@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/quarto-contrib/videojs/video.min.js"></script>
+<link href="../../site_libs/quarto-contrib/videojs/video-js.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.42">
+
+  <meta name="author" content="Florian Shkurti">
+  <title>CSC477 - Fall 2026 – CSC477 Introduction to Mobile Robotics</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-2f366650f320edcfcf53d73c80250a32.css">
+  <link rel="stylesheet" href="../style.css">
+  <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+<meta property="og:title" content="CSC477 Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta property="og:description" content="Week #2: Kinematics and Dynamics">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="CSC477 Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Week #2: Kinematics and Dynamics">
+<meta name="twitter:card" content="summary">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">CSC477 Introduction to Mobile Robotics</h1>
+  <p class="subtitle">Week #2: Kinematics and Dynamics</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Florian Shkurti 
+</div>
+</div>
+</div>
+
+</section>
+<section id="section" class="slide level2 center">
+<h2></h2>
+<p>Today’s slides borrow parts of Paul Furgale’s “Representing robot pose” presentation:</p>
+<p><a href="http://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly" class="uri">http://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly</a></p>
+<p>You should absolutely read it.</p>
+</section>
+<section id="todays-agenda" class="slide level2">
+<h2>Today’s Agenda</h2>
+<p>• Frames of reference</p>
+<p>• Ways to represent rotations</p>
+<p>• Simplified models of vehicles</p>
+<p>• Forward and inverse kinematics</p>
+</section>
+<section id="d-frames-of-reference-are-everywhere-in-robotics" class="slide level2">
+<h2>3D frames of reference are everywhere in robotics</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<p><img data-src="img/Lecture2_1.png"></p>
+</div><div class="column" style="width:30%;">
+<p><img data-src="img/Lecture2_3.png"></p>
+</div><div class="column" style="width:30%;">
+<p><img data-src="img/Lecture2_2.jpg"></p>
+</div></div>
+</section>
+<section id="right-handed-vs-left-handed-frames" class="slide level2">
+<h2>Right-handed vs left-handed frames</h2>
+<p><img data-src="img/left-right-hand.png" style="width:70.0%;height:60.0%"></p>
+<div class="absolute green" style="bottom: 50%; right: 0px; ">
+<p>Unless otherwise specified,<br>
+we use right-handed<br>
+frames in robotics</p>
+</div>
+</section>
+<section id="why-do-we-need-to-use-so-many-frames" class="slide level2">
+<h2>Why do we need to use so many frames?</h2>
+<div class="columns">
+<div class="column small-font" style="width:30%;">
+<ul>
+<li><p>Because we want to reason and express quantities relative to their local configuration.</p></li>
+<li><p>For example: “grab the bottle behind the cereal bowl”</p></li>
+<li><p>This lecture is about defining and representing frames of reference and reasoning about how to express quantities in one frame to quantities in the other.</p></li>
+</ul>
+</div><div class="column" style="width:70%;">
+<p><img data-src="img/Lecture2_5.jpg"></p>
+</div></div>
+</section>
+<section id="rigid-body-motion" class="slide level2">
+<h2>Rigid-body motion</h2>
+<ul>
+<li><p>Motion that can be described by a rotation and translation.</p></li>
+<li><p>All the parts making up the body move in unison, and there are no deformations.</p></li>
+<li><p>Representing rotations, translations, and vectors in a given frame of reference is often a source of frustration and bugs in robot software because there are so many options.</p></li>
+</ul>
+</section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+
+<img data-src="img/Lecture2_6.png" class="r-stretch"></section>
+<section id="the-answer-is-meaningless-unless-i-provide-a-definition-of-the-coordinate-frames" class="slide level2 center">
+<h2>The answer is meaningless unless I provide a definition of the coordinate frames</h2>
+</section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture2_8.png" class="quarto-figure quarto-figure-center" style="width:80.0%;height:85.0%"></p>
+</figure>
+</div>
+<div class="absolute small-font" style="top: 80px; left: 40px; ">
+<p>Color convention<br>
+for frames</p>
+</div>
+<div class="absolute small-font" style="top: 15%; right: 200px; ">
+<p>Moving body (robot) frame</p>
+</div>
+<div class="absolute small-font" style="bottom: 40px; right: 120px; ">
+<p>Fixed world frame</p>
+</div>
+</section>
+<section id="always-provide-a-frame-diagram" class="slide level2 center">
+<h2>Always provide a frame diagram</h2>
+</section>
+<section id="section-3" class="slide level2">
+<h2></h2>
+
+<img data-src="img/Lecture2_10.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="inertial-frames-of-reference" class="slide level2">
+<h2>Inertial frames of reference</h2>
+<ul>
+<li><p>G, the global frame of reference is fixed, i.e.&nbsp;with zero velocity in our previous example.</p></li>
+<li><p>But, in general it can move as long as it has zero acceleration. Such a frame is called an “inertial” frame of reference.</p></li>
+<li><p>Newton’s laws hold for inertial reference frames only. For reference frames with non-constant velocity we need the theory of General Relativity.</p></li>
+<li><p>So, make sure that your global frame of reference is inertial, preferably fixed.</p></li>
+</ul>
+</section>
+<section id="todays-agenda-1" class="slide level2">
+<h2>Today’s Agenda</h2>
+<div class="grey">
+<ul>
+<li>Frames of reference</li>
+</ul>
+</div>
+<ul>
+<li><p>Ways to represent rotations</p></li>
+<li><p>Simplified models of vehicles</p></li>
+<li><p>Forward and inverse kinematics</p></li>
+</ul>
+</section>
+<section id="representing-rotations-in-3d-euler-angles" class="slide level2">
+<h2>Representing Rotations in 3D: Euler Angles</h2>
+
+<img data-src="img/Lecture2_11.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="specification-ambiguities-in-euler-angles" class="slide level2">
+<h2>Specification ambiguities in Euler Angles</h2>
+<ul>
+<li><p>Need to specify the axes which each angle refers to.</p></li>
+<li><p>There are <strong>12 different valid combinations</strong> of fundamental rotations. Here are the possible axes:</p></li>
+<li><p>z-x-z, x-y-x, y-z-y, z-y-z, x-z-x, y-x-y</p></li>
+<li><p>x-y-z, y-z-x, z-y-x, x-z-y, z-y-x, y-x-z</p></li>
+</ul>
+<div class="fragment">
+<ul>
+<li>E.g.: x-y-z rotation with Euler angles <span class="math inline">\((\theta, \phi, \psi)\)</span> means the rotation can be expressed as a sequence of simple rotations <span class="math inline">\(R_x(\theta) R_y(\phi) R_z(\psi)\)</span></li>
+</ul>
+</div>
+</section>
+<section id="specification-ambiguities-in-euler-angles-1" class="slide level2">
+<h2>Specification ambiguities in Euler Angles</h2>
+<p>Simple rotations can be counter-clockwise or clockwise. This gives <strong>another 2 possibilities.</strong></p>
+<p><span class="math display">\[
+\mathbf{R}_z(\alpha) :=
+\begin{bmatrix}
+\cos\alpha &amp; -\sin\alpha &amp; 0 \\
+\sin\alpha &amp; \cos\alpha  &amp; 0 \\
+0          &amp; 0           &amp; 1
+\end{bmatrix}
+\qquad
+\mathbf{C}_z(\alpha) :=
+\begin{bmatrix}
+\cos\alpha &amp; \sin\alpha  &amp; 0 \\
+-\sin\alpha &amp; \cos\alpha &amp; 0 \\
+0           &amp; 0          &amp; 1
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="specification-ambiguities-in-euler-angles-2" class="slide level2">
+<h2>Specification ambiguities in Euler Angles</h2>
+<div class="columns">
+<div class="column medium-font" style="width:30%;">
+<p>You need to specify whether the rotation rotates from the world frame to the body frame, or the other way around.</p>
+<p><strong>Another 2 possibilities. More possibilities if you have more frames.</strong></p>
+<p><strong>Degrees or radians? Another 2 possibilities</strong></p>
+</div><div class="column" style="width:70%;">
+<p><img data-src="img/car-euler-angles.png"></p>
+</div></div>
+</section>
+<section id="specification-ambiguities-in-euler-angles-3" class="slide level2">
+<h2>Specification ambiguities in Euler Angles</h2>
+<ul>
+<li><p>Need to specify the ordering of the three parameters.</p></li>
+<li><p>1-2-3, 1-3-2, 2-1-3, 2-3-1, 3-1-2, 3-2-1</p></li>
+<li><p><strong>Another 6 different valid combinations</strong></p></li>
+</ul>
+</section>
+<section id="section-4" class="slide level2">
+<h2></h2>
+
+<img data-src="img/Lecture2_16.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="section-5" class="slide level2">
+<h2></h2>
+
+<img data-src="img/Lecture2_17.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="another-problem-with-euler-angles-gimbal-lock" class="slide level2">
+<h2>Another problem with Euler angles: Gimbal Lock</h2>
+<video id="video_shortcode_videojs_video1" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/gimbal_lock.mp4"></video>
+</section>
+<section id="another-problem-with-euler-angles-gimbal-lock-1" class="slide level2">
+<h2>Another problem with Euler angles: Gimbal Lock</h2>
+<ul>
+<li><p>Why should roboticists care about this?</p></li>
+<li><p>Because when it happens Euler angle representations lose one degree of freedom.</p></li>
+<li><p>They cannot represent the entire range of rotations any more.</p></li>
+<li><p>They get “locked” into a subset of the space of possible rotations.</p></li>
+</ul>
+</section>
+<section id="so-we-need-other-representations-aside-from-euler-angles.-even-though-they-are-a-minimal-representation." class="slide level2 center">
+<h2>So, we need other representations aside from Euler angles. Even though they are a minimal representation.</h2>
+</section>
+<section id="representing-rotations-in-3d-axis-angle" class="slide level2">
+<h2>Representing Rotations in 3D: Axis-Angle</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<p><img data-src="img/Lecture2_19.png"></p>
+</div><div class="column" style="width:70%;">
+<ul>
+<li><p>4-number representation (angle, 3D axis)</p></li>
+<li><p>2 ambiguities: (-angle, -axis) is the same as (angle, axis)</p></li>
+</ul>
+</div></div>
+</section>
+<section id="representing-rotations-in-3d-rotation-matrix" class="slide level2">
+<h2>Representing Rotations in 3D: Rotation Matrix</h2>
+<ul>
+<li><p>The royalty of rotation representations</p></li>
+<li><p>3x3-number representation, very redundant</p></li>
+<li><p>No ambiguities, as long as source frame and target frame are specified correctly. For example, define your notation this way:</p></li>
+<li><p>Rotation from Body frame to World frame: <span class="math inline">\(\mathbf{R}_{BW}\)</span></p></li>
+<li><p>Or you can define it this way: <span class="math inline">\(_B^W \mathbf{R}\)</span></p></li>
+</ul>
+</section>
+<section id="inverse-rotation-matrix" class="slide level2">
+<h2>Inverse Rotation Matrix</h2>
+<p><span class="math display">\[
+_B^W\mathbf{R}^{-1} = _B^W\mathbf{R}^t = _W^B\mathbf{R}
+\]</span></p>
+<p>Rotation matrices are orthogonal matrices: their transpose is their inverse and they do not change the length of a vector, they just rotate it in space.</p>
+<p><span class="math display">\[{}^W_B\mathbf{R}^{t} {}^W_B\mathbf{R} = \mathbf{I}\]</span></p>
+</section>
+<section id="converting-axis-angle-to-rotation-matrix" class="slide level2">
+<h2>Converting axis-angle to rotation matrix</h2>
+<ul>
+<li>Given angle theta and axis v the equivalent rotation matrix is</li>
+</ul>
+<p><span class="math display">\[
+\mathbf{R} = \mathbf{I}\cos\theta + (1 - \cos\theta)\mathbf{v}\mathbf{v}^t + [\mathbf{v}]_\times
+\]</span></p>
+<ul>
+<li><p>Where I is the 3x3 identity and <span class="math display">\[[\mathbf{a}]_\times \stackrel{\text{def}}{=} \begin{bmatrix} 0 &amp; -a_3 &amp; a_2 \\ a_3 &amp; 0 &amp; -a_1 \\ -a_2 &amp; a_1 &amp; 0 \end{bmatrix}\]</span></p></li>
+<li><p>This is called the “Rodrigues formula”</p></li>
+</ul>
+</section>
+<section id="example-finding-a-rotation-matrix-that-rotates-one-vector-to-another" class="slide level2">
+<h2>Example: finding a rotation matrix that rotates one vector to another</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="img/rotation_matrix1.png"></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+_C^D\mathbf{R} = \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \\ 1 &amp; 0 &amp; 0 \end{bmatrix}
+\]</span></p>
+</div></div>
+<p>This matrix transforms the x-axis of frame C to the z-axis of frame D. Same for y and z axes.</p>
+</section>
+<section id="rotation-multiplication-vs-addition-3d-vs-2d" class="slide level2">
+<h2>Rotation multiplication vs addition: 3D vs 2D</h2>
+<ul>
+<li><p>In 2D adding angles with wraparound at 360 degrees is a valid operation.</p></li>
+<li><p>Rotation matrices can be added, but the result is not necessarily a valid rotation. Rotations are not closed under the operation of addition.</p></li>
+<li><p>Rotations are closed under the operation of multiplication. To compose a sequence of simple rotations we need to multiply them.</p></li>
+</ul>
+</section>
+<section id="compound-rotations" class="slide level2">
+<h2>Compound rotations</h2>
+
+<img data-src="img/compound-rotations.png" class="r-stretch"><p><span class="math display">\[
+_C^E \mathbf{R} = _D^E \mathbf{R} _C^D \mathbf{R}
+\]</span></p>
+</section>
+<section id="representing-rotations-in-3d-quaternions" class="slide level2">
+<h2>Representing Rotations in 3D: Quaternions</h2>
+<ul>
+<li><p>Based on axis-angle representation, but more computationally efficient.</p></li>
+<li><p>The main workhorse of rotation representations.</p></li>
+<li><p>Used almost everywhere in robotics, aerospace, aviation.</p></li>
+<li><p>Very important to master in this course. You will need it for the first assignment and for working with ROS in general.</p></li>
+</ul>
+</section>
+<section id="converting-axis-angle-to-quaternion" class="slide level2">
+<h2>Converting axis-angle to quaternion</h2>
+<ul>
+<li>Given angle theta and axis v the equivalent quaternion representation is</li>
+</ul>
+<p><span class="math display">\[
+\mathbf{q} = [\sin(\theta/2)v_1, \sin(\theta/2)v_2, \sin(\theta/2)v_3, \cos(\theta/2)]
+\]</span></p>
+<p><span class="math display">\[\mathbf{q} = x\mathbf{i} + y\mathbf{j} + z\mathbf{k} + w\]</span></p>
+<ul>
+<li>Just like in the case of rotation matrices we denote the source and target frames of the rotation quaternion: <span class="math inline">\(_B^W \mathbf{q}\)</span></li>
+</ul>
+<div class="fragment">
+<ul>
+<li>We always work with unit length (normalized) quaternions.</li>
+</ul>
+</div>
+</section>
+<section id="examples-of-quaternions" class="slide level2">
+<h2>Examples of quaternions</h2>
+<ul>
+<li>90 degree rotation about the z-axis</li>
+</ul>
+<p><span class="math display">\[
+\mathbf{q} = [0, 0, \sin(\pi / 4)v_3, cos(\pi / 4)]
+\]</span></p>
+</section>
+<section id="quaternion-multiplication" class="slide level2">
+<h2>Quaternion multiplication</h2>
+<!-- ![](img/Lecture2_43.png) -->
+<p>Defined algebraically by</p>
+<p><span class="math display">\[ \begin{align}
+Q = q_0 + q_1i + q_2j q_sk \\
+i^2 = j^2 = k^2 = ijk = -1 \\
+ij = k, jk = i, ki = j
+\end{align}
+\]</span></p>
+<p>and usually denoted by the circular cross symbol. For example:</p>
+<p><span class="math display">\[
+_F^W\mathbf{q} = _C^W\mathbf{q} \otimes {} _F^C\mathbf{q}
+\]</span></p>
+</section>
+<section id="quaternion-multiplication-1" class="slide level2">
+<h2>Quaternion multiplication</h2>
+<p><span class="math display">\[{}^W_F\mathbf{q} = {}^W_C\mathbf{q} \otimes {}^C_F\mathbf{q}\]</span></p>
+<p>Direct correspondence with matrix multiplication:</p>
+<p><span class="math display">\[
+_F^W\mathbf{R(q)} = _C^W\mathbf{R(q)} _F^C\mathbf{R(q)}
+\]</span></p>
+<p>NOTE: the quaternion to matrix conversion will not be given here.</p>
+<p>It is usually present in all numerical algebra libraries. At the moment we’ll take it for granted.</p>
+</section>
+<section id="quaternion-inversion" class="slide level2">
+<h2>Quaternion inversion</h2>
+<p><span class="math display">\[
+\mathbf{q}^{-1} = -x\mathbf{i} - y\mathbf{j} -z\mathbf{k} + w
+\]</span></p>
+<!-- ![](img/Lecture2_48.png) -->
+<p><span class="math display">\[
+[0,0,0,1] = \mathbf{q}^{-1} \otimes \mathbf{q}
+\]</span></p>
+<p>Direct correspondence with matrix inversion: <!-- 
+![](img/Lecture2_49.png) --> <span class="math display">\[
+\mathbf{I} = \mathbf{R(q^{-1})R(q)}
+\]</span></p>
+<p><span class="math display">\[
+\mathbf{I} = \mathbf{R(q)^{-1} R(q)}
+\]</span></p>
+</section>
+<section id="example-updating-orientation-based-on-angular-velocity" class="slide level2">
+<h2>Example: updating orientation based on angular velocity</h2>
+<ul>
+<li><p>If the angular velocity of the Body frame is <span class="math inline">\(^Bw\)</span> and the body-to-world rotation at time t is <span class="math inline">\(_B^W\mathbf{q}(t)\)</span></p></li>
+<li><p>Then, at time t+dt the new body-to-world rotation will be <span class="math display">\[{}^W_{B(t+dt)}\mathbf{q} = {}^W_{B(t)}\mathbf{q} \otimes {}^{B(t)}_{B(t+dt)}\mathbf{q}\]</span></p></li>
+</ul>
+<p>where <span class="math inline">\({}^{B(t)}_{B(t+dt)}\mathbf{q}\)</span> has unit axis <span class="math inline">\(\frac{{}^B\omega}{||{}^B\omega||}\)</span> and angle <span class="math inline">\(||{}^B\omega|| dt\)</span></p>
+</section>
+<section id="main-ambiguities-of-quaternion-representation" class="slide level2">
+<h2>Main ambiguities of quaternion representation</h2>
+<ul>
+<li>The ones inherited from the axis-angle representation, but also:</li>
+</ul>
+<p><img data-src="img/quaternion-rep.png" style="width:80.0%;height:55.0%"></p>
+</section>
+<section id="be-clear-about-your-orientation-representation." class="slide level2 center">
+<h2>Be clear about your orientation representation.</h2>
+</section>
+<section id="suggested-minimum-documentation" class="slide level2">
+<h2>Suggested minimum documentation</h2>
+<ul>
+<li><p>Frame diagram</p></li>
+<li><p>Full description of how to build a transformation matrix from the provided scalars and down to the scalar level.</p></li>
+<li><p>A clear statement of which transformation matrix it is.</p></li>
+</ul>
+
+<img data-src="img/Lecture2_60.png" class="r-stretch"></section>
+<section id="lets-talk-about-code." class="slide level2">
+<h2>Lets talk about code.</h2>
+<ul>
+<li>Code has the same requirements as notation</li>
+<li>Rotation matrices have two frame decorations:
+<ul>
+<li>to</li>
+<li>from</li>
+</ul></li>
+<li>Coordinates of vectors have three decorations:
+<ul>
+<li>to</li>
+<li>from</li>
+<li>expressed in</li>
+</ul></li>
+</ul>
+</section>
+<section id="lets-talk-about-code.-1" class="slide level2">
+<h2>Lets talk about code.</h2>
+<p><img data-src="img/Lecture2_64.png" style="width:80.0%;height:70.0%"></p>
+</section>
+<section id="lets-talk-about-code.-2" class="slide level2">
+<h2>Lets talk about code.</h2>
+<p><img data-src="img/Lecture2_66.png" style="width:80.0%;height:70.0%"></p>
+</section>
+<section id="lets-talk-about-code.-3" class="slide level2">
+<h2>Lets talk about code.</h2>
+<p><img data-src="img/Lecture2_68.png" style="width:80.0%;height:70.0%"></p>
+</section>
+<section id="lets-talk-about-code.-4" class="slide level2">
+<h2>Lets talk about code.</h2>
+<p><img data-src="img/Lecture2_70.png" style="width:80.0%;height:70.0%"></p>
+</section>
+<section id="lets-talk-about-code.-5" class="slide level2">
+<h2>Lets talk about code.</h2>
+<p><img data-src="img/Lecture2_72.png" style="width:80.0%;height:70.0%"></p>
+</section>
+<section id="lets-talk-about-code.-6" class="slide level2 center">
+<h2>Lets talk about code.</h2>
+<p><strong>Choose an expressive coding style.</strong></p>
+<p><strong>Explain it clearly.</strong></p>
+<p><strong>Stick with it.</strong></p>
+</section>
+<section id="example-finding-quaternion-that-rotates-one-vector-into-another" class="slide level2">
+<h2>Example: finding quaternion that rotates one vector into another</h2>
+<ul>
+<li><p>Suppose you have a vector in frame A, and a vector in frame B</p></li>
+<li><p>You want to find a quaternion that transforms <span class="math inline">\(^A\mathbf{v}\)</span> to <span class="math inline">\(^B\mathbf{v}\)</span></p></li>
+<li><p>Idea: use axis-angle and convert it to quaternion</p></li>
+<li><p>Can rotate from <span class="math inline">\(^A\mathbf{v}\)</span> to <span class="math inline">\(^B\mathbf{v}\)</span> along an axis that is perpendicular to both of them. How do we find that?</p></li>
+</ul>
+</section>
+<section id="cross-product" class="slide level2">
+<h2>Cross Product</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="img/Lecture2_79.png" height="500"></p>
+</div><div class="column center" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{a} \times \mathbf{b} = ||\mathbf{a}|| ||\mathbf{b}|| \sin(\theta) \mathbf{n}
+\]</span></p>
+</div></div>
+</section>
+<section id="example-finding-quaternion-that-rotates-one-vector-into-another-1" class="slide level2">
+<h2>Example: finding quaternion that rotates one vector into another</h2>
+<p><span class="math inline">\(\mathbf{v}_\text{rot axis} = ^A\mathbf{v} \times ^B\mathbf{v}\)</span> is perpendicular to both of them</p>
+<p><span class="math inline">\(\theta_{\text{rot angle}} = \text{acos}(^A\mathbf{v} \cdot ^B\mathbf{v})\)</span></p>
+<p>Assuming the two vectors are unit length</p>
+</section>
+<section id="rotating-a-vector-via-a-quaternion" class="slide level2">
+<h2>Rotating a vector via a quaternion</h2>
+<ul>
+<li><p>Let <span class="math inline">\(^A\mathbf{v}\)</span> be given and a quaternion <span class="math inline">\(_A^B\mathbf{q}\)</span></p></li>
+<li><p>To obtain <span class="math inline">\(^B\mathbf{v}\)</span> you have two choices:</p></li>
+<li><p>Either use the rotation matrix <span class="math inline">\(^B\mathbf{v} = _A^B\mathbf{R(q)} ^A\mathbf{v}\)</span></p></li>
+<li><p>Or use quaternion multiplication directly</p></li>
+</ul>
+<p><span class="math display">\[
+[^B\mathbf{v}, 0] = _A^B\mathbf{q} \otimes [^A\mathbf{v}, 0] \otimes _B^A\mathbf{q}
+\]</span></p>
+</section>
+<section id="transforming-points-from-one-frame-to-another" class="slide level2">
+<h2>Transforming points from one frame to another</h2>
+<div class="red">
+<ul>
+<li><strong>VERY IMPORTANT AND USEFUL</strong></li>
+</ul>
+</div>
+<ul>
+<li>Suppose you have a point in the Body frame,<span class="math inline">\(^B\mathbf{p}\)</span> which you want to transform/express in the World frame. Then you can do any of the two following options:</li>
+</ul>
+<p><span class="math display">\[{}^W\mathbf{p} = {}^W_B\mathbf{R} {}^B\mathbf{p} + {}^W\mathbf{t}_{WB} \qquad {}^W\mathbf{p} = {}^W_B\mathbf{R}({}^B\mathbf{p} - {}^B\mathbf{t}_{BW})\]</span></p>
+<ul>
+<li>Think of it as first rotating the point to be in the World frame and then adding to it the translation from Body to World.</li>
+</ul>
+</section>
+<section id="transforming-vectors-from-one-frame-to-another" class="slide level2">
+<h2>Transforming vectors from one frame to another</h2>
+<div class="red">
+<ul>
+<li><strong>VERY IMPORTANT AND USEFUL</strong></li>
+</ul>
+</div>
+<ul>
+<li>Suppose you have a vector in the Body frame, <span class="math inline">\(^B\mathbf{v}\)</span> which you want to transform/express in the World frame. Then</li>
+</ul>
+<p><span class="math display">\[
+^W\mathbf{v} = _B^W\mathbf{R} ^B_\mathbf{v}
+\]</span></p>
+</section>
+<section id="combining-rotations-and-translation-into-one-transformation" class="slide level2">
+<h2>Combining rotations and translation into one transformation</h2>
+<div class="red">
+<ul>
+<li><strong>VERY IMPORTANT AND USEFUL</strong></li>
+</ul>
+</div>
+<ul>
+<li>Many times we combine the rotation and translation of a rigid motion into a 4x4 homogeneous matrix</li>
+</ul>
+<p><span class="math display">\[
+_B^W\mathbf{T} = \begin{bmatrix}
+_B^W\mathbf{R} &amp; ^W\mathbf{t}_{WB}  \\
+0 &amp; 1   \\
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="main-advantage-of-homogeneous-transformations-easy-composition" class="slide level2">
+<h2>Main advantage of homogeneous transformations: easy composition</h2>
+<p><span class="math display">\[
+_B^W\mathbf{T} = _A^W\mathbf{T} _B^A\mathbf{T}
+\]</span></p>
+<p>Composing rigid motions now becomes a series of matrix multiplications</p>
+</section>
+<section id="inverting-a-homogeneous-transformation" class="slide level2">
+<h2>Inverting a homogeneous transformation</h2>
+<ul>
+<li>Be careful:</li>
+</ul>
+<p><span class="math display">\[
+_B^W\mathbf{T}^{-1} \neq _A^W\mathbf{T}^t
+\]</span></p>
+<p>as was the case with rotation matrices.</p>
+</section>
+<section id="physical-models-of-how-systems-move" class="slide level2">
+<h2>Physical models of how systems move</h2>
+
+<img data-src="img/physical-models.png" class="r-stretch"></section>
+<section id="todays-agenda-2" class="slide level2">
+<h2>Today’s Agenda</h2>
+<div class="grey">
+<ul>
+<li><p>Frames of reference</p></li>
+<li><p>Ways to represent rotations</p></li>
+</ul>
+</div>
+<ul>
+<li><p>Simplified models of vehicles</p></li>
+<li><p>Forward and inverse kinematics</p></li>
+</ul>
+</section>
+<section id="why-simplified" class="slide level2">
+<h2>Why simplified?</h2>
+<ul>
+<li><p>“All models are wrong, but some are useful” – George Box (statistician)</p></li>
+<li><p>Model: a function that describes a physical phenomenon or a system, i.e.&nbsp;how a set of input variables cause a set of output variables.</p></li>
+<li><p>Models are useful if they can predict reality <u>up to some degree</u> .</p></li>
+<li><p>Mismatch between model prediction and reality = <strong>error / noise</strong></p></li>
+</ul>
+</section>
+<section id="noise" class="slide level2">
+<h2>Noise</h2>
+<ul>
+<li><p>Anything that we do not bother modelling with our model</p></li>
+<li><p>Example 1: “assume frictionless surface”</p></li>
+<li><p>Example 2: Taylor series expansion (only first few terms are dominant)</p></li>
+<li><p>With models, can be thought of as approximation error.</p></li>
+</ul>
+</section>
+<section id="simplified-physical-models-of-robotic-vehicles" class="slide level2">
+<h2>Simplified physical models of robotic vehicles</h2>
+<ul>
+<li><p>Omnidirectional motion</p></li>
+<li><p>Dubins car</p></li>
+<li><p>Differential drive steering</p></li>
+<li><p>Ackerman steering</p></li>
+<li><p>Unicycle</p></li>
+<li><p>Cartpole</p></li>
+<li><p>Quadcopter</p></li>
+</ul>
+</section>
+<section id="omnidirectional-robots" class="slide level2">
+<h2>Omnidirectional Robots</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/9GQ0lPGDC1w" width="90%" height="80%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</section>
+<section id="omnidirectional-robots-1" class="slide level2">
+<h2>Omnidirectional Robots</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/TXTo16KKm8Q" width="90%" height="80%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</section>
+<section id="the-state-of-an-omnidirectional-robot" class="slide level2">
+<h2>The state of an omnidirectional robot</h2>
+<p>State := Configuration := <span class="math inline">\(\mathbf{X}\)</span> := vector of physical quantities of interest about the system</p>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/omnidirectional-robot.png"></p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{X} = [^Gp_x, ^Gp_y, ^G\theta]
+\]</span></p>
+<p>State = [Position, Orientation]</p>
+<p>Position of the robot’s frame of reference C with respect to a fixed frame of reference G, expressed in coordinates of frame G. Angle is the orientation of frame C with respect to frame G.</p>
+</div></div>
+</section>
+<section id="control-of-an-omnidirectional-robot" class="slide level2">
+<h2>Control of an omnidirectional robot</h2>
+<p>Control := <span class="math inline">\(\mathbf{u}\)</span> := a vector of input commands that can modify the state of the system</p>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/omnidirectional-robot.png"></p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{u} = [^Cv_x, ^Cv_y, ^Cw_z]
+\]</span></p>
+<p>Control = [Linear velocity, Angular velocity]</p>
+<p>Linear and angular velocity of the robot’s frame of reference C with respect to a fixed frame of reference G, expressed in coordinates of frame C.</p>
+</div></div>
+</section>
+<section id="dynamics-of-an-omnidirectional-robot" class="slide level2">
+<h2>Dynamics of an omnidirectional robot</h2>
+<p>Dynamical System : = Dynamics := a function that describes the time evolution of the state in response to a control signal</p>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/omnidirectional-robot.png"></p>
+</div><div class="column" style="width:60%;">
+<p>Continuous case:</p>
+<p><span class="math display">\[
+\begin{align}
+\frac{dx}{dt} &amp;= \dot{x} = f(x, u) \\
+\dot{p}_x &amp;= v_x \\
+\dot{p}_y &amp;= v_y \\
+\dot{\theta} &amp;= \omega_z
+\end{align}
+\]</span></p>
+<p>Note: reference frames have been removed for readability.</p>
+</div></div>
+</section>
+<section id="the-state-of-a-simple-car" class="slide level2">
+<h2>The state of a simple car</h2>
+
+<img data-src="img/state-simplecar.png" class="r-stretch"><p>State = [Position and orientation]</p>
+<p>Position of the car’s frame of reference C with respect to a fixed frame of reference G, expressed in frame G.</p>
+<p>The angle is the orientation of frame C with respect to G.</p>
+<p><span class="math display">\[
+\mathbf{x} = [^Gp_x, ^Gp_y, ^G\theta]
+\]</span></p>
+</section>
+<section id="the-controls-of-a-simple-car" class="slide level2">
+<h2>The controls of a simple car</h2>
+
+<img data-src="img/state-simplecar.png" class="r-stretch"><p>Controls = [Forward speed and angular velocity]</p>
+<p>Linear velocity and angular velocity of the car’s frame of reference C with respect to a fixed frame of reference G, expressed in coordinates of C.</p>
+<p><span class="math display">\[
+\mathbf{u} = [^Cv_x, ^Cw_z]
+\]</span></p>
+</section>
+<section id="the-dynamical-system-of-a-simple-car" class="slide level2">
+<h2>The dynamical system of a simple car</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="img/simple-car.png"></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{align}
+\dot{p}_x &amp;= v_x \cos(\theta) \\
+\dot{p}_y &amp;= v_x \sin(\theta) \\
+\dot{\theta} &amp;= \omega_z
+\end{align}
+\]</span></p>
+<p><span class="small-font">Note: reference frames have been removed for readability.</span></p>
+</div></div>
+</section>
+<section id="kinematics-vs-dynamics" class="slide level2">
+<h2>Kinematics vs Dynamics</h2>
+<ul>
+<li><p>Kinematics considers models of locomotion independently of external forces and control.</p></li>
+<li><p>For example, it describes how the speed of a car affects the state without considering what the required control commands required to generate those speeds are.</p></li>
+<li><p>Dynamics considers models of locomotion as functions of their control inputs and state.</p></li>
+</ul>
+</section>
+<section id="special-case-of-simple-car-dubins-car" class="slide level2">
+<h2>Special case of simple car: Dubins car</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<ul>
+<li><p>Can only go forward</p></li>
+<li><p>Constant speed</p></li>
+</ul>
+<p><span class="math display">\[
+^Cv_x = \text{const} &gt; 0
+\]</span></p>
+<ul>
+<li>You only control the angular velocity</li>
+</ul>
+</div><div class="column" style="width:60%;">
+<iframe data-external="1" src="https://www.youtube.com/embed/fEImNJQ3hUM?si=tIAkbA0r10XJVdV6" width="100%" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</div></div>
+</section>
+<section id="special-case-of-simple-car-dubins-car-1" class="slide level2">
+<h2>Special case of simple car: Dubins car</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<ul>
+<li><p>Can only go forward</p></li>
+<li><p>Constant speed</p></li>
+</ul>
+<p><span class="math display">\[
+^Cv_x = \text{const} &gt; 0
+\]</span></p>
+<ul>
+<li>You only control the angular velocity</li>
+</ul>
+</div><div class="column" style="width:60%;">
+<video id="video_shortcode_videojs_video2" width="600" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/dubins_car.mp4"></video>
+</div></div>
+</section>
+<section id="dubins-car-motion-primitives" class="slide level2">
+<h2>Dubins car: motion primitives</h2>
+<p>The path of the car can be decomposed to L(eft), R(ight), S(traight) segments.</p>
+<div class="columns">
+<div class="column" style="width:80%;">
+<p><img data-src="img/Lecture2_128.gif" style="width:100.0%"></p>
+</div><div class="column small-font" style="width:20%;">
+<p>RSR path</p>
+</div></div>
+</section>
+<section id="instantaneous-center-of-rotation" class="slide level2">
+<h2>Instantaneous Center of Rotation</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/Lecture2_129.png"></p>
+</div><div class="column" style="width:60%;">
+<p><img data-src="img/Lecture2_130.gif"></p>
+</div></div>
+<p>IC = Instantaneous Center of Rotation</p>
+<p>The center of the circle circumscribed by the turning path.</p>
+<p>Undefined for straight path segments.</p>
+</section>
+<section id="dubins-car-colorbluerightarrow-dubins-boat" class="slide level2">
+<h2>Dubins car <span class="math inline">\(\color{blue}{\Rightarrow}\)</span> Dubins boat</h2>
+<ul>
+<li><p>Why do we care about a car that can only go forward?</p></li>
+<li><p>Because we can also model idealized airplanes and boats</p></li>
+<li><p>Dubins boat = Dubins car</p></li>
+</ul>
+<video id="video_shortcode_videojs_video3" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/dubins_boat.mp4"></video>
+</section>
+<section id="dubins-car-colorbluerightarrow-dubins-airplane-in-3d" class="slide level2">
+<h2>Dubins car <span class="math inline">\(\color{blue}{\Rightarrow}\)</span> Dubins airplane in 3D</h2>
+<ul>
+<li><p>Pitch angle <span class="math inline">\(\phi\)</span> and forward velocity determine descent rate</p></li>
+<li><p>Yaw angle <span class="math inline">\(\theta\)</span> and forward velocity determine turning rate</p></li>
+</ul>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="img/Lecture2_133.jpg"></p>
+</div><div class="column" style="width:40%;">
+<p><span class="math display">\[
+\begin{align}
+\dot{p}_x &amp;= v_x \cos(\theta) \sin(\phi) \\
+\dot{p}_y &amp;= v_x \sin(\theta) \sin(\phi) \\
+\dot{p}_z &amp;= v_x \cos(\phi) \\
+\dot{\theta} &amp;= \omega_z \\
+\dot{\phi} &amp;= \omega_y
+\end{align}
+\]</span></p>
+<div class="small-font">
+<p><span class="math inline">\(\theta\)</span> is yaw</p>
+<p><span class="math inline">\(\phi\)</span> is pitch</p>
+</div>
+</div></div>
+</section>
+<section id="the-state-of-a-unicycle" class="slide level2">
+<h2>The state of a unicycle</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="img/unicycle.png"></p>
+<p>Top view of a unicycle</p>
+</div><div class="column" style="width:65%;">
+<p><span class="math display">\[
+\mathbf{x} = [^Gp_x, ^Gp_y, ^G\theta]
+\]</span></p>
+<p>State = [Position, Orientation]</p>
+<p>Position of the unicycle’s frame of reference U with respect to a fixed frame of reference G, expressed in coordinates of frame G. Angle is the orientation of frame U with respect to frame G.</p>
+<p><span class="red">Q: Would you put the radius of the unicycle to be part of the state?</span></p>
+<div class="fragment red">
+<p>A: Most likely not, because it is a constant quantity that we can measure beforehand. But, if we couldn’t measure it, we need to make it part of the state in order to estimate it.</p>
+</div>
+</div></div>
+</section>
+<section id="controls-of-a-unicycle" class="slide level2">
+<h2>Controls of a unicycle</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="img/unicycle.png"></p>
+</div><div class="column" style="width:65%;">
+<p><span class="math display">\[
+\mathbf{u} = [^Uw_z, ^Uw_y]
+\]</span></p>
+<p>Controls = [Yaw rate, and pedaling rate]</p>
+<p>Yaw and pedaling rates describe the angular velocities of the respective axes of the unicycle’s frame of reference U with respect to a fixed frame of reference G, expressed in coordinates of U.</p>
+</div></div>
+</section>
+<section id="dynamics-of-a-unicycle" class="slide level2">
+<h2>Dynamics of a unicycle</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="img/unicycle.png"></p>
+</div><div class="column" style="width:65%;">
+<p><span class="math display">\[
+\begin{align}
+\dot{p}_x &amp;= rw_y\cos(\theta) \\
+\dot{p}_y &amp;= rw_y\sin(\theta) \\
+\dot{\theta} &amp;= w_z \\
+\end{align}
+\]</span></p>
+<p>r = the radius of the wheel</p>
+<p><span class="math inline">\(rw_y\)</span> is the forward velocity of the unicycle</p>
+</div></div>
+</section>
+<section id="the-state-of-a-differential-drive-vehicle" class="slide level2">
+<h2>The state of a differential drive vehicle</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="img/differential-drive-vehicle.png"></p>
+</div><div class="column" style="width:65%;">
+<p><span class="math display">\[
+\mathbf{x} = [^Gp_x, ^Gp_y, ^G\theta]
+\]</span></p>
+<p>State = [Position, Orientation]</p>
+<p>Position of the vehicle’s frame of reference D with respect to a fixed frame of reference G, expressed in coordinates of frame G. Angle is the orientation of frame D with respect to frame G.</p>
+</div></div>
+</section>
+<section id="controls-of-a-differential-drive-vehicle" class="slide level2">
+<h2>Controls of a differential drive vehicle</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="img/diff-drivevehicle2.png"></p>
+<p><span class="small-font">ICR = Instantaneous Center of Rotation</span></p>
+</div><div class="column" style="width:65%;">
+<p><span class="math display">\[
+\mathbf{u} = [u_l, u_r]
+\]</span></p>
+<p>Controls = [Left wheel and right wheel turning rates]</p>
+<p>Wheel turning rates determine the linear velocities of the respective wheels of the vehicle’s frame of reference D with respect to a fixed frame of reference G, expressed in coordinates of D.</p>
+<p><span class="math display">\[
+\begin{align}
+v_1 &amp;= (W - H/2)w \\
+v_r &amp;= (W + H/2)w \\
+v_x &amp;= (v_1 + v_r)/2
+\end{align}
+\]</span></p>
+<p><span class="math inline">\(v_1 = Ru_l\)</span> R is the wheel radius</p>
+<p><span class="math inline">\(v_r = Ru_r\)</span></p>
+</div></div>
+</section>
+<section id="dynamics-of-a-differential-drive-vehicle" class="slide level2">
+<h2>Dynamics of a differential drive vehicle</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="img/diff-drive-vehicle3.png"></p>
+<p><span class="small-font">ICR = Instantaneous Center of Rotation</span></p>
+</div><div class="column" style="width:65%;">
+<div class="medium-font">
+<p><span class="math display">\[
+\begin{bmatrix}
+p_x(t+1) \\
+p_y(t+1) \\
+\theta(t+1)
+\end{bmatrix} =
+\begin{bmatrix}
+\cos(\omega \delta t) &amp; -\sin(\omega \delta t) &amp; 0 \\
+\sin(\omega \delta t) &amp; \cos(\omega \delta t) &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+p_x(t) - \text{ICR}_x \\
+p_y(t) - \text{ICR}_y \\
+\theta(t)
+\end{bmatrix} +
+\begin{bmatrix}
+\text{ICR}_x \\
+\text{ICR}_y \\
+\omega \delta t
+\end{bmatrix}
+\]</span></p>
+</div>
+<p><span class="math display">\[
+\text{ICR} = [p_x - W\sin\theta, p_y + W\cos\theta]
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture2_185.gif" class="quarto-figure quarto-figure-center" width="350"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="dynamics-of-a-differential-drive-vehicle-1" class="slide level2">
+<h2>Dynamics of a differential drive vehicle</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="img/diff-drive-vehicle3.png"></p>
+</div><div class="column" style="width:65%;">
+<div class="medium-font">
+<p><span class="math display">\[
+\begin{bmatrix}
+p_x(t+1) \\
+p_y(t+1) \\
+\theta(t+1)
+\end{bmatrix} =
+\begin{bmatrix}
+\cos(\omega \delta t) &amp; -\sin(\omega \delta t) &amp; 0 \\
+\sin(\omega \delta t) &amp; \cos(\omega \delta t) &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+p_x(t) - \text{ICR}_x \\
+p_y(t) - \text{ICR}_y \\
+\theta(t)
+\end{bmatrix} +
+\begin{bmatrix}
+\text{ICR}_x \\
+\text{ICR}_y \\
+\omega \delta t
+\end{bmatrix}
+\]</span></p>
+</div>
+<p><span class="math display">\[
+\text{ICR} = [p_x - W\sin\theta, p_y + W\cos\theta]
+\]</span></p>
+<p>Special cases:</p>
+<ul>
+<li>moving straight <span class="math inline">\(v_l = v_r\)</span></li>
+<li>in-place rotation <span class="math inline">\(v_l = -v_r\)</span></li>
+<li>rotation about the left wheel <span class="math inline">\(v_l = 0\)</span></li>
+</ul>
+</div></div>
+</section>
+<section id="ackerman-steering" class="slide level2">
+<h2>Ackerman steering</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/i6uBwudwA5o" width="90%" height="75%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<div class="small-font">
+<p><a href="https://www.youtube.com/watch?v=i6uBwudwA5o" class="uri">https://www.youtube.com/watch?v=i6uBwudwA5o</a></p>
+</div>
+</section>
+<section id="the-state-of-a-double-link-inverted-pendulum-a.k.a.-acrobot" class="slide level2">
+<h2>The state of a double-link inverted pendulum (a.k.a. Acrobot)</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="img/Lecture2_198.png" style="width:50.0%"></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{x} = [\theta_1, \theta_2, \dot\theta_1, \dot\theta_2]
+\]</span></p>
+<p>State = [angle of joint 1, joint 2, joint velocities]</p>
+<p>Angle of joint 2 is expressed with respect to joint 1. Angle of joint 1 is expressed compared to down vector.</p>
+</div></div>
+</section>
+<section id="controls-of-a-double-link-inverted-pendulum-a.k.a.-acrobot" class="slide level2">
+<h2>Controls of a double-link inverted pendulum (a.k.a. Acrobot)</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="img/Lecture2_198.png" style="width:50.0%"></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{u} = [\tau_1]
+\]</span></p>
+<p>Controls = [torque applied to joint 1]</p>
+</div></div>
+</section>
+<section id="dynamics-of-a-double-link-inverted-pendulum-a.k.a-acrobot" class="slide level2">
+<h2>Dynamics of a double-link inverted pendulum (a.k.a Acrobot)</h2>
+<p><span class="math display">\[
+\begin{align}
+\ddot{\theta}_1 &amp;= -d_1^{-1}(d_2\ddot{\theta}_2 + \phi_1) \\
+\ddot{\theta}_2 &amp;= \left(m_2l_{c2}^2 + I_2 - \frac{d_2^2}{d_1}\right)^{-1}\left(\tau + \frac{d_2}{d_1}\phi_1 - m_2gl_1l_{c2}\dot{\theta}_1^2\sin\theta_2 - \phi_2\right) \\
+d_1 &amp;= m_1l_{c1}^2 + m_2(l_1^2 + l_{c2}^2 + 2l_1l_{c2}\cos\theta_2) + I_1 + I_2) \\
+d_2 &amp;= m_2(l_{c2}^2 + l_1l_{c2}\cos\theta_2) + I_2 \\
+\phi_1 &amp;= -m_2l_1l_{c2}\dot{\theta}_2^2\sin\theta_2 - 2m_2l_1l_{c2}\dot{\theta}_2\dot{\theta}_1\sin\theta_2
++ (m_1l_{c1} + m_2l_1)g\cos(\theta_1 - \pi/2) + \phi_2 \\
+\phi_2 &amp;= m_2l_{c2}g\cos(\theta_1 + \theta_2 - \pi/2)
+\end{align}
+\]</span></p>
+<div class="red-annotation">
+<p>Provided here just for reference and completeness. You are not expected to know this.</p>
+</div>
+</section>
+<section id="dynamics-of-a-double-link-inverted-pendulum-a.k.a-acrobot-1" class="slide level2">
+<h2>Dynamics of a double-link inverted pendulum (a.k.a Acrobot)</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/FeCwtvrD76I" width="80%" height="65%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</section>
+<section id="the-state-of-a-single-link-cartpole" class="slide level2">
+<h2>The state of a single-link cartpole</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="img/Lecture2_202.png"></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{x} = [^Gp_x, ^G{\dot p_x}, ^G\theta, ^G\dot\theta]
+\]</span></p>
+<p>State = [Position and velocity of cart, orientation and angular velocity of pole]</p>
+</div></div>
+</section>
+<section id="controls-of-a-single-link-cartpole" class="slide level2">
+<h2>Controls of a single-link cartpole</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="img/Lecture2_202.png"></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{u} = [f]
+\]</span></p>
+<p>Controls = [Horizontal force applied to cart]</p>
+</div></div>
+</section>
+<section id="balancing-a-triple-link-pendulum-on-a-cart" class="slide level2">
+<h2>Balancing a triple-link pendulum on a cart</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/cyN-CRNrb3E" width="80%" height="70%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</section>
+<section id="extreme-balancing" class="slide level2">
+<h2>Extreme Balancing</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/n_6p-1J551Y" width="80%" height="70%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</section>
+<section id="the-state-of-a-double-integrator" class="slide level2">
+<h2>The state of a double integrator</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/double-integrator.png"></p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{x} = [^Gp_x]
+\]</span></p>
+<p>State = [Position along x-axis]</p>
+</div></div>
+</section>
+<section id="controls-of-a-double-integrator" class="slide level2">
+<h2>Controls of a double integrator</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/double-integrator.png"></p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{x} = [^Gu_x]
+\]</span></p>
+<p>Controls = [Force along x-axis]</p>
+</div></div>
+</section>
+<section id="dynamics-of-a-double-integrator" class="slide level2">
+<h2>Dynamics of a double integrator</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/double-integrator.png"></p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\ddot x = F
+\]</span> This corresponds to applying force to a brick of mass 1 to move on frictionless ice. Where is the brick going to end up? Similar to curling.</p>
+</div></div>
+</section>
+<section id="the-state-of-a-quadrotor" class="slide level2">
+<h2>The state of a quadrotor</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/Lecture2_212.png" style="width:85.0%"></p>
+<p><img data-src="img/quadrotor.png"></p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{x} = [^G\phi, ^G\theta, ^G\psi, ^G\dot\phi, ^G\dot\theta, ^G\dot\psi]
+\]</span></p>
+<p>State = [Roll, pitch, yaw, and roll rate, pitch rate, roll rate]</p>
+<p>Angles are with respect to the global frame.</p>
+</div></div>
+</section>
+<section id="controls-of-a-quadrotor" class="slide level2">
+<h2>Controls of a quadrotor</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="img/Lecture2_215.png"></p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{u} = [T_1, T_2, T_3, T_4]
+\]</span></p>
+<p>Controls = [Thrusts of four motors]</p>
+<p>OR <span class="math display">\[
+\mathbf{u} = [M_1, M_2, M_3, M_4]
+\]</span></p>
+<p>Controls = [Torques of four motors]</p>
+<p>Notice how adjacent motors spin in opposite ways. Why?</p>
+</div></div>
+</section>
+<section id="what-if-all-four-motors-spin-the-same-direction" class="slide level2">
+<h2>What if all four motors spin the same direction?</h2>
+<video id="video_shortcode_videojs_video4" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/motor_spin.mp4"></video>
+</section>
+<section id="dynamics-of-a-quadrotor" class="slide level2">
+<h2>Dynamics of a quadrotor</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture2_218.png" class="quarto-figure quarto-figure-center" width="500"></p>
+</figure>
+</div>
+<p><img data-src="img/dynamic-quadrotor.png" class="absolute" style="left: 0px; bottom: 0px; "></p>
+</section>
+<section id="manipulators" class="slide level2">
+<h2>Manipulators</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li>Robot arms, industrial robot
+<ul>
+<li>Rigid bodies(links) connected by joints</li>
+<li>Joints: revolute or prismatic</li>
+<li>Drive: electric or hydraulic</li>
+<li>End-effector (tool) mounted on a flange or plate secured to the wrist joint of robot</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<p><img data-src="img/Lecture2_220.png"></p>
+</div></div>
+</section>
+<section id="manipulators-1" class="slide level2">
+<h2>Manipulators</h2>
+
+<img data-src="img/Lecture2_221.png" class="r-stretch"></section>
+<section id="manipulators-2" class="slide level2">
+<h2>Manipulators</h2>
+<ul>
+<li>Motion Control Methods
+<ul>
+<li>Point to point control
+<ul>
+<li>a sequence of discrete points</li>
+<li>spot welding, pick-and-place, loading &amp; unloading</li>
+</ul></li>
+<li>Continuous path control
+<ul>
+<li>follow a prescribed path, controlled-path motion</li>
+<li>Spray painting, Arc welding, Gluing</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="manipulators-3" class="slide level2">
+<h2>Manipulators</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li>Robot Specifications
+<ul>
+<li>Number of Axes
+<ul>
+<li>Major axes, (1-3) =&gt; Position the wrist</li>
+<li>Minor axes, (4-6) =&gt; Orient the tool</li>
+<li>Redundant, (7-n) =&gt; reaching around obstacles, avoiding undesirable configuration</li>
+</ul></li>
+<li>Degree of Freedom (DOF)</li>
+<li>Workspace</li>
+<li>Payload (load capacity)</li>
+<li>Precision v.s. Repeatability</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<p><img data-src="img/Lecture2_220.png"></p>
+<p>Which one is more important?</p>
+</div></div>
+</section>
+<section id="forward-and-inverse-kinematics" class="slide level2">
+<h2>Forward and Inverse Kinematics</h2>
+
+<img data-src="img/Lecture2_224.jpg" class="r-stretch"><div class="small-font">
+<p><a href="https://slideplayer.com/slide/4239432/" class="uri">https://slideplayer.com/slide/4239432/</a></p>
+</div>
+</section>
+<section id="controllability" class="slide level2">
+<h2>Controllability</h2>
+<ul>
+<li><p>A system is controllable if there exist control sequences that can bring the system from any state to any other state, in finite time.</p></li>
+<li><p>For example, even though cars are subject to non-holonomic constraints (can’t move sideways directly), they are controllable, They can reach sideways states by parallel parking.</p></li>
+</ul>
+
+<img data-src="img/Lecture2_225.jpg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="passive-dynamics" class="slide level2">
+<h2>Passive Dynamics</h2>
+<ul>
+<li>Dynamics of systems that operate without drawing (a lot of) energy from a power supply.</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Interesting because biological locomotion systems are more efficient than current robotic systems.</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<iframe data-external="1" src="https://www.youtube.com/embed/qwEWki9H0Ao" width="100%" height="350" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</div></div>
+</section>
+<section id="passive-dynamics-1" class="slide level2">
+<h2>Passive Dynamics</h2>
+<ul>
+<li>Dynamics of systems that operate without drawing (a lot of) energy from a power supply.</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><p>Usually propelled by their own weight.</p></li>
+<li><p>Interesting because biological locomotion systems are more efficient than current robotic systems.</p></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<iframe data-external="1" src="https://www.youtube.com/embed/v2qILGYl-BM" width="100%" height="350" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<p><span class="small-font">Steve Collins &amp; Andy Ruina, Cornell, 2001</span></p>
+</div></div>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="https://csc477.github.io/2026F_website" target="_blank" style="font-size:0.8em; bottom: -5px;">↩︎ Back to Course Website</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true,"boardmarkerWidth":2,"chalkWidth":2,"chalkEffect":1},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    <script>videojs(video_shortcode_videojs_video1);</script>
+    <script>videojs(video_shortcode_videojs_video2);</script>
+    <script>videojs(video_shortcode_videojs_video3);</script>
+    <script>videojs(video_shortcode_videojs_video4);</script>
+    
+
+</body></html>

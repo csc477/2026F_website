@@ -1,0 +1,112 @@
+
+.medium-font {
+font-size: 0.8em;
+}
+
+.small-font {
+font-size: 0.7em;
+}
+
+.semi-tiny-font {
+font-size: 0.6em;
+}
+
+.tiny-font {
+font-size: 0.5em;
+}
+
+.red-annotation {
+    color: red;
+    font-size: 0.7em;
+}
+
+.green-annotation {
+    color: green;
+    font-size: 0.7em;
+}
+
+.h3-fontsize {
+    font-size: var(--r-heading3-size);
+}
+
+.horizontal-layout {
+  display: flex;
+}
+
+
+.horizontal-layout > * {
+  flex: 1;
+}
+
+.horizontal-align {
+  display: flex;
+  justify-content: space-between;
+}
+
+.vertical-align > * {
+  flex: 1;
+}
+
+.bordered-box {
+  border: 1px solid red;
+}
+
+.red{
+    color: red;
+}
+
+.black{
+    color: black;
+}
+
+.green{
+    color: green;
+}
+
+.light-orange{
+    color: #f0a170;
+}
+
+.grey{
+  color: grey;
+}
+
+.blue{
+  color: blue;
+}
+
+.orange{
+    color: #FF8C00;
+}
+
+.left-align {
+    text-align: left;
+}
+
+.right-align {
+    text-align: right;
+}
+
+.center-align{
+    text-align: center; 
+}
+
+.bg-img {
+  z-index: -1;
+}
+
+.img-front {
+  z-index: 1;
+}
+
+/* 
+.reveal .slides {
+  background-image: url("layout.png");
+  background-size: cover;  
+  background-position: center;
+  background-repeat: no-repeat;
+} */
+
+.yellow-box{
+    background-color: #fdfd98;
+}

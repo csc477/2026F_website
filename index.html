@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>CSC477: Introduction to Mobile Robotics – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./index.qmd#teaching-staff" rel="next">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<meta property="og:title" content="CSC477: Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta property="og:description" content="Homepage for CSC477: Introduction to Mobile Robotics, Fall 2026">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="CSC477: Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Homepage for CSC477: Introduction to Mobile Robotics, Fall 2026">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Overview</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      <img src="./images/mars-exploration-rover.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">CSC477: Introduction to Mobile Robotics</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/csc477" title="Github workspace for the course" class="quarto-navigation-tool px-1" aria-label="Github workspace for the course"><i class="bi bi-github"></i></a>
+    <a href="http://piazza.com/utoronto.ca/fall2022/csc477" title="Discuss on Piazza" class="quarto-navigation-tool px-1" aria-label="Discuss on Piazza"><i class="bi bi-chat-quote"></i></a>
+    <a href="http://toolboxrenewal.utoronto.ca/" title="Official announcements on Quercus" class="quarto-navigation-tool px-1" aria-label="Official announcements on Quercus"><i class="bi bi-megaphone"></i></a>
+    <a href="./index.html#teaching-staff" title="Email teaching staff" class="quarto-navigation-tool px-1" aria-label="Email teaching staff"><i class="bi bi-envelope-at"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html#teaching-staff" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Teaching Staff</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html#schedule" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Schedule</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="http://piazza.com/utoronto.ca/fall2022/csc477" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Piazza</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="http://toolboxrenewal.utoronto.ca/" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quercus</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#course-overview" id="toc-course-overview" class="nav-link active" data-scroll-target="#course-overview">Course Overview</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#course-delivery-details" id="toc-course-delivery-details" class="nav-link" data-scroll-target="#course-delivery-details">Course Delivery Details</a></li>
+  <li><a href="#teaching-staff" id="toc-teaching-staff" class="nav-link" data-scroll-target="#teaching-staff">Teaching Staff</a></li>
+  <li><a href="#evaluation-and-due-dates" id="toc-evaluation-and-due-dates" class="nav-link" data-scroll-target="#evaluation-and-due-dates">Evaluation and Due Dates</a></li>
+  <li><a href="#recommended-but-optional-textbooks" id="toc-recommended-but-optional-textbooks" class="nav-link" data-scroll-target="#recommended-but-optional-textbooks">Recommended, but optional, textbooks</a></li>
+  <li><a href="#schedule" id="toc-schedule" class="nav-link" data-scroll-target="#schedule">Schedule</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">CSC477: Introduction to Mobile Robotics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="course-overview" class="level3">
+<h3 class="anchored" data-anchor-id="course-overview">Course Overview</h3>
+<p>This undergraduate course provides an introduction to robotic systems from a computational perspective. A robot is regarded as an intelligent computer that can use sensors and act on the world. We will consider the definitional problems in robotics and look at how they are being solved in practice and by the research community. The emphasis is on algorithms, probabilistic reasoning, optimization, inference mechanisms, and behavior strategies, as opposed to electromechanical systems design. This course aims to help students improve their probabilistic modeling skills and instill the idea that <strong><em>a robot that explicitly accounts for its uncertainty works better than a robot that does not.</em></strong></p>
+</section>
+<section id="prerequisites" class="level3">
+<h3 class="anchored" data-anchor-id="prerequisites">Prerequisites</h3>
+<p>Required: CSC209H5; STA256H5; MAT223H5/MAT240H5; MAT232H5; CSC376<br>
+Recommended: MAT224H5; CSC384H5; CSC311H5;</p>
+</section>
+<section id="course-delivery-details" class="level3">
+<h3 class="anchored" data-anchor-id="course-delivery-details">Course Delivery Details</h3>
+<ul>
+<li><strong>Lectures</strong>: Wednesdays @ 11am-1pm ET, IB260 + Zoom</li>
+<li><strong>Tutorials</strong>: Wednesdays @ 1pm-2pm ET, MN3110 + Zoom</li>
+<li><strong>Instructor Office Hours</strong>: Wednesdays @ 10am-11am ET, DH3066 + Zoom</li>
+<li><strong>TA Office Hours</strong>: TBA, Zoom</li>
+<li>Announcements will be posted on <a href="https://q.utoronto.ca/courses/444079">Quercus</a></li>
+<li>Discussions will take place on Piazza</li>
+<li><a href="https://www.surveymonkey.com/r/H8QH65F">Anonymous feedback form</a> for suggested improvements</li>
+</ul>
+</section>
+<section id="teaching-staff" class="level3">
+<h3 class="anchored" data-anchor-id="teaching-staff">Teaching Staff</h3>
+<p><a href="https://www.cs.toronto.edu/~florian/">Florian Shkurti</a> (Instructor, csc477-instructor@cs.toronto.edu)<br>
+<a href="https://www.linkedin.com/in/s-mohammad-sheikholeslami-phd">S. Mohammad Sheikholeslami</a> (TA, csc477-tas@cs.toronto.edu)</p>
+</section>
+<section id="evaluation-and-due-dates" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-and-due-dates">Evaluation and Due Dates</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Due Date</th>
+<th>% of Final Grade</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Assignment 1</td>
+<td>Oct 8</td>
+<td>10%</td>
+</tr>
+<tr class="even">
+<td>Assignment 2</td>
+<td>Oct 29</td>
+<td>10%</td>
+</tr>
+<tr class="odd">
+<td>Assignment 3</td>
+<td>Nov 19</td>
+<td>10%</td>
+</tr>
+<tr class="even">
+<td>Assignment 4</td>
+<td>Dec 4</td>
+<td>10%</td>
+</tr>
+<tr class="odd">
+<td>Midterm Test</td>
+<td>Nov 11</td>
+<td>20%</td>
+</tr>
+<tr class="even">
+<td>Tutorial / Lab Activities / Quizzes (best 6 / 8)</td>
+<td>during PRA sessions (*)</td>
+<td>10%</td>
+</tr>
+<tr class="odd">
+<td>Final project</td>
+<td>Dec 8</td>
+<td>20%</td>
+</tr>
+</tbody>
+</table>
+<p>(*) Sept 23, Sep 30, Oct 7, Oct 14, Oct 21, Nov 4, Nov 18, Nov 25</p>
+</section>
+<section id="recommended-but-optional-textbooks" class="level3">
+<h3 class="anchored" data-anchor-id="recommended-but-optional-textbooks">Recommended, but optional, textbooks</h3>
+<ul>
+<li>Probabilistic Robotics, by Thrun, Fox, and Burgard</li>
+<li>Planning Algorithms, by Lavalle</li>
+<li>Robotics, Vision, and Control, by Corke</li>
+<li>Computational Principles of Mobile Robotics, 2nd edition, by Dudek and Jenkin</li>
+<li>State Estimation for Robotics, by Barfoot</li>
+<li>Bayesian Filtering and Smoothing, by Sarkka</li>
+<li>Introduction to Autonomous Mobile Robots, by Siegwart, Nourbakhsh, Scaramuzza</li>
+<li>(Chapters 2 and 4 from) Computer Vision: Models, Learning, and Inference, by Prince</li>
+</ul>
+</section>
+<section id="schedule" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="schedule">Schedule</h3>
+<p>This page contains an outline of the topics, content, and assignments for the semester. Note that this schedule will be updated as the semester progresses, with all changes documented here.</p>
+<div class="column-screen-inset-right">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Week</th>
+<th>Date</th>
+<th>Topic</th>
+<th style="text-align: center;">Tutorials</th>
+<th style="text-align: center;">Lecture Slides</th>
+<th style="text-align: center;">Lecture Recordings</th>
+<th style="text-align: center;">Optional Exercises</th>
+<th style="text-align: center;">Assignments</th>
+<th style="text-align: center;">Midterm Test</th>
+<th style="text-align: center;">Project Deliverables</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-1">1</a></td>
+<td>Sep 9</td>
+<td>Introduction</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w01/lec01.html" class="no-style" target="_blank" aria-label="Lec 1 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td></td>
+<td>Sensors and Actuators</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-2">2</a></td>
+<td>Sep 16</td>
+<td>Kinematics</td>
+<td style="text-align: center;"><a href="./tutorials/w02/tut02.html" class="no-style" target="_blank" aria-label="Tut 2 slides">📖</a></td>
+<td style="text-align: center;"><a href="./lecs/w02/lec02.html" class="no-style" target="_blank" aria-label="Lec 2 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td></td>
+<td>Dynamics</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-3">3</a></td>
+<td>Sep 23</td>
+<td>PID Control</td>
+<td style="text-align: center;"><a href="./tutorials/w03/tut03.html" class="no-style" target="_blank" aria-label="Tut 3 slides">📖</a></td>
+<td style="text-align: center;"><a href="./lecs/w03/lec03.html" class="no-style" target="_blank" aria-label="Lec 3 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td></td>
+<td>Artificial Potential Fields and Obstacle Avoidance</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-4">4</a></td>
+<td>Sep 30</td>
+<td>Planning</td>
+<td style="text-align: center;"><a href="./tutorials/w04/tut04.html" class="no-style" target="_blank" aria-label="Tut 4 slides">📖</a></td>
+<td style="text-align: center;"><a href="./lecs/w04/lec04.html" class="no-style" target="_blank" aria-label="Lec 4 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><a href="#sched-week-5">5</a></td>
+<td>Oct 7</td>
+<td>Linear Quadratic Regulator (LQR)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w05/lec05.html" class="no-style" target="_blank" aria-label="Lec 5 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"><a href="https://github.com/florianshkurti/csc477_fall22/blob/master/wall_following_assignment/CSC477_Assignment_1.pdf" class="no-style" target="_blank" aria-label="Assignment 1 due Oct 8">✍️</a></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-6">6</a></td>
+<td>Oct 14</td>
+<td>Map Representations and Map Alignment</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w06/lec06.html" class="no-style" target="_blank" aria-label="Lec 6 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td></td>
+<td>Occupancy Grid Mapping With Known Robot Poses</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-7">7</a></td>
+<td>Oct 21</td>
+<td>Maximum Likelihood, Least Squares Estimation, Maximum A Posteriori Estimation</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w07/lec07.html" class="no-style" target="_blank" aria-label="Lec 7 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td></td>
+<td>GraphSLAM</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-8">8</a></td>
+<td>Oct 28</td>
+<td>Reading Week</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="https://github.com/florianshkurti/csc477_fall22/blob/master/path_planning_and_control_assignment/description/CSC477_Assignment_2.pdf" class="no-style" target="_blank" aria-label="Assignment 2 due Oct 29">✍️</a></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><a href="#sched-week-9">9</a></td>
+<td>Nov 4</td>
+<td>Kalman Filter</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w09/lec09.html" class="no-style" target="_blank" aria-label="Lec 9 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td></td>
+<td>Bayes’ Filter and Kalman Filter</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><a href="#sched-week-10">10</a></td>
+<td>Nov 11</td>
+<td>Extended Kalman Filter (EKF)</td>
+<td style="text-align: center;"><a href="https://github.com/florianshkurti/csc477_fall22/blob/master/website/tutorials/Kalman_Filter_Notes.pdf" class="no-style" target="_blank" aria-label="Tut 9 Notes">📖</a></td>
+<td style="text-align: center;"><a href="./lecs/w10/lec10.html" class="no-style" target="_blank" aria-label="Lec 10 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-11">11</a></td>
+<td>Nov 18</td>
+<td>Particle Filter</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w11/lec11.html" class="no-style" target="_blank" aria-label="Lec 11 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"><a href="https://github.com/florianshkurti/csc477_fall22/blob/master/estimation_assignment/latex/CSC477_Assignment_3.pdf" class="no-style" target="_blank" aria-label="Assignment 3 due Nov 19">✍️</a></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><a href="#sched-week-12">12</a></td>
+<td>Nov 25</td>
+<td>Camera Optics and Multi-view Geometry</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w12/lec12.html" class="no-style" target="_blank" aria-label="Lec 12 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="#sched-week-13">13</a></td>
+<td>Dec 2</td>
+<td>Visual odometry and Visual SLAM</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="./lecs/w13/lec13.html" class="no-style" target="_blank" aria-label="Lec 13 slides">🖥️</a></td>
+<td style="text-align: center;"><a href="https://q.utoronto.ca/courses/444079" class="no-style" target="_blank" aria-label="Lecture recording">🎥</a></td>
+<td style="text-align: center;">📋</td>
+<td style="text-align: center;"><a href="https://github.com/florianshkurti/csc477_fall22/blob/master/estimation_and_vision_assignment/latex/CSC477_Assignment_4.pdf" class="no-style" target="_blank" aria-label="Assignment 4 due Dec 4">✍️</a></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><a href="#sched-week-14">14</a></td>
+<td>Dec 9</td>
+<td>Study break, beginning of exams</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><a href="https://www.cs.toronto.edu/~florian/courses/csc477_fall22/CSC2630_Project_Guidelines.pdf" class="no-style" target="_blank">📂</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="sched-week-1" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-1">Week 1</h4>
+<p><strong>Introduction</strong><br>
+Motivation, logistics, rough description of assignments, sense-plan-act paradigm.</p>
+<p><strong>Sensors and Actuators</strong><br>
+Camera, LiDAR, tactile, IMU, depth, GPS, Hall-effect sensors, encoders, RGBD. Pulse-Width Modulation. Motors.</p>
+<p><strong>No Tutorials</strong></p>
+<p><strong>Readings</strong><br>
+- Dudek &amp; Jenkin 3.1.1,4, 3.2-3, 4.1-8, 4.10, 5.1.1<br>
+</p>
+<p><strong>Things to know</strong><br>
+- Camera projection models: pinhole and thin-lens<br>
+- How RGB-D cameras work<br>
+- LiDAR sensors<br>
+- IMU sensors and what they measure<br>
+- Encoders and Hall effect sensors<br>
+- PWM</p>
+</section>
+<section id="sched-week-2" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-2">Week 2</h4>
+<p><strong>Kinematics</strong><br>
+Frames of reference. Rotation representations. Homogeneous coordinates and transformations. Rigid body motion.</p>
+<p><strong>Dynamics</strong><br>
+Dynamical systems and control. Examples: Dubins car, differential drive car, unicycle, pendulum, cartpole, quadcopter. Holonomic vs.&nbsp;non-holonomic systems.</p>
+<p><strong>Readings</strong><br>
+- <a href="http://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly">Paul Furgale: robot pose</a><br>
+- <a href="http://msl.cs.uiuc.edu/planning/node657.html">Lavalle 13.1</a><br>
+- Dudek &amp; Jenkin 3.1.5,6</p>
+<p><strong>Things to know</strong><br>
+- Euler angles, quaternions, rotation matrices, and axis-angle representations<br>
+- How to convert points from one frame to another<br>
+- How to convert vectors from one frame to another<br>
+- How to find the rotation that converts one vector into another<br>
+- How to update the current rotation based on an angular velocity measurement<br>
+- What is an inertial frame?<br>
+- Dubins vehicle<br>
+- What is forward and backward kinematics?<br>
+- Rotation representations, in more detail than covered in lecture</p>
+</section>
+<section id="sched-week-3" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-3">Week 3</h4>
+<p><strong>PID Control</strong><br>
+Tuning, cascading PID, advantages and drawbacks.</p>
+<p><strong>Artificial Potential Fields and Obstacle Avoidance</strong><br>
+Implementation issues, navigation functions. Vector-field histogram (VFH), dynamic window approach (DWA).</p>
+<p><strong>Readings</strong><br>
+- Optional: <a href="https://www.amazon.com/Automatic-Tuning-Controllers-Karl-Astrom/dp/1556170815">Astrom and Hagglund, Ch. 2</a><br>
+- <a href="http://planning.cs.uiuc.edu/node388.html">Lavalle Ch. 8.4</a><br>
+- Dudek &amp; Jenkin 6.3.4<br>
+- Optional: <a href="http://www.cs.cmu.edu/~motionplanning/lecture/Chap4-Potential-Field_howie.pdf">Howie Choset’s notes</a></p>
+<p><strong>Things to know</strong><br>
+- How to implement and tune a PID controller<br>
+- When is PID insufficient<br>
+- How to formulate a potential field for goal-based navigation<br>
+- Disadvantages of potential fields<br>
+- Vector Field Histogram</p>
+</section>
+<section id="sched-week-4" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-4">Week 4</h4>
+<p><strong>Planning</strong><br>
+Dijkstra, A*, Rapidly-exploring Random Trees (RRT), Probabilistic RoadMaps (PRM)</p>
+<p><strong>Readings</strong><br>
+- <a href="http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html">Blog post on A*</a><br>
+- <a href="https://www.udacity.com/course/artificial-intelligence-for-robotics--cs373">Udacity Lesson 4</a><br>
+- <a href="http://planning.cs.uiuc.edu/ch5.pdf">Lavalle 5.5, 5.6</a></p>
+<p><strong>Things to know</strong><br>
+- Dynamic programming<br>
+- Sense plan act vs subsumption architecture<br>
+- Dijkstra and its use of cost-to-come as the new node visitation order<br>
+- A* and its use of cost-to-come + underestimate of cost-to-go as the new node visitation order<br>
+- Configuration space planning<br>
+- Problems with state discretization in high dimensions<br>
+- RRT, and its 5 properties<br>
+- PRM</p>
+</section>
+<section id="sched-week-5" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-5">Week 5</h4>
+<p><strong>Linear Quadratic Regulator (LQR)</strong><br>
+Computing optimal actions for linear dynamical systems with quadratic cost-to-go functions.</p>
+<p><strong>Readings</strong><br>
+- Optional: Stephen Boyd’s LQR <a href="https://stanford.edu/class/ee363/lectures/dlqr.pdf">notes</a> and <a href="https://stanford.edu/class/ee103/lectures/control/control_slides.pdf">examples</a></p>
+<p><strong>Things to know</strong><br>
+- The derivations for 1 step of LQR<br>
+- What are the requirements on the cost function for LQR to be applied<br>
+- What are the requirements on the dynamics for LQR to be applied<br>
+- How to convert a continuous-time dynamical system to a discrete-time dynamical system for use in LQR</p>
+</section>
+<section id="sched-week-6" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-6">Week 6</h4>
+<p><strong>Map Representations and Map Alignment</strong><br>
+Occupancy grids, Octrees, Voronoi Graph, Homotopy Classes. Map alignment with known or unknown correspondences. Iterative Closest Point (ICP).</p>
+<p><strong>Occupancy Grid Mapping With Known Robot Poses</strong><br>
+Log-odds ratio, Probabilistic dynamics and measurement models, Bayesian estimation.</p>
+<p><strong>Readings</strong><br>
+- <a href="https://people.eecs.berkeley.edu/~pabbeel/cs287-fa13/slides/ScanMatching.pdf">Pieter Abbeel’s notes</a><br>
+- <a href="https://people.eecs.berkeley.edu/~pabbeel/cs287-fa13/slides/MappingWithKnownPoses.pdf">Pieter Abbeel’s notes</a><br>
+- Probabilistic Robotics Ch. 2 and Ch. 9</p>
+<p><strong>Things to know</strong><br>
+- The difference between metric, topological, and topometric maps<br>
+- Advantages and disadvantages of quadtrees and octrees<br>
+- Signed distance functions<br>
+- Homotopy classes<br>
+- Scan matching with unknown correspondences &amp; the Iterative Closest Point (ICP) algorithm<br>
+- The proof of the occupancy grid mapping algorithm</p>
+</section>
+<section id="sched-week-7" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-7">Week 7</h4>
+<p><strong>Maximum Likelihood, Least Squares Estimation, Maximum A Posteriori Estimation</strong><br>
+Least squares as a special case of maximum likelihood estimation on Gaussian models.</p>
+<p><strong>GraphSLAM</strong><br>
+Expectation and Covariance. Geometric interpretation of the covariance matrix. Nonlinear Least Squares formulation of the Simultaneous Localization And Mapping (SLAM) problem.</p>
+<p><strong>Readings</strong><br>
+- <a href="https://www.udacity.com/school/artificial-intelligence">Udacity Lesson 6</a><br>
+- Probabilistic Robotics Ch. 11</p>
+<p><strong>Things to know</strong><br>
+- The difference between maximum likelihood and maximum a posteriori estimation<br>
+- Least squares as a special case of maximum likelihood estimation<br>
+- Smoothing vs filtering<br>
+- Cost functions in GraphSLAM</p>
+</section>
+<section id="sched-week-8" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-8">Week 8</h4>
+<p><strong>Reading Week</strong></p>
+<p>No lectures or tutorials this week.</p>
+</section>
+<section id="sched-week-9" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-9">Week 9</h4>
+<p><strong>Kalman Filter</strong><br>
+Bayes’ rule on Gaussian distributions. Example of 1D Kalman Filter.</p>
+<p><strong>Bayes’ Filter and Kalman Filter</strong><br>
+Kalman Filter as a special case of Bayes’ Filter. Examples of 2D and 4D Kalman Filter. General prediction and update equations.</p>
+<p><strong>Readings</strong><br>
+- <a href="https://www.udacity.com/course/artificial-intelligence-for-robotics--cs373">Udacity Lesson 2</a><br>
+- <a href="http://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/">Kalman Filter, Illustrated,</a><br>
+- Probabilistic Robotics Ch. 2,3</p>
+<p><strong>Things to know</strong><br>
+- The difference between smoothing and filtering<br>
+- The assumptions of the Bayes’ filters and Kalman filter<br>
+- How to derive the Bayes’ filter<br>
+- How to derive the 1D Kalman filter<br>
+- Whether the uncertainty grows or shrinks after the prediction step and update step<br>
+- How to derive the 2D Kalman filter<br>
+- Is the Kalman filter an optimal estimator for linear systems?</p>
+</section>
+<section id="sched-week-10" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-10">Week 10</h4>
+<p><strong>Extended Kalman Filter (EKF)</strong><br>
+Bayes’ Filter and nonlinear transformations. Monte Carlo sampling vs.&nbsp;Linearization. EKF prediction and update equations. Examples: EKF Localization and EKF SLAM.</p>
+<p><strong>Readings</strong><br>
+- <a href="https://www.youtube.com/watch?v=DE6Jn2cB4J4">Cyrill Stachniss’ intro to EKF</a><br>
+- <a href="https://www.youtube.com/watch?v=XeWG5D71gC0">Cyrill Stachniss’ intro to EKF-SLAM</a><br>
+- Probabilistic Robotics Ch. 2,3</p>
+<p><strong>Things to know</strong><br>
+- What’s the pdf of the random variable Y=aX+b when X ~ N(x; mu, sigma^2)<br>
+- Is the pdf of the random variable Y = g(X) normally distributed when X ~ N(x; mu, sigma^2)?<br>
+- Taylor approximation for multi-dimensional functions and inputs<br>
+- What are the assumptions of the Extended Kalman Filter?<br>
+- Whether the uncertainty grows or shrinks after the prediction step and update step<br>
+- How to locally linearize the dynamics model and the observation model in EKF<br>
+- Is the EKF an optimal estimator for nonlinear systems?<br>
+- How to use the EKF for localization<br>
+- The disadvantages of EKF-SLAM</p>
+</section>
+<section id="sched-week-11" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-11">Week 11</h4>
+<p><strong>Particle Filter</strong><br>
+Representing multimodal distributions. Particle propagation and resampling. Pathologies of particle filter. Importance Sampling. Examples: Markov localization in a known map. FastSLAM.</p>
+<p><strong>Readings</strong><br>
+- <a href="https://www.udacity.com/course/artificial-intelligence-for-robotics--cs373">Udacity Lesson 3</a><br>
+- Optional: <a href="http://robots.stanford.edu/papers/thrun.pf-in-robotics-uai02.pdf">Thrun’s paper on PF</a></p>
+<p><strong>Things to know</strong><br>
+- Differences between KF, EKF, Particle Filter<br>
+- How to update particle weights after receiving an observation from the sensor<br>
+- Particle resampling and its pathologies<br>
+- How to address particle deprivation<br>
+- Monte Carlo localization in a known map</p>
+</section>
+<section id="sched-week-12" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-12">Week 12</h4>
+<p><strong>Camera Optics and Multi-view Geometry</strong><br>
+Pinhole cameras, lenses, perspective projection. Aperture, focal length, exposure time, depth-of-field. Structure from Motion.</p>
+<p><strong>Readings</strong><br>
+- Optional: <a href="https://www.cs.toronto.edu/lectures_Spring2017/11_Spring2017_CamerasAndOptics.pdf">James Tompkin’s notes.</a><br>
+- <a href="http://www.cs.toronto.edu/~fidler/slides/2017/CSC420/lecture12.pdf">Sanja Fidler’s notes on depth from stereo</a></p>
+<p><strong>Things to know</strong><br>
+- Differences between projective geometry and Euclidean geometry<br>
+- Pinhole camera model vs thin-lens camera model<br>
+- Aperture, exposure time, focal length, field of view, depth of field<br>
+- Pinhole camera observation model<br>
+- Lens distortion model in the thin-lens camera model<br>
+- Camera calibration<br>
+- Multiview geometry problem definitions: estimating structure, motion, optical flow, and stereo</p>
+</section>
+<section id="sched-week-13" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-13">Week 13</h4>
+<p><strong>Visual odometry and Visual SLAM</strong><br>
+Epipolar constraints. Depth from stereo disparity for parallel cameras. Triangulation as a least-squares problem. Scale issues in visual odometry with a single camera. Visual SLAM vs.&nbsp;structure from motion.</p>
+<p><strong>Readings</strong><br>
+- Optional: James Tompkin’s notes on <a href="http://cs.brown.edu/courses/cs143/lectures_Spring2017/12_Spring2017_StereoIntroduction.pdf">stereo</a> and <a href="http://cs.brown.edu/courses/cs143/lectures_Spring2017/14_Spring2017_EpipolarGeometryAndStructureFromMotion.pdf">SfM</a>.<br>
+- <a href="http://www.cs.toronto.edu/~fidler/slides/2017/CSC420/lecture12.pdf">Sanja Fidler’s notes on depth from stereo</a></p>
+<p><strong>Things to know</strong><br>
+- Setting up 3D triangulation as a least squares problem<br>
+- Depth from disparity for parallel and calibrated stereo cameras<br>
+- Scale ambiguity in single-camera visual odometry and visual SLAM<br>
+- Structure from motion as a least squares problem</p>
+</section>
+<section id="sched-week-14" class="level4">
+<h4 class="anchored" data-anchor-id="sched-week-14">Week 14</h4>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./index.html#teaching-staff" class="pagination-link" aria-label="Teaching Staff">
+        <span class="nav-page-text">Teaching Staff</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

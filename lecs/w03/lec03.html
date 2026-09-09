@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/quarto-contrib/videojs/video.min.js"></script>
+<link href="../../site_libs/quarto-contrib/videojs/video-js.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.42">
+
+  <meta name="author" content="Florian Shkurti">
+  <title>CSC477 - Fall 2026 – CSC477 Introduction to Mobile Robotics</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-2f366650f320edcfcf53d73c80250a32.css">
+  <link rel="stylesheet" href="../style.css">
+  <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+<meta property="og:title" content="CSC477 Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta property="og:description" content="Week #3: PID Control, Potential Fields, Obstacle Avoidance">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="CSC477 Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Week #3: PID Control, Potential Fields, Obstacle Avoidance">
+<meta name="twitter:card" content="summary">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">CSC477 Introduction to Mobile Robotics</h1>
+  <p class="subtitle">Week #3: PID Control, Potential Fields, Obstacle Avoidance</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Florian Shkurti 
+</div>
+</div>
+</div>
+
+</section>
+<section id="feedback-control" class="slide level2">
+<h2>Feedback Control</h2>
+
+<img data-src="img/feedback-control.png" class="r-stretch"><p><span class="orange">Main question: what are the controls that will take the system from state A to B?</span></p>
+</section>
+<section id="example-wallline-following-at-fixed-speed" class="slide level2">
+<h2>Example: wall/line following at fixed speed</h2>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[1,1]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p>You have to control the angular velocity <span class="math inline">\(w\)</span></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/fixed-speed-ex.png" width="450"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="why-bother-with-wallline-following" class="slide level2">
+<h2>Why bother with wall/line following?</h2>
+<ul>
+<li>Because it enables arbitrary path following where the line is the local tangent of the curved path</li>
+</ul>
+</section>
+<section id="idea-1-bang-bang-control" class="slide level2">
+<h2>Idea 1: bang-bang control</h2>
+<p><span class="math display">\[
+\omega = \begin{cases}
+\omega_{\text{max}} &amp; \text{if } \text{CTE} &gt; 0 \\
+-\omega_{\text{max}} &amp; \text{if } \text{CTE} &lt; 0 \\
+0
+\end{cases}
+\]</span></p>
+<p>What’s wrong with this?</p>
+</section>
+<section id="idea-2-proportional-p-control" class="slide level2">
+<h2>Idea 2: proportional (P-)control</h2>
+<p><span class="math display">\[
+w = K_{p}e(t)
+\]</span></p>
+<p>Will the car reach the target line?</p>
+<p>Will the car overshoot the target line?</p>
+<p>Is the asymptotic (steady-state) error zero?</p>
+</section>
+<section id="idea-2-proportional-p-control-1" class="slide level2">
+<h2>Idea 2: proportional (P-)control</h2>
+<p><span class="math display">\[
+w = K_{p}e(t)
+\]</span></p>
+<div class="center-align">
+<p>Will the car reach the target line? YES</p>
+<p>Will the car overshoot the target line? YES</p>
+<p>Is the asymptotic (steady-state) error zero? NO</p>
+</div>
+<p><img data-src="img/car-control.png" class="absolute" style="left: 0px; bottom: 0px; width: 280px; "></p>
+</section>
+<section id="addressing-the-oscillation-problem" class="slide level2">
+<h2>Addressing the oscillation problem</h2>
+<ul>
+<li><p>Need to reduce turning rate <strong>well before</strong> the line is approached</p></li>
+<li><p>Idea: have a small proportional gain <span class="math inline">\(K_p\)</span><br>
+Problem: that means the car doesn’t turn very much</p></li>
+<li><p>Idea: need to <strong>predict the error</strong> in the near future<br>
+This is good, as long as the error does not oscillate at a very high frequency</p></li>
+</ul>
+</section>
+<section id="idea-3-proportional-derivative-pd-control" class="slide level2">
+<h2>Idea 3: proportional-derivative (PD-)control</h2>
+<p><span class="math display">\[
+W = K_{p}e(t) + K_{d}\dot e(t)
+\]</span></p>
+<div class="center-align">
+<p>How do we set the gains?</p>
+<p>What if there are systematic errors/biases?</p>
+<p>What if the error estimate is very noisy?</p>
+</div>
+<p><img data-src="img/idea3-car.png" class="absolute bg-img" style="left: 0px; bottom: 0px; "></p>
+</section>
+<section id="handling-systematic-biases-the-integral-term" class="slide level2">
+<h2>Handling systematic biases: the integral term</h2>
+<ul>
+<li>Examples of systematic biases:
+<ul>
+<li>wheels are misaligned</li>
+<li>car is much heavier on one side</li>
+</ul></li>
+<li>Add integral of the error from the beginning of time: <span class="math inline">\(\int_{\tau=0}^{\tau=t} e(\tau) d\tau\)</span></li>
+</ul>
+<div class="fragment">
+<ul>
+<li>Can the PI-controller have nonzero error asymptotically (in steady-state)?
+<ul>
+<li>NO. In steady state both the control <span class="math inline">\(w_\infty\)</span> and the error <span class="math inline">\(e_\infty\)</span> must be constant. If the asymptotic error is nonzero then the control is not constant: <span class="math inline">\(\omega_\infty = K_p e_\infty + K_i e_\infty t\)</span></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="potential-problem-integrator-windup" class="slide level2">
+<h2>Potential problem: integrator windup</h2>
+<ul>
+<li><p>What happens if the control variable reaches the actuator’s limits?</p></li>
+<li><p>I.e. the car can’t turn as fast as the controller commands it.</p></li>
+<li><p>Actuator may remain at its limit for a long time while the controller modifies its commands</p></li>
+<li><p>Error increases, integral term winds up while controller goes back to issuing commands in the feasible region.</p></li>
+</ul>
+</section>
+<section id="potential-problem-integrator-windup-1" class="slide level2">
+<h2>Potential problem: integrator windup</h2>
+<ul>
+<li>Heuristic fixes:
+<ul>
+<li>Limit integral error values</li>
+<li>Stop integral error while the commands are in the non feasible region</li>
+<li>Reduce gain of integral error term</li>
+</ul></li>
+</ul>
+</section>
+<section id="pid-controller" class="slide level2">
+<h2>PID controller</h2>
+<p><span class="math display">\[
+\omega(t) = K_p e(t) + K_d \dot{e}(t) + K_i \int_{\tau=0}^{\tau=t} e(\tau) d\tau
+\]</span></p>
+<p>Perhaps the most widely used controller in industry and robotics.</p>
+<p>Perhaps the easiest to code.</p>
+<p></p>
+<p>You will also see it as:</p>
+<p><span class="math display">\[
+\omega(t) = K_p \left[ e(t) + T_d \dot{e}(t) + \frac{1}{T_i} \int_{\tau=0}^{\tau=t} e(\tau) d\tau \right]
+\]</span></p>
+</section>
+<section id="tips-how-to-implement-pid" class="slide level2">
+<h2>Tips: how to implement PID</h2>
+<div class="medium-font">
+<ul>
+<li>Assume time is discrete</li>
+<li>Identify your error function e(t)= current_state(t)- target_state(t)</li>
+<li>Is the measurement of the state reliable?</li>
+<li>If the measurement of the current state is very noisy you might want to smooth/filter it, using:
+<ul>
+<li><p><strong>Moving average filter</strong> with uniform weights <span class="math display">\[
+\hat{x}_t = \frac{x_t + x_{t-1} + \ldots + x_{t-k+1}}{k} = \hat{x}_{t-1} + \frac{x_t - x_{t-k}}{k}
+\]</span></p>
+<p>Potential problem: the larger the window of the filter the slower it is going to register changes.</p></li>
+<li><p><strong>Exponential filter</strong> <span class="math display">\[
+\hat{x}_t = \alpha \hat{x}_{t-1} + (1 - \alpha) x_t, \quad \alpha \in [0, 1]
+\]</span></p>
+<p>Potential problem: the closer is to 1 the slower it is going to register changes.</p></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="tips-how-to-implement-pid-1" class="slide level2">
+<h2>Tips: how to implement PID</h2>
+<ul>
+<li><p>Approximate the integral of error by a sum</p></li>
+<li><p>Approximate the derivative of error by:</p>
+<ul>
+<li>Finite differences <span class="math inline">\(\dot{e}(t_k) \approx \frac{e(t_k) - e(t_{k-1})}{\delta t}\)</span></li>
+<li>Filtered finite differences, e.g.&nbsp;<span class="math inline">\(\dot{e}(t_k) \approx \alpha \dot{e}(t_{k-1}) + (1 - \alpha) \frac{e(t_k) - e(t_{k-1})}{\delta t}\)</span></li>
+</ul></li>
+<li><p>Limit the computed controls</p></li>
+<li><p>Limit or stop the integral term when detecting large errors and windup</p></li>
+</ul>
+</section>
+<section id="tips-how-to-tune-the-pid" class="slide level2">
+<h2>Tips: how to tune the PID</h2>
+<ul>
+<li>Manually:
+<ul>
+<li>First, use only the proportional term. Set the other gains to zero.</li>
+<li>When you see oscillations slowly add derivative term
+<ul>
+<li>Increasing <span class="math inline">\(K_d\)</span> increases the duration in which linear error prediction is assumed to be valid</li>
+</ul></li>
+<li>Add a small integral gain</li>
+</ul></li>
+</ul>
+</section>
+<section id="tips-how-to-tune-the-pid-1" class="slide level2">
+<h2>Tips: how to tune the PID</h2>
+<ul>
+<li>Ziegler-Nichols heuristic:
+<ul>
+<li>First, use only the proportional term. Set the other gains to zero.</li>
+<li>When you see consistent oscillations, record the proportional gain <span class="math inline">\(K_u\)</span> and the oscillation period <span class="math inline">\(T_u\)</span></li>
+</ul></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture3_41.png" class="quarto-figure quarto-figure-center" width="600" height="300"></p>
+</figure>
+</div>
+</section>
+<section id="tips-how-to-tune-the-pid-2" class="slide level2">
+<h2>Tips: how to tune the PID</h2>
+<ul>
+<li>After manual or Z-N tweaking you might want to use coordinate ascent to search for a better set of parameters automatically:</li>
+</ul>
+<div class="quarto-figure quarto-figure-right">
+<figure>
+<p><img data-src="img/Lecture3_42.png" class="quarto-figure quarto-figure-right" data-widht="400" height="450"></p>
+</figure>
+</div>
+<div class="red-annotation absolute" style="left: 0px; bottom: 40px; ">
+<p>See Sebastian Thrun’s online class<br>
+“AI for robotics” on Udacity for more<br>
+details on this. He calls the algorithm<br>
+Twiddle and it is in Lesson 5.</p>
+<p>Other names for this are<br>
+“Self-tuning PID controllers”</p>
+</div>
+</section>
+<section id="when-is-pid-insufficient" class="slide level2">
+<h2>When is PID insufficient?</h2>
+<ul>
+<li>Systems with large time delays</li>
+<li>Controllers that require completion time guarantees
+<ul>
+<li>E.g. the system must reach target state within 2 secs</li>
+</ul></li>
+<li>Systems with high-frequency oscillations</li>
+<li>High-frequency variations on the target state</li>
+</ul>
+</section>
+<section id="example-applications-self-driving-cars" class="slide level2">
+<h2>Example applications: self-driving cars</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/M2AcMnfzpNg?start=7.54" width="600" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</section>
+<section id="cascading-pid" class="slide level2">
+<h2>Cascading PID</h2>
+<ul>
+<li><p>Sometimes we have multiple error sources (e.g.&nbsp;multiple sensors) and one actuator to control.</p></li>
+<li><p>We can use a master PID loop that sets the setpoint for the slave PID loop. Master (outer loop) runs at low rate, while slave (inner loop) runs at higher rate.</p></li>
+<li><p>One way of getting hierarchical control behavior.</p></li>
+</ul>
+</section>
+<section id="potential-fields-main-motivation" class="slide level2">
+<h2>Potential Fields Main Motivation</h2>
+
+<img data-src="img/star-circle.png" class="r-stretch"><p>Q: How do you control the robot to reach the goal state while avoiding the obstacle?</p>
+</section>
+<section id="main-motivation" class="slide level2">
+<h2>Main Motivation</h2>
+
+<img data-src="img/star-circle.png" class="r-stretch"><p><br></p>
+<p>Q: How do you control the robot to reach the goal state while avoiding the obstacle?</p>
+<p>Assume omnidirectional robot.</p>
+<div class="absolute" style="top: 100px; left: 0px; ">
+<iframe data-external="1" src="https://www.youtube.com/embed/9GQ0lPGDC1w" width="350" height="200" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</div>
+</section>
+<section id="background-potential-energy-and-forces" class="slide level2">
+<h2>Background: potential energy and forces</h2>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture3_48.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[
+\begin{align}
+U(x) &amp;= \frac{1}{2}kx^2 \\
+F(x) &amp;= -kx
+\end{align}
+\]</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="background-potential-energy-and-forces-1" class="slide level2">
+<h2>Background: potential energy and forces</h2>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture3_51.jpg"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[
+\begin{align}
+U(x) &amp;= mgx \\
+F(x) &amp;= -mg
+\end{align}
+\]</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="background-potential-energy-and-forces-2" class="slide level2">
+<h2>Background: potential energy and forces</h2>
+<p>In both cases we have conversion from kinetic energy to potential energy U(x).</p>
+<p>In both cases there is a force resulting from the potential field, and F(x)=-dU(x)/dx.</p>
+<p>This is a general rule for conservative systems with no external forces.</p>
+</section>
+<section id="main-motivation-1" class="slide level2">
+<h2>Main Motivation</h2>
+
+<img data-src="img/star-circles.png" class="r-stretch"><p>Q: How do you control the robot to reach the goal state while avoiding the obstacle?</p>
+</section>
+<section id="artificial-potential-fields" class="slide level2">
+<h2>Artificial Potential Fields</h2>
+
+<img data-src="img/star-circles-arrows.png" class="r-stretch"><p>Q: How do you control the robot to reach the goal state while avoiding the obstacle?</p>
+<p>A: Place a repulsive potential field around obstacles</p>
+</section>
+<section id="artificial-potential-fields-1" class="slide level2">
+<h2>Artificial Potential Fields</h2>
+
+<img data-src="img/artificial-potential-fields.png" class="r-stretch"><p>Q: How do you control the robot to reach the goal state while avoiding the obstacle?</p>
+<p>A: Place a repulsive potential field around obstacles and an attractive potential field around the goal</p>
+</section>
+<section id="artificial-potential-fields-2" class="slide level2">
+<h2>Artificial Potential Fields</h2>
+
+<img data-src="img/artificial-potential-fields-r.png" class="r-stretch"><p><span class="math display">\[
+U_{\text{repulsive}}(x) = \begin{cases}
+\left( \frac{1}{d(x,\text{obs})} - \frac{1}{r} \right)^2 &amp; \text{if } d(x, \text{obs}) &lt; r \\
+0 &amp; \text{if } d(x, \text{obs}) \geq r
+\end{cases}
+\]</span></p>
+</section>
+<section id="artificial-potential-fields-3" class="slide level2">
+<h2>Artificial Potential Fields</h2>
+
+<img data-src="img/artificial-potential-fields-longr.png" class="r-stretch"><div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[65,-5, 30]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 65.0%;justify-content: flex-start;">
+<p><span class="math display">\[
+U_{\text{repulsive}}(x) = \begin{cases}
+\left( \frac{1}{d(x,\text{obs})} - \frac{1}{r} \right)^2 &amp; \text{if } d(x, \text{obs}) &lt; r \\
+0 &amp; \text{if } d(x, \text{obs}) \geq r
+\end{cases}
+\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[
+U_\text{attractive}(x) = d(x, x_{\text{goal}})^2
+\]</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="how-do-we-compute-these-distances-from-obstacles" class="slide level2">
+<h2>How do we compute these distances from obstacles?</h2>
+
+<img data-src="img/Lecture3_73.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="how-do-we-compute-these-distances-from-obstacles-1" class="slide level2">
+<h2>How do we compute these distances from obstacles?</h2>
+
+<img data-src="img/Lecture3_74.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="how-do-we-compute-these-distances-from-obstacles-2" class="slide level2">
+<h2>How do we compute these distances from obstacles?</h2>
+
+<img data-src="img/Lecture3_75.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="how-do-we-compute-these-distances-from-obstacles-3" class="slide level2">
+<h2>How do we compute these distances from obstacles?</h2>
+
+<img data-src="img/Lecture3_76.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="attractive-and-repulsive-potential-fields" class="slide level2">
+<h2>Attractive and Repulsive Potential Fields</h2>
+
+<img data-src="img/sum-potential-fields.png" class="r-stretch"><p><span class="math inline">\(U(x) = \alpha U\_{\text{attractive}}(x) + \beta U\_{\text{repulsive}}(x)\)</span></p>
+<div class="red-annotation absolute" style="bottom: 0px; right: 0px; ">
+<p>Q1: How do we reach the goal state<br>
+from an arbitrary state?</p>
+<p>Q2: In this example there is an unambiguous way<br>
+to reach the goal from any state. Is this true in<br>
+general?</p>
+</div>
+</section>
+<section id="from-potential-fields-to-forces" class="slide level2">
+<h2>From Potential Fields to Forces</h2>
+<p>Make the robot move by applying forces resulting from potential fields</p>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><span class="math display">\[
+U_\text{attractive}(x) = d(x, x_{\text{goal}})^2
+\]</span></p>
+<p><img data-src="img/Lecture3_81.png"></p>
+</div><div class="column" style="width:5%;">
+<p><img data-src="img/blue-arrow.png" width="40"></p>
+</div><div class="column medium-font" style="width:60%;">
+<p><span class="math display">\[
+F_{\text{attractive}}(x) = -\nabla_x U_\text{attractive}(x) = -2(x - x_{\text{goal}})
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="40"></p>
+</figure>
+</div>
+<p>Attractive force makes state x go to the bottom of the potential energy bowl. Bottom=Goal = low-energy state.</p>
+<div class="fragment">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="40"></p>
+</figure>
+</div>
+<p>Move the robot using F=ma, for m=1: <span class="math display">\[
+\dot{x}_{t+1} = \dot{x}_t + \delta t F(x_t)
+\]</span></p>
+<p><strong>Gradient descent down the potential bowl</strong></p>
+</div>
+</div></div>
+</section>
+<section id="from-potential-fields-to-forces-1" class="slide level2">
+<h2>From Potential Fields to Forces</h2>
+<p>Make the robot move by applying forces resulting from potential fields</p>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><span class="math display">\[
+U_\text{attractive}(x) = d(x, x_{\text{goal}})^2
+\]</span></p>
+<p><img data-src="img/Lecture3_81.png"></p>
+</div><div class="column" style="width:5%;">
+<p><img data-src="img/blue-arrow.png" width="40"></p>
+</div><div class="column medium-font" style="width:60%;">
+<p><span class="math display">\[
+F_{\text{attractive}}(x) = -\nabla_x U_\text{attractive}(x) = -2(x - x_{\text{goal}})
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="40"></p>
+</figure>
+</div>
+<p>Attractive force makes state x go to the bottom of the potential energy bowl. Bottom=Goal = low-energy state.</p>
+</div></div>
+<p><span class="red-annotation">Q: Do you see any problems with this potential energy and force if x is far away from goal?</span></p>
+<div class="fragment">
+<p><span class="red-annotation">A: The farther the robot is the stronger the force. May need to normalize the force vector. Alternatively:</span></p>
+<p><span class="math display">\[
+U_{\text{attractive}}(x) = d(x, x_{\text{goal}}) \Rightarrow F_{\text{attractive}}(x) = -\frac{(x - x_{\text{goal}})}{d(x, x_{\text{goal}})}
+\]</span></p>
+</div>
+</section>
+<section id="from-potential-fields-to-forces-2" class="slide level2">
+<h2>From Potential Fields to Forces</h2>
+<p>Make the robot move by applying forces resulting from potential fields</p>
+<div class="columns">
+<div class="column small-font" style="width:48%;">
+<p><span class="math display">\[
+U_{\text{repulsive}}(x) = \begin{cases}
+\left( \frac{1}{d(x,\text{obs})} - \frac{1}{r} \right)^2 &amp; \text{if } d(x, \text{obs}) &lt; r \\
+0 &amp; \text{if } d(x, \text{obs}) \geq r
+\end{cases}
+\]</span></p>
+<p><img data-src="img/Lecture3_96.png"></p>
+</div><div class="column" style="width:4%;">
+<p><img data-src="img/blue-arrow.png" width="40"></p>
+</div><div class="column small-font" style="width:48%;">
+<p><span class="math display">\[
+F_{\text{repulsive}}(x) = \begin{cases}
+2\left( \frac{1}{d(x,\text{obs})} - \frac{1}{r} \right) \frac{\nabla_x d(x,\text{obs})}{d(x,\text{obs})^2} &amp; \text{if } d(x, \text{obs}) &lt; r \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="35"></p>
+</figure>
+</div>
+<p>Repulsive force makes state x go away from the obstacle to lower potential energy states. Free space = {low-energy states}</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="35"></p>
+</figure>
+</div>
+<p>Move the robot using F=ma, for m=1:</p>
+<p><span class="math display">\[
+\dot x_{t+1} = \dot x_t + \delta t F(x_t)
+\]</span></p>
+<p><strong>Gradient descent until obstacle is cleared</strong></p>
+</div></div>
+</section>
+<section id="combining-attractive-and-repulsive-forces" class="slide level2">
+<h2>Combining Attractive and Repulsive Forces</h2>
+<div class="medium-font center-align">
+<p>Potential energy</p>
+<p><span class="math display">\[
+U_{\text{total}}(x) = \alpha U_{\text{attractive}}(x) + \beta U_{\text{repulsive}}(x)
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="35"></p>
+</figure>
+</div>
+<p>results in forces</p>
+<p><span class="math display">\[
+F_{\text{total}}(x) = \alpha F_{\text{attractive}}(x) + \beta F_{\text{repulsive}}(x)
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="35"></p>
+</figure>
+</div>
+<p>makes robot accelerate</p>
+<p><span class="math display">\[
+\dot{x}_{t+1} = \dot{x}_t + \delta t F(x_t)
+\]</span></p>
+</div>
+</section>
+<section id="artificial-potential-fields-example" class="slide level2">
+<h2>Artificial Potential Fields: Example</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p>Advantages of potential fields:</p>
+<ul>
+<li><p>Can handle moving obstacles</p></li>
+<li><p>Fast and easy to compute</p></li>
+<li><p>Fairly reactive</p></li>
+</ul>
+</div><div class="column" style="width:60%;">
+<video id="video_shortcode_videojs_video1" width="600" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/potential_fields.mp4"></video>
+</div></div>
+</section>
+<section id="combining-attractive-and-repulsive-forces-1" class="slide level2">
+<h2>Combining Attractive and Repulsive Forces</h2>
+<div class="medium-font center-align">
+<p>Potential energy</p>
+<p><span class="math display">\[
+U_{\text{total}}(x) = \alpha U_{\text{attractive}}(x) + \beta U_{\text{repulsive}}(x)
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="35"></p>
+</figure>
+</div>
+<p>results in forces</p>
+<p><span class="math display">\[
+F_{\text{total}}(x) = \alpha F_{\text{attractive}}(x) + \beta F_{\text{repulsive}}(x)
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/blue-arrow-down.png" class="quarto-figure quarto-figure-center" height="35"></p>
+</figure>
+</div>
+<p>makes robot accelerate</p>
+<p><span class="math display">\[
+\dot{x}_{t+1} = \dot{x}_t + \delta t F(x_t)
+\]</span></p>
+<div class="red-annotation absolute" style="bottom: 40%; right: 0px; ">
+<p>Q: What’s a possible problem<br>
+with addition of forces?</p>
+</div>
+</div>
+</section>
+<section id="artificial-potential-fields-4" class="slide level2">
+<h2>Artificial Potential Fields</h2>
+
+<img data-src="img/atrificial-potential-fields.png" class="r-stretch"><div class="columns">
+<div class="column" style="width:20%;">
+
+</div><div class="column red medium-font" style="width:40%;">
+<p>What’s the total potential here?</p>
+<div class="fragment" data-fragment-index="1">
+<p>It’s zero. The repulsive force is exactly the opposite of the attractive force (assuming alpha = beta)</p>
+</div>
+</div><div class="column medium-font fragment" data-fragment-index="1" style="width:40%;">
+<p><span class="math display">\[
+F_{\text{total}}(x) = \alpha F_{\text{attractive}}(x) + \beta F_{\text{repulsive}}(x) = 0
+\]</span></p>
+<p><strong>Problem: gradient descent gets stuck</strong></p>
+</div></div>
+</section>
+<section id="local-minima-on-the-potential-field-getting-stuck" class="slide level2">
+<h2>Local Minima on the Potential Field: Getting Stuck</h2>
+<p>States of zero total force correspond to local minima in the potential function:</p>
+
+<img data-src="img/local-minima.png" class="r-stretch"></section>
+<section id="local-minima-on-the-potential-field-getting-stuck-1" class="slide level2">
+<h2>Local Minima on the Potential Field: Getting Stuck</h2>
+<p>States of zero total force correspond to local minima in the potential function:</p>
+
+<img data-src="img/local-minima2.png" class="quarto-figure quarto-figure-center r-stretch"><p><span class="red-annotation">Problem: If you end up here gradient descent<br>
+can’t help you. All local moves seem<br>
+identical in terms of value <span class="math inline">\(\rightarrow\)</span> local min</span></p>
+</section>
+<section id="local-minima-on-the-potential-field-getting-unstuck-randomly" class="slide level2">
+<h2>Local Minima on the Potential Field: Getting Unstuck Randomly</h2>
+<p>States of zero total force correspond to local minima in the potential function:</p>
+
+<img data-src="img/local-minima2.png" class="quarto-figure quarto-figure-center r-stretch"><p><span class="red-annotation">Problem: If you end up here gradient descent<br>
+can’t help you. All local moves seem<br>
+identical in terms of value <span class="math inline">\(\rightarrow\)</span> local min</span></p>
+<p><span class="absolute medium-font" style="bottom: 40%; right: 0px; "><strong>Solution #1: Do random move in case<br>
+it helps you get unstuck.</strong></span></p>
+</section>
+<section id="local-minima-on-the-potential-field-getting-unstuck-by-backing-up" class="slide level2">
+<h2>Local Minima on the Potential Field: Getting Unstuck By Backing Up</h2>
+<p>States of zero total force correspond to local minima in the potential function:</p>
+
+<img data-src="img/local-minima2.png" class="quarto-figure quarto-figure-center r-stretch"><p><span class="red-annotation">Problem: If you end up here gradient descent<br>
+can’t help you. All local moves seem<br>
+identical in terms of value <span class="math inline">\(\rightarrow\)</span> local min</span></p>
+<p><span class="absolute medium-font" style="bottom: 40%; right: 0px; "><strong>Solution #2: back up and get out from<br>
+the dead end, just like you entered it.</strong></span></p>
+</section>
+<section id="drawbacks-of-potential-fields" class="slide level2">
+<h2>Drawbacks of potential fields</h2>
+<ul>
+<li><em>Local minima</em>
+<ul>
+<li>Attractive and repulsive forces can balance, so robot makes no progress.</li>
+<li>Closely spaced obstacles, or dead end.</li>
+</ul></li>
+<li><em>Unstable oscillation</em>
+<ul>
+<li>The dynamics of the robot/environment system can become unstable.</li>
+<li>High speeds, narrow corridors, sudden changes</li>
+</ul></li>
+</ul>
+
+<img data-src="img/drawback-potential-field.png" class="quarto-figure quarto-figure-right r-stretch"></section>
+<section id="avoiding-local-minima-on-the-potential-field-navigation-functions" class="slide level2">
+<h2>Avoiding Local Minima on the Potential Field: Navigation Functions</h2>
+<p>Potential energy function <span class="math inline">\(\phi(x)\)</span> with a <strong>single global minimum</strong> at the goal, and <strong>no local minima.</strong></p>
+<p>For any state x there exists a neighboring state x’ such that <span class="math inline">\(\phi(x') &lt; \phi(x)\)</span></p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[60, 40]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 60.0%;justify-content: flex-start;">
+<p>So far not used in practice very much because they are usually as hard to compute as a planned path from the current state to the goal.</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 40.0%;justify-content: center;">
+<p><img data-src="img/Lecture3_117.png"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="addressing-the-drawbacks-of-potential-fields" class="slide level2">
+<h2>Addressing the Drawbacks of Potential Fields</h2>
+<ul>
+<li><p>Vector Field Histogram (VFH)</p></li>
+<li><p>Dynamic Window Approach</p></li>
+</ul>
+<p>Both methods for local obstacle avoidance</p>
+</section>
+<section id="vfh-vector-field-histogram" class="slide level2">
+<h2>VFH (Vector Field Histogram)</h2>
+
+<img data-src="img/Lecture3_118.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="vfh-vector-field-histogram-1" class="slide level2">
+<h2>VFH (Vector Field Histogram)</h2>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture3_120.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture3_119.png"></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="medium-font quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p>High risk for cells with high probability of being occupied.<br>
+Risk inversely proportional to distance.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="vfh-vector-field-histogram-2" class="slide level2">
+<h2>VFH (Vector Field Histogram)</h2>
+
+<img data-src="img/Lecture3_121.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="vfh-vector-field-histogram-3" class="slide level2">
+<h2>VFH (Vector Field Histogram)</h2>
+<video id="video_shortcode_videojs_video2" width="600" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/vfh1.mp4"></video>
+</section>
+<section id="vfh-vector-field-histogram-4" class="slide level2">
+<h2>VFH (Vector Field Histogram)</h2>
+<iframe data-external="1" src="https://www.youtube.com/embed/oQ-1pnm6MPk" width="600" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</section>
+<section id="dwa-dynamic-window-approach" class="slide level2">
+<h2>DWA (Dynamic Window Approach)</h2>
+<div class="columns">
+<div class="column medium-font" style="width:50%;">
+<p>Local, reactive controller</p>
+<ol type="1">
+<li><p>Sample a set of controls for x,y,theta</p></li>
+<li><p>Simulate where each control is going to take the robot</p></li>
+<li><p>Eliminate those that lead to collisions.</p></li>
+<li><p>Reward those that agree with a navigation plan.</p></li>
+<li><p>Reward high-speeds</p></li>
+<li><p>Reward proximity to goal.</p></li>
+<li><p>Pick control with highest score that doesn’t lead to collision.</p></li>
+</ol>
+</div><div class="column" style="width:50%;">
+<p><img data-src="img/Lecture3_124.png"></p>
+</div></div>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="https://csc477.github.io/2026F_website" target="_blank" style="font-size:0.8em; bottom: -5px;">↩︎ Back to Course Website</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true,"boardmarkerWidth":2,"chalkWidth":2,"chalkEffect":1},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    <script>videojs(video_shortcode_videojs_video1);</script>
+    <script>videojs(video_shortcode_videojs_video2);</script>
+    
+
+</body></html>

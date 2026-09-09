@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.42">
+
+  <meta name="author" content="Florian Shkurti">
+  <title>CSC477 - Fall 2026 – CSC477 Introduction to Mobile Robotics</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-2f366650f320edcfcf53d73c80250a32.css">
+  <link rel="stylesheet" href="../style.css">
+  <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+<meta property="og:title" content="CSC477 Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta property="og:description" content="Week #10: Extended Kalman Filter">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="CSC477 Introduction to Mobile Robotics – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Week #10: Extended Kalman Filter">
+<meta name="twitter:card" content="summary">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">CSC477 Introduction to Mobile Robotics</h1>
+  <p class="subtitle">Week #10: Extended Kalman Filter</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Florian Shkurti 
+</div>
+</div>
+</div>
+
+</section>
+<section id="recommended-reading" class="slide level2">
+<h2>Recommended reading</h2>
+<ul>
+<li><p>Chapter 3.3 in Probabilistic Robotics for EKF</p></li>
+<li><p>Chapter 7.4 in Probabilistic Robotics for EKF-Localization</p></li>
+<li><p>Chapter 10.2 in Probabilistic Robotics for EKF-SLAM</p></li>
+</ul>
+</section>
+<section id="kalman-filter-an-instance-of-bayes-filter" class="slide level2">
+<h2><span class="medium-font">Kalman Filter: an instance of Bayes’ Filter</span></h2>
+<p><br><br><br></p>
+<p><span class="math display">\[\begin{align}bel(x_t) &amp;= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&amp;= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}\]</span></p>
+<p><img data-src="img/blue-annot.png" class="absolute" style="top: 70px; right: 175px; width: 730px; height: 430px; "></p>
+<p><img data-src="img/red-annot.png" class="absolute" style="bottom: 120px; right: 150px; width: 780px; height: 240px; "></p>
+<div class="absolute semi-tiny-font" style="left: 120px; bottom: 40px; ">
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[30,-5,30, -5, 30]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}z_t = &amp; Hx_t + n_t \\
+&amp; \text{with noise } n_t \sim \mathcal{N}(0, R)\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}
+x_t &amp;= Ax_{t-1} + Bu_{t-1} + Gw_{t-1} \\
+&amp; \text{with noise } w_{t-1} \sim N(0,Q)
+\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math inline">\(\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)\)</span></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="kalman-filter-an-instance-of-bayes-filter-1" class="slide level2">
+<h2><span class="medium-font">Kalman Filter: an instance of Bayes’ Filter</span></h2>
+<p><br><br><br></p>
+<p><span class="math display">\[\begin{align}bel(x_t) &amp;= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&amp;= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}\]</span></p>
+<p><img data-src="img/blue-annot.png" class="absolute" style="top: 70px; right: 175px; width: 730px; height: 430px; "></p>
+<p><img data-src="img/red-annot.png" class="absolute" style="bottom: 120px; right: 150px; width: 780px; height: 240px; "></p>
+<div class="absolute semi-tiny-font" style="left: 120px; bottom: 40px; ">
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[30,-5,30, -5, 30]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}z_t = &amp; h(x_t) + n_t \\
+&amp; \text{with noise } n_t \sim \mathcal{N}(0, R)\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}
+x_t &amp;= f(x_{t-1}, u_{t-1}) + Gw_{t-1} \\
+&amp; \text{with noise } w_{t-1} \sim N(0,Q)
+\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math inline">\(\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)\)</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="tiny-font absolute orange" style="left: 10px; bottom: 120px; ">
+<p><strong>Suppose you replace</strong><br>
+<strong>the linear models with</strong><br>
+<strong>nonlinear models.</strong></p>
+<p><strong>Does the posterior</strong><br>
+<strong><span class="math inline">\(\color{black}bel(x_t)\)</span> remain</strong><br>
+<strong>Gaussian?</strong></p>
+<p><span class="math inline">\(\qquad\)</span> <img data-src="img/orange-arrow.png" width="50"></p>
+</div>
+</section>
+<section id="kalman-filter-an-instance-of-bayes-filter-2" class="slide level2">
+<h2><span class="medium-font">Kalman Filter: an instance of Bayes’ Filter</span></h2>
+<p><br><br><br></p>
+<p><span class="math display">\[\begin{align}bel(x_t) &amp;= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&amp;= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}\]</span></p>
+<p><img data-src="img/blue-annot.png" class="absolute" style="top: 70px; right: 175px; width: 730px; height: 430px; "></p>
+<p><img data-src="img/red-annot.png" class="absolute" style="bottom: 120px; right: 150px; width: 780px; height: 240px; "></p>
+<div class="absolute semi-tiny-font" style="left: 120px; bottom: 40px; ">
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[30,-5,30, -5, 30]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}z_t = &amp; h(x_t) + n_t \\
+&amp; \text{with noise } n_t \sim \mathcal{N}(0, R)\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}
+x_t &amp;= f(x_{t-1}, u_{t-1}) + Gw_{t-1} \\
+&amp; \text{with noise } w_{t-1} \sim N(0,Q)
+\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math inline">\(\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)\)</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="tiny-font absolute orange" style="left: 10px; bottom: 120px; ">
+<p><strong>Suppose you replace</strong><br>
+<strong>the linear models with</strong><br>
+<strong>nonlinear models.</strong></p>
+<p><strong>Does the posterior</strong><br>
+<strong><span class="math inline">\(\color{black}bel(x_t)\)</span> remain</strong><br>
+<strong>Gaussian? NO</strong></p>
+<p><span class="math inline">\(\qquad\)</span> <img data-src="img/orange-arrow.png" width="50"></p>
+</div>
+</section>
+<section id="linearity-assumption-revisited" class="slide level2">
+<h2>Linearity Assumption Revisited</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture9_15.png" class="quarto-figure quarto-figure-center" height="550"></p>
+</figure>
+</div>
+<div class="absolute small-font" style="bottom: 300px; right: 0px; ">
+<p>If <span class="math inline">\(y = ax + b\)</span></p>
+<p>and <span class="math inline">\(x \sim \mathcal{N}(\mu, \sigma^2)\)</span></p>
+<p>then <span class="math inline">\(y \sim \mathcal{N}(a\mu + b, a^2\sigma^2)\)</span></p>
+</div>
+</section>
+<section id="nonlinear-function" class="slide level2">
+<h2>Nonlinear Function</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture9_19.png" class="quarto-figure quarto-figure-center" height="550"></p>
+</figure>
+</div>
+<div class="absolute small-font" style="bottom: 300px; right: 0px; ">
+<p>If <span class="math inline">\(y = g(x)\)</span></p>
+<p>and <span class="math inline">\(x \sim \mathcal{N}(\mu, \sigma^2)\)</span></p>
+<p>then y is not necessarily</p>
+<p>distributed as a Gaussian.</p>
+</div>
+<div class="fragment">
+<div class="absolute semi-tiny-font blue" style="left: 0px; bottom: 0px; ">
+<p>How can we approximate p(y) using a single Gaussian, without having a<br>
+formula for p(y)?</p>
+<p>IDEA #1: MONTE CARLO SAMPLING<br>
+- Draw many (e.g.&nbsp;10^6) samples xi ~ p(x)<br>
+- Pass them through the nonlinear function yi = g(xi)<br>
+- Compute the empirical mean (m) and covariance (S) of the samples yi<br>
+- Return Normal(m, S)</p>
+<p>IDEA #2: LINEARIZE THE NONLINEAR FUNCTIONS f, h<br>
+- Then we are in the case y = Gx +c, so p(y) is a Gaussian</p>
+</div>
+</div>
+<div class="fragment">
+<p><img data-src="img/nonlinear-func-annot.png" class="absolute" style="left: -70px; bottom: 175px; width: 335px; "></p>
+</div>
+</section>
+<section id="nonlinear-function-1" class="slide level2">
+<h2>Nonlinear Function</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture9_19.png" class="quarto-figure quarto-figure-center" height="550"></p>
+</figure>
+</div>
+<div class="absolute small-font" style="bottom: 300px; right: 0px; ">
+<p>If <span class="math inline">\(y = g(x)\)</span></p>
+<p>and <span class="math inline">\(x \sim \mathcal{N}(\mu, \sigma^2)\)</span></p>
+<p>then y is not necessarily</p>
+<p>distributed as a Gaussian.</p>
+</div>
+<div class="absolute semi-tiny-font blue" style="left: 0px; bottom: 0px; ">
+<p>How can we approximate p(y) using a single Gaussian, without having a<br>
+formula for p(y)?</p>
+<p>IDEA #1: MONTE CARLO SAMPLING<br>
+- Draw many (e.g.&nbsp;10^6) samples xi ~ p(x)<br>
+- Pass them through the nonlinear function yi = g(xi)<br>
+- Compute the empirical mean (m) and covariance (S) of the samples yi<br>
+- Return Normal(m, S)</p>
+<p>IDEA #2: LINEARIZE THE NONLINEAR FUNCTIONS f, h<br>
+- Then we are in the case y = Gx +c, so p(y) is a Gaussian</p>
+</div>
+<p><img data-src="img/nonlinear-func-annot2.png" class="absolute" style="left: 0px; bottom: 165px; width: 250px; "></p>
+</section>
+<section id="linearization" class="slide level2">
+<h2>Linearization</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture9_31.png" class="quarto-figure quarto-figure-center" height="550"></p>
+</figure>
+</div>
+<div class="absolute semi-tiny-font red" style="left: 0px; bottom: 50px; ">
+<p>Notice how the Linearization<br>
+approximation differs from the<br>
+Monte Carlo approximation (which<br>
+is better, provided sufficiently many<br>
+samples).</p>
+<p>That said, the Linearization approximation<br>
+can be computed efficiently, and can be<br>
+integrated into the Kalman<br>
+Filter estimator <span class="math inline">\(\rightarrow\)</span> Extended Kalman Filter</p>
+</div>
+</section>
+<section id="linearization-with-low-approximation-error" class="slide level2">
+<h2><span class="medium-font">Linearization with low approximation error</span></h2>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[-30,70]">
+<div class="quarto-layout-row">
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: center;">
+<p><img data-src="img/Lecture9_32.png"></p>
+</div>
+</div>
+</div>
+<div class="absolute semi-tiny-font blue" style="left: 0px; bottom: 150px; ">
+<p>The quality of the linearization<br>
+approximation depends on the uncertainty<br>
+of p(x) but also on the shape of the nonlinearity<br>
+g(x).</p>
+<p>In this example p(x) has small variance so<br>
+most points will be concentrated around 0.5 and<br>
+will pass through a very small region of g(x), where<br>
+g(x) is close to linear.</p>
+<p>In this case p(y) is nearly Gaussian,<br>
+and the Linearization approximation<br>
+matches the Monte Carlo approximation.</p>
+</div>
+<p><img data-src="img/double-arrows.png" class="absolute" style="left: 300px; bottom: 150px; width: 400px; height: 300px; "></p>
+</section>
+<section id="linearization-with-high-approximation-error" class="slide level2">
+<h2><span class="medium-font">Linearization with high approximation error</span></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lecture9_33.png" class="quarto-figure quarto-figure-center" height="550"></p>
+</figure>
+</div>
+<div class="absolute tiny-font blue" style="left: 0px; bottom: 150px; ">
+<p>The quality of the linearization<br>
+approximation depends on the<br>
+uncertainty of p(x) but also on<br>
+the shape of the nonlinearity g(x).</p>
+<p>In this example p(x) has high<br>
+variance so points g(x) will be<br>
+spread out around g(0.5), where<br>
+g(x) is not close to linear.</p>
+<p>In this case p(y) is multimodal,<br>
+and the Linearization approximation<br>
+matches the Monte Carlo approximation<br>
+are both suboptimal approximations.<br>
+Again Monte Carlo is better, provided<br>
+sufficient samples.</p>
+</div>
+<p><img data-src="img/double-arrow-2.png" class="absolute" style="left: 202px; bottom: 210px; width: 530px; "></p>
+</section>
+<section id="how-do-we-linearize" class="slide level2">
+<h2>How do we linearize?</h2>
+<ul>
+<li>Using the first order Taylor expansion around the mean of the previous update step’s state estimate:</li>
+</ul>
+<div class="columns small-font">
+<div class="column" style="width:55%;">
+<p><span class="math display">\[\begin{align*}
+x_{t+1} &amp;= f(x_t, u_t) + w_t \\
+&amp;\approx f(\mu_{t|t}, u_t) + \frac{\partial f}{\partial x}(\mu_{t|t}, u_t)(x_t - \mu_{t|t}) + w_t \\
+&amp;= f(\mu_{t|t}, u_t) + F_t(x_t - \mu_{t|t}) + w_t \\
+&amp;= F_t x_t + \color{red}\boxed{\color{black}f(\mu_{t|t}, u_t) - F_t \mu_{t|t}} \color{black} + w_t \\
+&amp;= F_t x_t + \bar{u}_t + w_t
+\end{align*}\]</span></p>
+</div><div class="column" style="width:45%;">
+<p><span class="red">Recall how to compute the Jacobian matrix. For example, if</span></p>
+<p><span class="math inline">\(f(x_{1},x_{2},u)=[x_{1}+x_{2}^{2},x_{2}+3u,x_{1}^{4}-u^{2}]\in\mathbb{R}^{3}\)</span></p>
+<p><span style="color:#ff0000">then the Jacobian of f with respect to <span class="math inline">\(\color{black}(x_1, x_2)\)</span> at <span class="math inline">\(\color{black}(u_1, u_2, u)\)</span> is</span></p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial f}{\partial x_{1:2}}(\mu_1, \mu_2, u_1) &amp;= \begin{bmatrix} \frac{\partial f_1}{\partial x_1} &amp; \frac{\partial f_1}{\partial x_2} \\ \frac{\partial f_2}{\partial x_1} &amp; \frac{\partial f_2}{\partial x_2} \\ \frac{\partial f_3}{\partial x_1} &amp; \frac{\partial f_3}{\partial x_2} \end
+{bmatrix} (\mu_1, \mu_2, u_1) \\
+&amp;= \begin{bmatrix} 1 &amp; 2\mu_2 \\ 0 &amp; 1 \\ 4\mu_1^3 &amp; 0 \end{bmatrix}
+\end{align}\]</span></p>
+</div></div>
+<p><img data-src="img/linearize-annot.png" class="absolute" style="left: 350px; bottom: 200px; width: 150px; "></p>
+</section>
+<section id="how-do-we-linearize-1" class="slide level2">
+<h2>How do we linearize?</h2>
+<ul>
+<li>Using the first-order Taylor expansion around the mean of the previous prediction step’s state estimate:</li>
+</ul>
+<div class="columns small-font">
+<div class="column" style="width:55%;">
+<p><span class="math display">\[\begin{align*}
+z_{t+1} &amp;= h(x_{t+1}) + n_{t+1} \\
+&amp;\approx h(\mu_{t+1|t}) + \frac{\partial h}{\partial x}(\mu_{t+1|t})(x_t - \mu_{t+1|t}) + n_{t+1} \\
+&amp;= h(\mu_{t+1|t}) + H_{t+1}(x_{t+1} - \mu_{t+1|t}) + n_{t+1} \\
+&amp;= H_{t+1}x_{t+1} + \color{red}\boxed{\color{black}h(\mu_{t+1|t}) - H_{t+1}\mu_{t+1|t}} \color{black} + n_{t+1} \\
+&amp;= H_{t+1}x_{t+1} + \bar{c}_{t+1} + n_{t+1}
+\end{align*}\]</span></p>
+</div><div class="column" style="width:45%;">
+<p><span class="red">Recall how to compute the Jacobian matrix. For example, if</span></p>
+<p><span class="math inline">\(h(x_{1},x_{2}) = [x_{1}+x_{2}^{2}, x_{2}, x_{1}^{4}] \in \mathbb{R}^{3}\)</span></p>
+<p><span style="color:#ff0000">then the Jacobian of f with respect to <span class="math inline">\(\color{black}(x_1, x_2)\)</span> at <span class="math inline">\(\color{black}(u_1, u_2)\)</span> is</span></p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial h}{\partial x_{1:2}}(\mu_1, \mu_2) &amp;= \begin{bmatrix} \frac{\partial h_1}{\partial x_1} &amp; \frac{\partial h_1}{\partial x_2} \\ \frac{\partial h_2}{\partial x_1} &amp; \frac{\partial h_2}{\partial x_2} \\ \frac{\partial h_3}{\partial x_1} &amp; \frac{\partial h_3}{\partial x_2} \end
+{bmatrix} (\mu_1, \mu_2) \\
+&amp;= \begin{bmatrix} 1 &amp; 2\mu_2 \\ 0 &amp; 1 \\ 4\mu_1^3 &amp; 0 \end{bmatrix}
+\end{align}\]</span></p>
+</div></div>
+<p><img data-src="img/linearize-annot.png" class="absolute" style="left: 350px; bottom: 200px; width: 150px; "></p>
+</section>
+<section id="extended-kalman-filter-an-instance-of-bayes-filter" class="slide level2">
+<h2><span class="medium-font">Extended Kalman Filter: an instance of Bayes’ Filter</span></h2>
+<p><br></p>
+<p><span class="math display">\[\begin{align}bel(x_t) &amp;= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&amp;= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}\]</span></p>
+<p><img data-src="img/blue-annot.png" class="absolute" style="top: 90px; right: 175px; width: 740px; height: 430px; "></p>
+<p><img data-src="img/red-annot.png" class="absolute" style="bottom: 120px; right: 150px; width: 780px; height: 240px; "></p>
+<div class="absolute semi-tiny-font" style="left: 120px; bottom: 40px; ">
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[30,-5,30, -5, 30]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}
+z_t = &amp; H x_t + \bar{c}_t + n_t \\
+&amp; \text{with noise } n_t \sim \mathcal{N}(0, R)
+\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math display">\[\begin{align}
+\qquad x_t = &amp; F_{t-1}x_{t-1} + \bar{u}_{t-1} + Gw_{t-1} \\
+&amp; \text{with noise } w_{t-1} \sim \mathcal{N}(0, Q)
+\end{align}\]</span></p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><span class="math inline">\(\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)\)</span></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="qquadquad-ekf-in-n-dimensions" class="slide level2">
+<h2><span class="math inline">\(\qquad\quad\)</span> EKF in N dimensions</h2>
+<div class="tiny-font absolute" style="top: 0px; left: 0px; ">
+<p><strong>Dynamics</strong></p>
+<p><span class="math inline">\(x_{t+1} = f(x_{t},u_{t})+Gw_{t}\)</span><br>
+<span class="math inline">\(w_{t} \sim \mathcal{N}(0, Q)\)</span></p>
+</div>
+<div class="tiny-font absolute" style="top: 0px; right: 0px; ">
+<p><strong>Measurements</strong></p>
+<p><span class="math inline">\(z_t = h(x_t) + n_t\)</span><br>
+<span class="math inline">\(n_t \sim \mathcal{N}(0, R)\)</span></p>
+</div>
+<div class="center-align medium-font">
+<p><strong>Init</strong> <span class="math display">\[bel(x_0) \sim \mathcal{N}(\mu_{0|0}, \Sigma_{0|0})\]</span></p>
+<p><strong>Prediction Step</strong> <span class="math display">\[\mu_{t+1|t} = f(\mu_{t |t}, \mu_t)\]</span> <span class="math display">\[\Sigma_{t+1|t} = F_t\Sigma_{t|t}F^T_t + GQG^T\]</span></p>
+<p><strong>Update Step</strong></p>
+<p>Received measurement <span class="math inline">\(\bar{z}_{t+1}\)</span> but expected to receive <span class="math inline">\(\mu_{z_{t+1}} = h(\mu_{t+1|t})\)</span></p>
+<p>Prediction residual is a Gaussian random variable <span class="math inline">\(\delta z \sim \mathcal{N}(\bar{z}_{t+1} - \mu_{z_{t+1}}, S_{t+1})\)</span><br>
+where the covariance of the residual is <span class="math inline">\(S_{t+1} = H_{t+1}\Sigma_{t+1|t}H^T_{t+1} + R\)</span></p>
+<p>Kalman Gain (optimal correction factor): <span class="math inline">\(K_{t+1}=\Sigma_{t+1|t}H_{t+1}^{T}S_{t+1}^{-1}\)</span></p>
+<p><span class="math display">\[\mu_{t+1|t+1}=\mu_{t+1|t}+K_{t+1}(\bar{z}_{t+1}-\mu_{z_{t+1}})\]</span></p>
+<p><span class="math display">\[\Sigma_{t+1|t+1}=\Sigma_{t+1|t}-K_{t+1}H_{t+1}\Sigma_{t+1|t}\]</span></p>
+</div>
+</section>
+<section id="ekf-summary" class="slide level2">
+<h2>EKF Summary</h2>
+<ul>
+<li><p><span style="color:#ff0000">Efficient</span> : Polynomial in measurement dimensionality <em>k</em> and state dimensionality n: <span class="math display">\[O(k^{2.376} + n^2)\]</span></p></li>
+<li><p><span style="color:#ff0000">Not optimal (unlike the Kalman Filter for linear systems)</span></p></li>
+<li><p>Can <span style="color:#ff0000">diverge</span> if nonlinearities are large</p></li>
+<li><p>Works surprisingly well even when all assumptions are violated</p></li>
+</ul>
+<div class="absolute semi-tiny-font" style="top: 150px; left: -100px; ">
+<p><span style="color:#ff0000">As in KF, inverting</span><br>
+<span style="color:#ff0000">the covariance of the</span><br>
+<span style="color:#ff0000">residual is O(k^2.376)</span></p>
+</div>
+</section>
+<section id="example-1-ekf-localization" class="slide level2">
+<h2>Example #1: EKF-Localization</h2>
+<div class="yellow-box">
+<p>“Using sensory information to locate the robot in its environment is the most fundamental problem to providing a mobile robot with autonomous capabilities.” [Cox ’91]</p>
+</div>
+<ul>
+<li><strong>Given</strong>
+<ul>
+<li>Map of the environment.</li>
+<li>Sequence of sensor measurements.</li>
+</ul></li>
+<li><strong>Wanted</strong>
+<ul>
+<li>Estimate of the robot’s position.</li>
+</ul></li>
+<li><strong>Problem classes</strong>
+<ul>
+<li>Position tracking</li>
+<li>Global localization</li>
+<li>Kidnapped robot problem (recovery)</li>
+</ul></li>
+</ul>
+</section>
+<section id="landmark-based-localization" class="slide level2">
+<h2>Landmark-based Localization</h2>
+<p><br></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/landmark-localization.png" class="quarto-figure quarto-figure-center" width="700" height="500"></p>
+</figure>
+</div>
+<div class="absolute red small-font" style="left: 0px; bottom: 150px; ">
+<p>Landmarks, whose<br>
+position <span class="math inline">\(\color{black}(l_{x}^{(i)}, l_{y}^{(i)})\)</span><br>
+in the world is known.</p>
+<p><br></p>
+<p>Each robot measures<br>
+its range and bearing<br>
+from each landmark<br>
+to localize itself.</p>
+<p><br></p>
+<p>State of a robot:</p>
+<p><span class="math inline">\(\color{black} x_{t} = \begin{bmatrix} p_{x}(t) \\ p_{y}(t) \\ \theta(t) \end{bmatrix}\)</span></p>
+</div>
+</section>
+<section id="landmark-based-localization-1" class="slide level2">
+<h2>Landmark-based Localization</h2>
+<p><br></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/landmark-pic2.png" class="quarto-figure quarto-figure-center" width="700" height="500"></p>
+</figure>
+</div>
+<div class="absolute red small-font" style="left: 0px; bottom: 100px; ">
+<p>Measurement at time t,<br>
+<span class="math inline">\(\color{black}z_t = \begin{bmatrix} \dots \\ z_t^{(i)} \\ \dots \end{bmatrix}\)</span><br>
+</p>
+<p><br></p>
+<p>is a variable-sized<br>
+vector, depending on the<br>
+landmarks that are<br>
+visible at time t.</p>
+<p><br></p>
+<p>Each measurement is<br>
+a 2D vector, containing<br>
+range and bearing from<br>
+the robot to a landmark.</p>
+</div>
+<div class="absolute small-font" style="bottom: 50px; right: 150px; ">
+<p><span class="math display">\[z_t^{(i)} = h_i(x_t) = \left[ \begin{pmatrix} \sqrt{(p_x(t)-l_x^{(i)})^2 + (p_y(t)-l_y^{(i)})^2} \\ \text{atan2}(p_y(t)-l_y^{(i)}, p_x(t)-l_x^{(i)})-\theta(t) \end{pmatrix} \right] + n_t\]</span></p>
+</div>
+</section>
+<section id="estimation-sequence-1" class="slide level2">
+<h2>Estimation Sequence (1)</h2>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture9_74.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture9_75.png"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="estimation-sequence-2" class="slide level2">
+<h2>Estimation Sequence (2)</h2>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture9_76.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="img/Lecture9_77.png"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="comparison-to-true-trajectory" class="slide level2">
+<h2>Comparison to true trajectory</h2>
+
+<!-- ![](img/Lecture9_79.png) -->
+<img data-src="img/Lecture9_78.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="example-2-ekf-slam" class="slide level2">
+<h2>Example #2: EKF-SLAM</h2>
+<div class="columns">
+<div class="column">
+<p>A robot is exploring an unknown, static environment.</p>
+<ul>
+<li><strong>Given:</strong>
+<ul>
+<li>The robot’s controls</li>
+<li>Observations of nearby features</li>
+</ul></li>
+<li><strong>Estimate:</strong>
+<ul>
+<li>Map of features</li>
+<li>Path of the robot</li>
+</ul></li>
+</ul>
+</div><div class="column">
+<p><img data-src="img/Lecture9_80.png"></p>
+</div></div>
+</section>
+<section id="structure-of-landmark-based-slam" class="slide level2">
+<h2>Structure of Landmark-based SLAM</h2>
+
+<img data-src="img/Lecture9_81.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="why-is-slam-a-hard-problem" class="slide level2">
+<h2>Why is SLAM a hard problem?</h2>
+<p><strong>SLAM</strong> : robot path and map are both <span style="color:#ff0000"><strong>unknown</strong></span></p>
+<p><img data-src="img/SLAM.png" height="430"></p>
+<p>Robot path error correlates errors in the map</p>
+</section>
+<section id="why-is-slam-a-hard-problem-1" class="slide level2">
+<h2>Why is SLAM a hard problem?</h2>
+<p><img data-src="img/SLAM-2.png" height="250"></p>
+<ul>
+<li>In the real world, the mapping between observations and landmarks is unknown</li>
+<li>Picking wrong data associations can have catastrophic consequences</li>
+<li>Pose error correlates data associations</li>
+</ul>
+</section>
+<section id="ekf-slam" class="slide level2">
+<h2>EKF-SLAM</h2>
+<ul>
+<li>Map with N landmarks: (3+2N)-dimensional Gaussian</li>
+</ul>
+<p><img data-src="img/ekf-slam.png" class="absolute" style="top: 110px; left: -50px; width: 700px; height: 350px; "></p>
+<p><br><br><br><br><br><br><br><br></p>
+<ul>
+<li>Can handle hundreds of dimensions</li>
+</ul>
+</section>
+<section id="appendix" class="slide level2 center">
+<h2>Appendix</h2>
+</section>
+<section id="ekf-slam-1" class="slide level2">
+<h2>EKF-SLAM</h2>
+
+<img data-src="img/Lecture9_82.png" class="r-stretch"><div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[-5, 45, 45, -5]">
+<div class="quarto-layout-row">
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 45.0%;justify-content: flex-start;">
+<p>Map</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 45.0%;justify-content: flex-start;">
+<p>Covariance matrix</p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+</section>
+<section id="ekf-slam-2" class="slide level2">
+<h2>EKF-SLAM</h2>
+
+<img data-src="img/Lecture9_83.png" class="r-stretch"><div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[-5, 45, 45, -5]">
+<div class="quarto-layout-row">
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 45.0%;justify-content: flex-start;">
+<p>Map</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 45.0%;justify-content: flex-start;">
+<p>Covariance matrix</p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+</section>
+<section id="ekf-slam-3" class="slide level2">
+<h2>EKF-SLAM</h2>
+
+<img data-src="img/Lecture9_84.png" class="r-stretch"><div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[-5, 45, 45, -5]">
+<div class="quarto-layout-row">
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 45.0%;justify-content: flex-start;">
+<p>Map</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 45.0%;justify-content: flex-start;">
+<p>Covariance matrix</p>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+</section>
+<section id="properties-of-ekf-slam-linear-case" class="slide level2">
+<h2>Properties of EKF-SLAM (Linear Case)</h2>
+<p>[Dissanayake et al., 2001]</p>
+<p><br></p>
+<p><em>Theorem</em> :</p>
+<p>The determinant of any sub-matrix of the map covariance matrix decreases monotonically as successive observations are made.</p>
+<p><br></p>
+<p><em>Theorem</em> :</p>
+<p>In the limit the landmark estimates become fully correlated</p>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="https://csc477.github.io/2026F_website" target="_blank" style="font-size:0.8em; bottom: -5px;">↩︎ Back to Course Website</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true,"boardmarkerWidth":2,"chalkWidth":2,"chalkEffect":1},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
