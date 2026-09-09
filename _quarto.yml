@@ -5,7 +5,7 @@ project:
 website:
   page-navigation: true
   title: "CSC477 - Fall 2026"
-  description: "Homepage for CSC477: Introduction to Mobile Robotics, Fall 2026"
+  description: "Schedule, lecture slides, tutorials, and assignments."
   site-url: "https://csc477.github.io/2026F_website"
 
   repo-url: https://github.com/csc477/2026F_website

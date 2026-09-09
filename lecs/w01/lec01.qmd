@@ -259,6 +259,12 @@ CSC477
 
 -   1 final project = 20%
 
+## RC Racecars
+
+{{< video https://www.youtube.com/watch?v=gaV5hb1b3no start="120"  height=500 width=800 >}}
+
+* 5 cars with navigation sensors (Intel Realsense RGBD cameras, Hokuyo 2D LiDAR, IMU)  
+* onboard GPU computing (NVIDIA Jetson Xavier)  
 
 ## Recommended Textbooks (optional)
 
