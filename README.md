@@ -1,4 +1,4 @@
-# Website for CSC 477 at the University of Toronto (Fall 2024)
+# Website for CSC 477 at the University of Toronto (Fall 2026)
 
 🔗 
 
@@ -19,8 +19,8 @@ quarto --version
 Clone this repository to your local machine:
 
 ``` bash
-git clone https://github.com/csc477/website_fall24.git
-cd website_fall24
+git clone https://github.com/csc477/2026F_website.git
+cd 2026F_website
 ```
 
 ### 3. Compile the Website and Run Locally

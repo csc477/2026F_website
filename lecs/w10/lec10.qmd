@@ -1,12 +1,12 @@
 ---
 title: "CSC477 Introduction to Mobile Robotics"
-subtitle: "Week #10: Particle Filters"
+subtitle: "Week #10: Extended Kalman Filter"
 author: "Florian Shkurti"
 format: 
   revealjs:
     slide-number: true
     smaller: true
-    footer: '<a href="https://csc477.github.io/website_fall24" target="_blank" style="font-size:0.8em; bottom: -5px;">↩ Back to Course Website</a>'
+    footer: '<a href="https://csc477.github.io/2026F_website" target="_blank" style="font-size:0.8em; bottom: -5px;">↩ Back to Course Website</a>'
     css: ../style.css
     chalkboard:
       buttons: true
@@ -18,794 +18,621 @@ html-math-method:
   url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
 ---
 
+
 ## Recommended reading
 
--   Lesson 3 in <https://www.udacity.com/course/artificial-intelligence-for-robotics--cs373>
+- Chapter 3.3 in Probabilistic Robotics for EKF
 
--   Chapters 4.3 and 8.3 in the Probabilistic Robotics textbook
+- Chapter 7.4 in Probabilistic Robotics for EKF-Localization
 
-## KF vs EKF vs PF
-
-|                |    Kalman Filter    | Extended Kalman Filter | Particle Filter |
-|:--------------:|:-------------------:|:----------------------:|:---------------:|
-| Dynamics model |       Linear        |       Nonlinear        |    Nonlinear    |
-|  Sensor model  |       Linear        |       Nonlinear        |    Nonlinear    |
-|     Noise      | Gaussian (Unimodal) |  Gaussian (Unimodal)   |   Multimodal    |
-
-:::{layout="[-30, 50, 20]"}
-![](img/one-peak.png){width="300"}
-
-![](img/multiple-peak.png){width="200"}
-:::
-
-## [How can we represent multimodal distributions?]{.small-font}
-
-![](img/purple-arrow.png){.absolute width=210 left=210 top=110 .img-front}
-
-::: {.columns}
-::: {.column width="40%"}
-![[https://www.opsclarity.com]{.small-font}](img/Lecture10_1.png)
-:::
-
-::: {.column width="60%" .medium-font}
-**Idea #1: Histograms**
-
-Advantages: the higher the number of bars the better the approximation is
-
-Disadvantages: exponential dependence on number of dimensions
-
-Note: this approach is called the Histogram Filter. It is useful for low-dimensional systems but we will not study it in this class.
-
-:::{.fragment}
-![](img/red-arrow.png){width="60" height="100" .absolute bottom="290" right="625"}
-
-<br>
-
-**Idea #2: Function Approximation**
-:::
-
-:::
-:::
-
-## [How can we represent multimodal distributions?]{.small-font}
-
-::: {.columns}
-::: {.column width="40%"}
-![[https://www.opsclarity.com]{.small-font}](img/multimodal-diagram.png)
-:::
-
-::: {.column width="60%" .medium-font}
-**Idea #1: Histograms**
-
-Advantages: the higher the number of bars the better the approximation is
-
-Disadvantages: exponential dependence on number of dimensions
-
-Note: this approach is called the Histogram Filter. It is useful for low-dimensional systems but we will not study it in this class.
-
-<br>
-
-**Idea #2: Function Approximation**
-
-<br>
-
-**Idea #3: Weighted Particles** $\{(x^{[1]},w^{[1]}),...,(x^{[M]},w^{[M]})\}$
-
-Advantages: easy to predict/update by treating each particle as a separate hypothesis whose weight is updated.
-
-Disadvantages: need enough particles to “cover” the distribution
-
-:::
-:::
-
-![](img/black-arrow.png){width="240" .absolute bottom="190" right="625"}
+- Chapter 10.2 in Probabilistic Robotics for EKF-SLAM
 
 
-## [How can we represent multimodal distributions?]{.small-font}
+## [Kalman Filter: an instance of Bayes’ Filter]{.medium-font}
 
-::: {.columns}
-::: {.column width="40%" .small-font}
-![[https://www.opsclarity.com]{.small-font}](img/multimodal-diagram.png)
+<br><br><br>
 
-<br><br><br><br><br>
+$$\begin{align}bel(x_t) &= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}$$
+
+![](img/blue-annot.png){width=730 height=430 .absolute top=70 right="175"}
+
+![](img/red-annot.png){width=780 height="240" .absolute bottom=120 right=150}
+
+:::{.absolute bottom=40 left=120 .semi-tiny-font}
+:::{layout="[30,-5,30, -5, 30]" }
+$$\begin{align}z_t = & Hx_t + n_t \\
+& \text{with noise } n_t \sim \mathcal{N}(0, R)\end{align}$$
 
 $$\begin{align}
-bel(x_t) &= p(x_t|z_{0:t}, u_{0:t-1}) \\
-&= \sum_{m=1}^{M} \begin{cases} w^{[m]}/W & \text{if } x_t=x_t^{[m]} \\ 0 & \text{o.w.} \end{cases}
+x_t &= Ax_{t-1} + Bu_{t-1} + Gw_{t-1} \\
+& \text{with noise } w_{t-1} \sim N(0,Q)
+\end{align}$$
+
+$\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)$
+:::
+:::
+
+
+## [Kalman Filter: an instance of Bayes’ Filter]{.medium-font}
+
+<br><br><br>
+
+$$\begin{align}bel(x_t) &= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}$$
+
+![](img/blue-annot.png){width=730 height=430 .absolute top=70 right="175"}
+
+![](img/red-annot.png){width=780 height="240" .absolute bottom=120 right=150}
+
+:::{.absolute bottom=40 left=120 .semi-tiny-font}
+:::{layout="[30,-5,30, -5, 30]" }
+$$\begin{align}z_t = & h(x_t) + n_t \\
+& \text{with noise } n_t \sim \mathcal{N}(0, R)\end{align}$$
+
+$$\begin{align}
+x_t &= f(x_{t-1}, u_{t-1}) + Gw_{t-1} \\
+& \text{with noise } w_{t-1} \sim N(0,Q)
+\end{align}$$
+
+$\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)$
+:::
+:::
+
+:::{.tiny-font .absolute left=10 bottom="120" .orange}
+**Suppose you replace** \
+**the linear models with** \
+**nonlinear models.**
+
+**Does the posterior** \
+**$\color{black}bel(x_t)$ remain** \
+**Gaussian?**
+
+$\qquad$ ![](img/orange-arrow.png){width=50}
+
+:::
+
+
+## [Kalman Filter: an instance of Bayes’ Filter]{.medium-font}
+
+<br><br><br>
+
+$$\begin{align}bel(x_t) &= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}$$
+
+![](img/blue-annot.png){width=730 height=430 .absolute top=70 right="175"}
+
+![](img/red-annot.png){width=780 height="240" .absolute bottom=120 right=150}
+
+:::{.absolute bottom=40 left=120 .semi-tiny-font}
+:::{layout="[30,-5,30, -5, 30]" }
+$$\begin{align}z_t = & h(x_t) + n_t \\
+& \text{with noise } n_t \sim \mathcal{N}(0, R)\end{align}$$
+
+$$\begin{align}
+x_t &= f(x_{t-1}, u_{t-1}) + Gw_{t-1} \\
+& \text{with noise } w_{t-1} \sim N(0,Q)
+\end{align}$$
+
+$\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)$
+:::
+:::
+
+:::{.tiny-font .absolute left=10 bottom="120" .orange}
+**Suppose you replace** \
+**the linear models with** \
+**nonlinear models.**
+
+**Does the posterior** \
+**$\color{black}bel(x_t)$ remain** \
+**Gaussian? NO**
+
+$\qquad$ ![](img/orange-arrow.png){width=50}
+
+:::
+
+
+## Linearity Assumption Revisited
+
+![](img/Lecture9_15.png){height="550" fig-align="center"}
+
+:::{.absolute right=0 bottom=300 .small-font}
+If $y = ax + b$ 
+
+and $x \sim \mathcal{N}(\mu, \sigma^2)$ 
+
+then $y \sim \mathcal{N}(a\mu + b, a^2\sigma^2)$
+:::
+
+## Nonlinear Function
+
+![](img/Lecture9_19.png){height="550" fig-align="center"}
+
+:::{.absolute right=0 bottom=300 .small-font}
+If $y = g(x)$ 
+
+and $x \sim \mathcal{N}(\mu, \sigma^2)$ 
+
+then y is not necessarily 
+
+distributed as a Gaussian.
+:::
+
+. . .
+
+:::{.absolute bottom=0 left=0 .semi-tiny-font .blue}
+How can we approximate p(y) using a single Gaussian, without having a \
+formula for p(y)?
+
+IDEA #1: MONTE CARLO SAMPLING \
+- Draw many (e.g. 10^6) samples xi ~ p(x) \
+- Pass them through the nonlinear function yi = g(xi) \
+- Compute the empirical mean (m) and covariance (S) of the samples yi \
+- Return Normal(m, S)
+
+IDEA #2: LINEARIZE THE NONLINEAR FUNCTIONS f, h \
+- Then we are in the case y = Gx +c, so p(y) is a Gaussian
+:::
+
+. . .
+
+![](img/nonlinear-func-annot.png){.absolute bottom="175" left="-70" width="335"}
+
+
+## Nonlinear Function
+
+![](img/Lecture9_19.png){height="550" fig-align="center"}
+
+:::{.absolute right=0 bottom=300 .small-font}
+If $y = g(x)$ 
+
+and $x \sim \mathcal{N}(\mu, \sigma^2)$ 
+
+then y is not necessarily 
+
+distributed as a Gaussian.
+:::
+
+
+:::{.absolute bottom=0 left=0 .semi-tiny-font .blue}
+How can we approximate p(y) using a single Gaussian, without having a \
+formula for p(y)?
+
+IDEA #1: MONTE CARLO SAMPLING \
+- Draw many (e.g. 10^6) samples xi ~ p(x) \
+- Pass them through the nonlinear function yi = g(xi) \
+- Compute the empirical mean (m) and covariance (S) of the samples yi \
+- Return Normal(m, S)
+
+IDEA #2: LINEARIZE THE NONLINEAR FUNCTIONS f, h \
+- Then we are in the case y = Gx +c, so p(y) is a Gaussian
+:::
+
+
+![](img/nonlinear-func-annot2.png){.absolute bottom="165" left="0" width="250"}
+
+
+## Linearization
+
+![](img/Lecture9_31.png){height="550" fig-align="center"}
+
+:::{.absolute bottom=50 left=0 .semi-tiny-font .red}
+Notice how the Linearization \
+approximation differs from the \
+Monte Carlo approximation (which \
+is better, provided sufficiently many \
+samples).
+
+That said, the Linearization approximation \
+can be computed efficiently, and can be \
+integrated into the Kalman \
+Filter estimator $\rightarrow$ Extended Kalman Filter 
+
+:::
+
+
+## [Linearization with low approximation error]{.medium-font}
+
+:::{layout="[-30,70]"}
+![](img/Lecture9_32.png){height="600"}
+:::
+
+:::{.absolute bottom=150 left=0 .semi-tiny-font .blue}
+The quality of the linearization \
+approximation depends on the uncertainty \
+of p(x) but also on the shape of the nonlinearity \
+g(x). 
+
+In this example p(x) has small variance so \
+most points will be concentrated around 0.5 and \
+will pass through a very small region of g(x), where \
+g(x) is close to linear. 
+
+In this case p(y) is nearly Gaussian, \
+and the Linearization approximation \
+matches the Monte Carlo approximation.
+:::
+
+![](img/double-arrows.png){.absolute bottom="150" left="300" width="400" height=300}
+
+
+## [Linearization with high approximation error]{.medium-font}
+
+![](img/Lecture9_33.png){height="550" fig-align="center"}
+
+
+:::{.absolute bottom=150 left=0 .tiny-font .blue}
+The quality of the linearization \
+approximation depends on the \
+uncertainty of p(x) but also on \
+the shape of the nonlinearity g(x). 
+
+In this example p(x) has high \
+variance so points g(x) will be \
+spread out around g(0.5), where \
+g(x) is not close to linear. 
+
+In this case p(y) is multimodal, \
+and the Linearization approximation \
+matches the Monte Carlo approximation \
+are both suboptimal approximations. \
+Again Monte Carlo is better, provided \
+sufficient samples.
+
+:::
+
+![](img/double-arrow-2.png){.absolute bottom="210" left="202" width="530"}
+
+
+## How do we linearize?
+
+- Using the first order Taylor expansion around the mean of the previous update step’s state estimate:
+
+::: {.columns .small-font}
+::: {.column width="55%"}
+
+$$\begin{align*}
+x_{t+1} &= f(x_t, u_t) + w_t \\
+&\approx f(\mu_{t|t}, u_t) + \frac{\partial f}{\partial x}(\mu_{t|t}, u_t)(x_t - \mu_{t|t}) + w_t \\
+&= f(\mu_{t|t}, u_t) + F_t(x_t - \mu_{t|t}) + w_t \\
+&= F_t x_t + \color{red}\boxed{\color{black}f(\mu_{t|t}, u_t) - F_t \mu_{t|t}} \color{black} + w_t \\
+&= F_t x_t + \bar{u}_t + w_t
+\end{align*}$$
+
+:::
+
+::: {.column width="45%"}
+[Recall how to compute the Jacobian
+matrix. For example, if]{.red}
+
+$f(x_{1},x_{2},u)=[x_{1}+x_{2}^{2},x_{2}+3u,x_{1}^{4}-u^{2}]\in\mathbb{R}^{3}$
+
+[then the Jacobian of f with respect to $\color{black}(x_1, x_2)$ at $\color{black}(u_1, u_2, u)$ is]{style="color:#ff0000"}
+
+$$\begin{align}
+\frac{\partial f}{\partial x_{1:2}}(\mu_1, \mu_2, u_1) &= \begin{bmatrix} \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} \\ \frac{\partial f_2}{\partial x_1} & \frac{\partial f_2}{\partial x_2} \\ \frac{\partial f_3}{\partial x_1} & \frac{\partial f_3}{\partial x_2} \end 
+{bmatrix} (\mu_1, \mu_2, u_1) \\
+&= \begin{bmatrix} 1 & 2\mu_2 \\ 0 & 1 \\ 4\mu_1^3 & 0 \end{bmatrix}
 \end{align}$$
 
 :::
+:::
 
-::: {.column width="60%" .medium-font}
-**Idea #1: Histograms**
+![](img/linearize-annot.png){.absolute width=150 left="350" bottom="200"}
 
-Advantages: the higher the number of bars the better the approximation is
 
-Disadvantages: exponential dependence on number of dimensions
 
-Note: this approach is called the Histogram Filter. It is useful for low-dimensional systems but we will not study it in this class.
+## How do we linearize?
+
+- Using the first-order Taylor expansion around the mean of the previous prediction step’s state estimate:
+
+::: {.columns .small-font}
+::: {.column width="55%"}
+
+$$\begin{align*}
+z_{t+1} &= h(x_{t+1}) + n_{t+1} \\
+&\approx h(\mu_{t+1|t}) + \frac{\partial h}{\partial x}(\mu_{t+1|t})(x_t - \mu_{t+1|t}) + n_{t+1} \\
+&= h(\mu_{t+1|t}) + H_{t+1}(x_{t+1} - \mu_{t+1|t}) + n_{t+1} \\
+&= H_{t+1}x_{t+1} + \color{red}\boxed{\color{black}h(\mu_{t+1|t}) - H_{t+1}\mu_{t+1|t}} \color{black} + n_{t+1} \\
+&= H_{t+1}x_{t+1} + \bar{c}_{t+1} + n_{t+1}
+\end{align*}$$
+
+:::
+
+::: {.column width="45%"}
+[Recall how to compute the Jacobian
+matrix. For example, if]{.red}
+
+$h(x_{1},x_{2}) = [x_{1}+x_{2}^{2}, x_{2}, x_{1}^{4}] \in \mathbb{R}^{3}$
+
+[then the Jacobian of f with respect to $\color{black}(x_1, x_2)$ at $\color{black}(u_1, u_2)$ is]{style="color:#ff0000"}
+
+$$\begin{align}
+\frac{\partial h}{\partial x_{1:2}}(\mu_1, \mu_2) &= \begin{bmatrix} \frac{\partial h_1}{\partial x_1} & \frac{\partial h_1}{\partial x_2} \\ \frac{\partial h_2}{\partial x_1} & \frac{\partial h_2}{\partial x_2} \\ \frac{\partial h_3}{\partial x_1} & \frac{\partial h_3}{\partial x_2} \end 
+{bmatrix} (\mu_1, \mu_2) \\
+&= \begin{bmatrix} 1 & 2\mu_2 \\ 0 & 1 \\ 4\mu_1^3 & 0 \end{bmatrix}
+\end{align}$$
+
+:::
+:::
+
+![](img/linearize-annot.png){.absolute width=150 left="350" bottom="200"}
+
+
+## [Extended Kalman Filter: an instance of Bayes’ Filter]{.medium-font}
 
 <br>
 
-**Idea #2: Function Approximation**
+$$\begin{align}bel(x_t) &= p(x_t|u_{0:t-1}, z_{0:t}) \\
+&= \eta p(z_t|x_t) \int p(x_t|u_{t-1}, x_{t-1}) bel(x_{t-1}) dx_{t-1}\end{align}$$
+
+![](img/blue-annot.png){width=740 height=430 .absolute top=90 right="175"}
+
+![](img/red-annot.png){width=780 height="240" .absolute bottom=120 right=150}
+
+:::{.absolute bottom=40 left=120 .semi-tiny-font}
+:::{layout="[30,-5,30, -5, 30]" }
+$$\begin{align}
+z_t = & H x_t + \bar{c}_t + n_t \\
+& \text{with noise } n_t \sim \mathcal{N}(0, R)
+\end{align}$$
+
+$$\begin{align}
+\qquad x_t = & F_{t-1}x_{t-1} + \bar{u}_{t-1} + Gw_{t-1} \\
+& \text{with noise } w_{t-1} \sim \mathcal{N}(0, Q)
+\end{align}$$
+
+$\qquad bel(x_0) \sim \mathcal{N}(\mu_0, \Sigma_0)$
+:::
+:::
+
+
+## $\qquad\quad$ EKF in N dimensions
+
+:::{.tiny-font .absolute left=0 top=0}
+**Dynamics**
+
+$x_{t+1} = f(x_{t},u_{t})+Gw_{t}$ \
+$w_{t} \sim \mathcal{N}(0, Q)$
+:::
+
+:::{.tiny-font .absolute right=0 top=0}
+**Measurements** 
+
+$z_t = h(x_t) + n_t$ \
+$n_t \sim \mathcal{N}(0, R)$
+:::
+
+:::{.center-align .medium-font }
+**Init**
+$$bel(x_0) \sim \mathcal{N}(\mu_{0|0}, \Sigma_{0|0})$$
+
+**Prediction Step**
+$$\mu_{t+1|t} = f(\mu_{t |t}, \mu_t)$$
+$$\Sigma_{t+1|t} = F_t\Sigma_{t|t}F^T_t + GQG^T$$
+
+**Update Step**
+
+Received measurement $\bar{z}_{t+1}$ but expected to receive $\mu_{z_{t+1}} = h(\mu_{t+1|t})$
+
+Prediction residual is a Gaussian random variable $\delta z \sim \mathcal{N}(\bar{z}_{t+1} - \mu_{z_{t+1}}, S_{t+1})$ \
+where the covariance of the residual is $S_{t+1} = H_{t+1}\Sigma_{t+1|t}H^T_{t+1} + R$
+
+Kalman Gain (optimal correction factor): $K_{t+1}=\Sigma_{t+1|t}H_{t+1}^{T}S_{t+1}^{-1}$
+
+$$\mu_{t+1|t+1}=\mu_{t+1|t}+K_{t+1}(\bar{z}_{t+1}-\mu_{z_{t+1}})$$
+
+$$\Sigma_{t+1|t+1}=\Sigma_{t+1|t}-K_{t+1}H_{t+1}\Sigma_{t+1|t}$$
+
+:::
+
+
+## EKF Summary
+
+- [Efficient]{style="color:#ff0000"} : Polynomial in measurement dimensionality *k* and state dimensionality n:
+    $$O(k^{2.376} + n^2)$$
+
+- [Not optimal (unlike the Kalman Filter for linear systems)]{style="color:#ff0000"}
+
+- Can [diverge]{style="color:#ff0000"} if nonlinearities are large
+
+- Works surprisingly well even when all assumptions are violated
+
+:::{.absolute .semi-tiny-font left=-100 top=150}
+[As in KF, inverting]{style="color:#ff0000"} \
+[the covariance of the]{style="color:#ff0000"} \
+[residual is O(k\^2.376)]{style="color:#ff0000"}
+:::
+
+## Example #1: EKF-Localization
+
+:::{.yellow-box}
+“Using sensory information to locate the robot in its environment is the most fundamental problem to providing a mobile robot with autonomous capabilities.” \[Cox ’91\]
+:::
+
+-   **Given**
+    -   Map of the environment.
+    -   Sequence of sensor measurements.
+-   **Wanted**
+    -   Estimate of the robot’s position.
+-   **Problem classes**
+    -   Position tracking
+    -   Global localization
+    -   Kidnapped robot problem (recovery)
+
+
+## Landmark-based Localization
 
 <br>
 
-**Idea #3: Weighted Particles** $\{(x^{[1]},w^{[1]}),...,(x^{[M]},w^{[M]})\}$
+![](img/landmark-localization.png){fig-align="center" width=700 height="500"}
 
-Advantages: easy to predict/update by treating each particle as a separate hypothesis whose weight is updated.
-
-Disadvantages: need enough particles to “cover” the distribution
-
-:::
-:::
-
-![](img/black-arrow.png){width="240" .absolute bottom="190" right="625"}
-
-
-[Higher density of \
-particles means \
-higher probability \
-mass]{.semi-tiny-font .absolute bottom=200 left=200}
-
-## [How can we represent multimodal distributions?]{.small-font}
-
-::: {.columns}
-::: {.column width="40%" .small-font}
-![[https://www.opsclarity.com]{.small-font}](img/multimodal-diagram.png)
-
-<br><br><br><br><br>
-
-Want particles to be drawn from the belief at time t: \
-$$x_{t}^{[m]}\sim p(x_{t}|z_{0:t},u_{0:t-1})$$
-
-:::
-
-::: {.column width="60%" .medium-font}
-**Idea #1: Histograms**
-
-Advantages: the higher the number of bars the better the approximation is
-
-Disadvantages: exponential dependence on number of dimensions
-
-Note: this approach is called the Histogram Filter. It is useful for low-dimensional systems but we will not study it in this class.
+:::{.absolute .red .small-font bottom=150 left="0"}
+Landmarks, whose \
+position $\color{black}(l_{x}^{(i)}, l_{y}^{(i)})$ \
+in the world is known. 
 
 <br>
 
-**Idea #2: Function Approximation**
+Each robot measures \
+its range and bearing \
+from each landmark \
+to localize itself. 
 
 <br>
 
-**Idea #3: Weighted Particles** $\{(x^{[1]},w^{[1]}),...,(x^{[M]},w^{[M]})\}$
+State of a robot: 
 
-Advantages: easy to predict/update by treating each particle as a separate hypothesis whose weight is updated.
-
-Disadvantages: need enough particles to “cover” the distribution
-
-:::
+$\color{black} x_{t} = \begin{bmatrix} p_{x}(t) \\ p_{y}(t) \\ \theta(t) \end{bmatrix}$
 :::
 
-![](img/black-arrow.png){width="240" .absolute bottom="190" right="625"}
+
+## Landmark-based Localization
+
+<br>
+
+![](img/landmark-pic2.png){fig-align="center" width=700 height="500"}
 
 
-[Higher density of \
-particles means \
-higher probability \
-mass]{.semi-tiny-font .absolute bottom=200 left=200}
+:::{.absolute .red .small-font bottom=100 left="0"}
+Measurement at time t, \
+$\color{black}z_t = \begin{bmatrix} \dots \\ z_t^{(i)} \\ \dots \end{bmatrix}$ \
 
+<br>
 
+is a variable-sized \
+vector, depending on the \
+landmarks that are \
+visible at time t. 
 
-## Particle propagation/prediction
+<br>
+
+Each measurement is \
+a 2D vector, containing \
+range and bearing from \
+the robot to a landmark.
+:::
+
+:::{.absolute bottom=50 right=150 .small-font}
+$$z_t^{(i)} = h_i(x_t) = \left[ \begin{pmatrix} \sqrt{(p_x(t)-l_x^{(i)})^2 + (p_y(t)-l_y^{(i)})^2} \\ \text{atan2}(p_y(t)-l_y^{(i)}, p_x(t)-l_x^{(i)})-\theta(t) \end{pmatrix} \right] + n_t$$
+:::
+
+## Estimation Sequence (1)
+
+:::{layout-ncol="2"}
+![](img/Lecture9_74.png)
+
+![](img/Lecture9_75.png)
+:::
+
+## Estimation Sequence (2)
+
+:::{layout-ncol="2"}
+![](img/Lecture9_76.png)
+
+![](img/Lecture9_77.png)
+:::
+
+## Comparison to true trajectory
+
+![](img/Lecture9_78.png){fig-align="center"}
+
+<!-- ![](img/Lecture9_79.png) -->
+
+## Example #2: EKF-SLAM
 
 ::: {.columns}
 ::: {.column}
-![](img/particle-propagation.png)
+
+A robot is exploring an unknown, static environment.
+
+-   **Given:**
+    -   The robot’s controls
+    -   Observations of nearby features
+-   **Estimate:**
+    -   Map of features
+    -   Path of the robot 
+
 :::
 
 ::: {.column}
-
-Simulate what is going to happen to the particle
-at the next time step by drawing a sample from
-the next state specified in the dynamics (a.k.a.
-one-step simulator)
-
-$$x_t^{[m]} \sim p(x_t | x_{t-1}^{[m]}, u_{t-1})$$
-
-Usually 
-
-$$\begin{aligned}
-x_{t}^{[m]}=f(x_{t-1}^{[m]},u_{t-1})+w_{t-1}\\
-w_{t-1}\sim\mathcal{N}(0,Q)
-\end{aligned}$$
-
+![](img/Lecture9_80.png)
 :::
 ::: 
 
+## Structure of Landmark-based SLAM
+![](img/Lecture9_81.png){fig-align="center"}
 
+## Why is SLAM a hard problem?
 
-## Particle Update{.center}
+**SLAM** : robot path and map are both [**unknown**]{style="color:#ff0000"}
 
-## How to update particle weights after an observation
-![](img/particle-update-1.png){height="400" width="750" fig-align="center"}
+![](img/SLAM.png){height="430"}
 
-:::{.semi-tiny-font .absolute bottom="30" left=200}
-Measurement model $z_t = h(x_t) + n_t = [r_1, r_2, r_3, r_4] + n_t$
+Robot path error correlates errors in the map
 
-with $r_i = \sqrt{(p_x - l_x^{(i)})^2 + (p_y - l_y^{(i)})^2}$ and $n_i \sim \mathcal{N}(0, \sigma^2)$
-:::
+## Why is SLAM a hard problem?
 
-:::{.semi-tiny-font .absolute bottom="30" right=150}
-$$\left. \rule{0pt}{1cm} \right\} p(z_t|x_t) = \mathcal{N}(z_t; r_{1:4}, \sigma^2 \mathbb{I}_4)$$
-:::
+![](img/SLAM-2.png){height="250"}
 
-## How to update particle weights after an observation
-![](img/update-particle-2.png){height="400" width="750" fig-align="center"}
+- In the real world, the mapping between observations and landmarks is unknown
+- Picking wrong data associations can have catastrophic consequences
+- Pose error correlates data associations
 
-:::{.semi-tiny-font .absolute bottom="30" right=100}
-Actual measurement received: ${\bar{z}_t = [\bar{r}_1, \bar{r}_2, \bar{r}_3, \bar{r}_4]}$
-:::
+## EKF-SLAM
 
+- Map with N landmarks: (3+2N)-dimensional Gaussian
 
-
-## How to update particle weights after an observation
-![](img/update-particle-3.png){height="400" width="850" fig-align="center"}
-
-:::{.semi-tiny-font .absolute bottom="30" left=150}
-Measurement model $z_{t}=h(x_{t}^{[m]})+n_{t}=[d_{1},d_{2},d_{3},d_{4}]+n_{t}$
-
-with $d_{i}=\sqrt{(p_{x}^{[m]}-l_{x}^{(i)})^{2}+(p_{y}^{[m]}-l_{y}^{(i)})^{2}}$ and $n_i \sim \mathcal{N}(0, \sigma^2)$
-:::
-
-:::{.semi-tiny-font .absolute bottom="30" right=150}
-$$\left. \rule{0pt}{1cm} \right\} p(z_t|x_t^{[m]}) = \mathcal{N}(z_t; d_{1:4}, \sigma^2 \mathbb{I}_4)$$
-:::
-
-## How to update particle weights after an observation
-![](img/update-particle-3.png){height="400" width="850" fig-align="center"}
-
-:::{.semi-tiny-font .absolute bottom="30" left=200}
-Q: What is the probability of the actual measurement given the state hypothesized by the particle?
-
-A: $p(\bar{z}_t | x_t^{[m]}) = \mathcal{N}(\bar{z}_t; d_{1:4}, \sigma^2 \mathbb{I}_4) = \eta \exp(-\|\bar{z}_t - d_{1:4}\|^2 / \sigma^2)$
-:::
-
-## How to update particle weights after an observation
-![](img/update-particle-3.png){height="400" width="850" fig-align="center"}
-
-:::{.semi-tiny-font .absolute bottom="30" left=200}
-Q: What is the probability of the actual measurement given the state hypothesized by the particle?
-
-A: $p(\bar{z}_{t}|x_{t}^{[m]}) = \prod_{i=1}^{4} p(\bar{r}_{i}|x_{t}^{[m]}) = \prod_{i=1}^{4} \mathcal{N}(\bar{r}_{i}; d_{i}, \sigma^{2}) = \prod_{i=1}^{4} \eta \exp(-(\bar{r}_{i}-d_{i})/\sigma^{2})$
-:::
-
-:::{.semi-tiny-font .red .absolute bottom="30" left=-50}
-Assuming range measurements \
-are conditionally independent \
-given state 
-:::
-
-## How to update particle weights after an observation
-![](img/update-particle-3.png){height="400" width="850" fig-align="center"}
-
-:::{.semi-tiny-font .absolute bottom="30" left=200}
-Q: What is the probability of the actual measurement given the state hypothesized by the particle?
-
-A: $p(\bar{z}_{t}|x_{t}^{[m]}) = \prod_{i=1}^{4} p(\bar{r}_{i}|x_{t}^{[m]}) = \prod_{i=1}^{4} \mathcal{N}(\bar{r}_{i}; d_{i}, \sigma^{2})$
-:::
-
-:::{.semi-tiny-font .red .absolute bottom="15" right=50}
-In the figure above this probability would be low \
-and this particle would be unlikely.
-:::
-
-## How to update particle weights after an observation
-![](img/update-particle-3.png){height="400" width="850" fig-align="center"}
-
-:::{.semi-tiny-font .absolute bottom="70" left=200}
-Particle’s (unnormalized) weight $\quad w_t^{[m]} \propto p(\bar{z}_t | x_t^{[m]})$
-:::
-
-:::{.semi-tiny-font .red .absolute bottom="15" right=50}
-See Appendix 1 for why \
-this choice was made \
-for the weight \
-:::
-
-
-## The distribution of the particles has not been updated yet. We only updated their weights. To update the distribution of particles we need to do [resampling]{.underline} {.center}
-
-<br><br><br>
-
-:::{.small-font .right-align .absolute bottom=0 left=300 .fragment}
-![](img/red-arrow.png){width="150"}
-[Sample particles with repetition/replacement,]{style="color:#ff0000"} \
-[according to their updated weights.]{style="color:#ff0000"}
-:::
-
-## Resampling Particles
-
-- [Main goal]{.underline} : Get rid of unlikely particles (with too low weights) and focus on most likely particles (a.k.a. survival of the fittest).
-
-- [Main mechanism]{.underline} : Sample new set of particles from existing set, with replacement(repetition), so that same particle can be sampled more than once. Sample old particle i with probability $\propto \text{weight}_i$
-
-- Many possible ways to implement it. Here we present two algorithms.
-
-## Resampling Particles: Algorithm #1
-
-::: {.columns}
-::: {.column width="30%" .medium-font}
-
-new_particles = \[\] \
-sample u \~ Uniform\[0,1\] \
-idx = int( u \* (N-1) ) \
-beta = 0 \
-max_w = max(weights)
-
-<br>
-
-for each of the N particles: \
-$\qquad$ sample v \~ Uniform\[0,1\] \
-$\qquad$ beta += v \* 2\* max_w
-
-<br>
-
-$\qquad$ while beta \> weights\[idx\]: \
-    $\qquad\qquad$ beta -= weights\[idx\] \
-    $\qquad\qquad$ idx = (idx + 1) % N
-
-<br>
-
-$\qquad$ p = particles\[idx\].copy()
-$\qquad$ new_particles.append(p)
-
-:::
-::: {.column width="70%"}
-:::
-::: 
-
-
-
-## Resampling Particles: Algorithm #2
-
-::: {.columns}
-::: {.column width="60%" .medium-font}
-
-new_particles = \[\] \
-sample r \~ Uniform\[0, 1/N\] \
-c = weights\[0\] \
-idx = 0
-
-<br>
-
-for n = 1…N: \
-$\qquad$ u = r + (n-1)/N
-
-<br>
-
-$\qquad$ while u \> c: \
-$\qquad\qquad$ idx = idx + 1 \
-$\qquad\qquad$ c = c + weights\[idx\]
-
-<br>
-
-$\qquad$ p = particles\[idx\].copy() \
-$\qquad$ new_particles.append(p)
-
-:::
-
-::: {.column width="40%" .medium-font}
-![](img/resampling-algo2.png){height="350"}
-
-- Stochastic universal sampling
-- Systematic resampling
-- Linear time complexity
-:::
-::: 
-
-
-## Resampling Particles: Example
-
-• Suppose we only have 5 particles:
-
-:::: {.columns}
-::: {.column width="50%"}
-
-| Particle index | Normalized weight |
-|:--------------:|:-----------------:|
-|       1        |        0.1        |
-|       2        |        0.2        |
-|       3        |        0.4        |
-|       4        |        0.1        |
-|       5        |        0.2        |
-:::
-
-::: {.column width="50%"}
-
-Q: What is the probability that after a round of resampling the highest probability particle (#3) is not sampled?
-
-A: $0.6^5 \simeq 0.077$
-
-<br>
-
-[i.e. there is nonzero probability that we will lose the ]{style="color:#ff0000"}
-[highest-probability particle ]{style="color:#ff0000"} [$\rightarrow$]{style="color:#ff0000"} [ it will happen eventually]{style="color:#ff0000"}
-:::
-
-::::
-
-## Resampling Particles: Example
-
-• Suppose we only have 5 particles:
-
-:::: {.columns}
-::: {.column width="50%"}
-
-| Particle index | Normalized weight |
-|:--------------:|:-----------------:|
-|       1        |        0.1        |
-|       2        |        0.2        |
-|       3        |        0.4        |
-|       4        |        0.1        |
-|       5        |        0.2        |
-:::
-
-::: {.column width="50%"}
-
-Q: What is the probability that after a round of resampling the highest probability particle (#3) is not sampled?
-
-A: $0.6^5 \simeq 0.077$
-
-<br>
-
-Q: What is the probability that after a round of resampling one of the lowest-probability particles (#1) is not sampled?
-
-A: $0.9^5 \simeq 0.59$
-
-:::
-::::
-
-
-## Resampling Particles: Consequences
-
-- Weak particles very likely do not survive.
-
-:::{.center-align}
-$\mathbf{\Downarrow}$
-:::
-
-- Variance among the set of particles **decreases** , due to mostly sampling strong particles (i.e. loss of particle diversity).
-
-:::{.center-align}
-$\mathbf{\Downarrow}$
-:::
-
-- Loss of particle diversity implies **increased variance** of the approximation error between the particles and the true distribution **.**
-
-:::{.center-align}
-$\mathbf{\Downarrow}$
-:::
-
-- Particle deprivation: there are no particles in the vicinity of the correct state
-
-## How to address particle deprivation
-
-- Idea #1: don’t resample when only a few particles contribute
-
-- Idea #2: inject random particles during resampling
-
-- Idea #3: increase the number of particles (may be impractical depending on the computational complexity of the system)
-
-## How to address particle deprivation
-
--   Idea #1: don’t resample when only a few particles contribute
-    -   Effective sample size: $N_{\text{eff}} = \frac{1}{\sum_{i=1}^{N}w_{i}^{2}}$
-    -   When all particles have equal, normalized weights (1/N) then $N_{\text{eff}} = N$
-    -   When a single particle carries the entire weight then $N_{\text{eff}} = 1/N$
-    -   and we have loss of particle diversity.
-    -   Resample only when $N_{\text{eff}} > N_{\text{thresh}}$
--   Idea #2: inject random particles during resampling
--   Idea #3: increase the number of particles (may be impractical depending on the computational complexity of the system)
-
-## How to address particle deprivation
-
--   Idea #1: don’t resample when only a few particles contribute
--   Idea #2: inject random particles during resampling
-    -   A small percentage of the particles’ states should be set randomly
-        -   Pro: simple to code, reduces (but does not fix) particle deprivation
-        -   Con: incorrect posterior estimation even when there are infinitely many particles
--   Idea #3: increase the number of particles (may be impractical depending on the computational complexity of the system) 
-
-## Particle Filter Algorithm
-
-:::{layout="[50, -50]" .medium-font}
-$$\begin{aligned}
-&\text{ParticleFilter}(\bar{z}_t, u_{t-1}) \\
-&\qquad\bar{S}_t = \{\} \quad \bar{W}_t = \{\} \\
-&\qquad\text{for particle index } m = 1...M \\
-&\qquad\qquad \text{sample } x_t^{[m]} \sim p(x_t|x_{t-1}^{[m]}, u_{t-1}) \\
-&\qquad\qquad w_t^{[m]} = p(\bar{z}_t|x_t^{[m]}) \\
-&\qquad\qquad \bar{S}_t.\text{append}(x_t^{[m]}) \\
-&\qquad\qquad \bar{W}_t.\text{append}(w_t^{[m]}) \\
-\\
-&\qquad S_t = \{\} \\
-&\qquad\text{for particle index } m = 1...M \\
-&\qquad\qquad \text{sample particle i from } \bar{S}_t \text{ with probability } \propto w_i^{[i]} \\
-&\qquad\qquad S_t.\text{append}(x_t^{[m]}) \\
-\\
-&\quad\text{return } S_t
-\end{aligned}$$
-
-:::
-
-:::{.absolute left=220 top="85" .red .semi-tiny-font .fragment .fade-out}
-![](img/red-long-arrow.png){width=170} Actual observation and control received
-:::
-
-:::{.absolute top=190 right="140" .semi-tiny-font .right-align .fragment .fade-in-then-out}
-[Particle propagation/prediction: ]{style="color:#ff0000"} \
-![](img/red-long-arrow.png){width=170} [noise needs to be added in order to make]{style="color:#ff0000"} \
-[particles differentiate from each other. ]{style="color:#ff0000"}
-
-[If propagation is deterministic then particles ]{style="color:#ff0000"} \
-[are going to collapse to a single particle after a]{style="color:#ff0000"} \
-[few resampling steps. ]{style="color:#ff0000"}
-:::
-
-:::{.absolute top=250 right="240" .semi-tiny-font .right-align .fragment .fade-in-then-out}
-![](img/red-long-arrow.png){width=170} [Weight computation as measurement likelihood.]{style="color:#ff0000"} \
-[For each particle we compute the probability of the ]{style="color:#ff0000"} \
-[actual observation given the state is at that particle.]{style="color:#ff0000"}
-:::
-
-
-:::{.absolute bottom=113 right="120" .semi-tiny-font .right-align .fragment .fade-in-then-out}
-![](img/red-long-arrow.png){width=170} [Resampling step]{style="color:#ff0000"} \
-[Note: particle deprivation heuristics are not]{style="color:#ff0000"} \
-[shown here ]{style="color:#ff0000"}
-:::
-
-
-:::{.fragment}
-![](img/downward-arrow.png){.absolute width="200" bottom="230" left="350"}
-
-:::{.semi-tiny-font .red .horizontal-layout .absolute bottom=250 right=50}
-Note: here we work with a fixed number of particles \
-but in many applications, such as localization, you could work \
-with a reduced number of particles after the particles have \
-converged to the true estimate.   
-
-Such implementations of particle filters are called adaptive. An \
-example is the KLD-sampling adaptive particle filter, which is \
-not going to be covered here.  
-:::
-
-:::
-
-
-## Examples: 1D Localization
-
-![](img/Lecture10_159.png){fig-align="center"}
-
-![](img/Lecture10_162.png){fig-align="center" width="740"}
-
-:::{.absolute bottom=150 left=0 .medium-font}
-$p(x)$
-
-<br><br><br>
-
-$p(z = \text{door} | x)$
-
-<br><br>
-
-$p(x|z_0 = \text{door})$
-:::
-
-## Examples: 1D Localization
-
-
-![](img/Lecture10_167.png){fig-align="center"}
-
-![](img/Lecture10_170.png){fig-align="center" width="740"}
-
-:::{.absolute bottom=150 left=-100 .tiny-font .right-align}
-$p(x|z_0 = \text{door}, u_0 = \text{right})$
+![](img/ekf-slam.png){width="700" height="350" .absolute left=-50 top="110"}
 
 <br><br><br><br><br><br><br><br>
 
-$p(z = \text{door} | x)$
+- Can handle hundreds of dimensions
 
-<br><br><br><br><br>
 
-$p(x|z_0 = \text{door}, u_0 = \text{right}, z_1 = \text{door})$
+
+## Appendix{.center}
+
+## EKF-SLAM
+
+![](img/Lecture9_82.png)
+
+:::{layout="[-5, 45, 45, -5]"}
+Map 
+
+Covariance matrix
+:::
+
+## EKF-SLAM
+![](img/Lecture9_83.png)
+
+:::{layout="[-5, 45, 45, -5]"}
+Map 
+
+Covariance matrix
+:::
+
+## EKF-SLAM
+![](img/Lecture9_84.png)
+
+:::{layout="[-5, 45, 45, -5]"}
+Map 
+
+Covariance matrix
+:::
+
+## Properties of EKF-SLAM (Linear Case)
+
+\[Dissanayake et al., 2001\]
 
 <br>
 
-:::
+*Theorem* :
 
+The determinant of any sub-matrix of the map covariance matrix decreases monotonically as successive observations are made.
 
-## Examples: Monte Carlo Localization
+<br>
 
-![](img/Lecture10_175.png)
+*Theorem* :
 
-## Examples: Monte Carlo Localization
-
-![After incorporating 10 ultrasound scans](img/Lecture10_176.png)
-
-## Examples: Monte Carlo Localization
-![After incorporating 65 ultrasound scans](img/Lecture10_177.png)
-
-## Using Ceiling Maps for Localization
-
-![](img/ceiling-maps.png)
-
-
-## Vision-based Localization
-
-![](img/vision-based-localization.png)
-
-## Under a Light
-
-::: {.columns}
-::: {.column width="25%"}
-Measurement z:
-
-![](img/Lecture10_183.png)
-:::
-
-::: {.column width="75%"}
-P(z|x): 
-
-![](img/Lecture10_182.png)
-:::
-::: 
-
-
-## Next to a Light
-
-::: {.columns}
-::: {.column width="25%"}
-Measurement z:
-
-![](img/Lecture10_185.png)
-:::
-
-::: {.column width="75%"}
-P(z|x): 
-
-![](img/Lecture10_184.png)
-:::
-::: 
-
-
-## Elsewhere
-
-::: {.columns}
-::: {.column width="25%"}
-Measurement z:
-
-![](img/Lecture10_186.png)
-:::
-
-::: {.column width="75%"}
-P(z|x): 
-
-![](img/Lecture10_187.png)
-:::
-::: 
-
-## Global Localization Using Vision
-
-![](img/global-localization.png)
-
-
-## Appendix 1
-
-:::{.medium-font}
-- Why did we choose $w_t^{[m]} \propto p(z_t|x_t^{[m]})$ as the importance weight for particle m?
-
-- Main trick: **importance sampling** , i.e. how to estimate properties/statistics of one distribution (f) given samples from another distribution (g)
-:::
-
-::: {.columns .medium-font}
-::: {.column}
-![](img/Lecture10_189.png)
-:::
-
-::: {.column}
-For example, suppose we want to estimate the expected value of f given only samples from g.
-
-:::{.fragment}
-$$\begin{align*}
-\mathbb{E}_{x\sim f(x)}[x] &= \int xf(x)dx \qquad\qquad\quad \\
-&= \int \frac{g(x)}{g(x)}xf(x)dx \qquad\qquad\quad \\
-&= \int x\frac{f(x)}{g(x)}g(x)dx \qquad\qquad\quad \\
-&= \mathbb{E}_{x\sim g(x)}\left[x\frac{f(x)}{g(x)}\right] \qquad\qquad\quad \\
-&= \mathbb{E}_{x\sim g(x)}[x w(x)] \qquad\qquad\quad
-\end{align*}$$
-:::
-
-:::
-:::
-
-:::{.red .tiny-font .absolute right="-20" bottom="100" .fragment}
-Weights describe the mismatch \
-between the two distributions, \
-i.e. how to reweigh samples to \
-obtain statistics of f  from \
-samples of  g
-:::
-
-## Appendix 1
-
-:::{.medium-font}
-- Why did we choose $w_t^{[m]} \propto p(z_t|x_t^{[m]})$ as the importance weight for particle m?
-
-- Main trick: **importance sampling** , i.e. how to estimate properties/statistics of one distribution (f) given samples from another distribution (g)
-:::
-
-::: {.columns}
-::: {.column .small-font}
-![](img/Lecture10_189.png)
-
-In the case of particle filters
-
-$f(x_t) = p(x_t | z_{0:t}, u_{0:t-1}) = bel(x_t) \qquad g(x_t) = p(x_t | z_{0:t-1}, u_{0:t-1}) = \overline{bel}(x_t)$
-:::
-
-::: {.column .small-font}
-For example, suppose we want to estimate the expected value of f given only samples from g.
-
-$$\begin{align*}
-\mathbb{E}_{x\sim f(x)}[x] &= \int xf(x)dx \qquad\qquad\quad \\
-&= \int \frac{g(x)}{g(x)}xf(x)dx \qquad\qquad\quad \\
-&= \int x\frac{f(x)}{g(x)}g(x)dx \qquad\qquad\quad \\
-&= \mathbb{E}_{x\sim g(x)}\left[x\frac{f(x)}{g(x)}\right] \qquad\qquad\quad \\
-&= \mathbb{E}_{x\sim g(x)}[x w(x)] \qquad\qquad\quad
-\end{align*}$$
-
-:::
-:::
-
-:::{.red .tiny-font .absolute right="-20" bottom="150"}
-Weights describe the mismatch \
-between the two distributions, \
-i.e. how to reweigh samples to \
-obtain statistics of f  from \
-samples of  g
-:::
-
-[Posterior belief after update $\qquad\qquad\qquad$ Belief after propagation, before update]{.red .small-font}
-
-
-
-## Appendix 1
-
-:::{.medium-font}
-- Why did we choose $w_t^{[m]} \propto p(z_t|x_t^{[m]})$ as the importance weight for particle m?
-
-- Main trick: **importance sampling** , i.e. how to estimate properties/statistics of one distribution (f) given samples from another distribution (g)
-:::
-
-::: {.columns}
-::: {.column .small-font}
-![](img/Lecture10_189.png)
-
-In the case of particle filters
-
-$f(x_t) = p(x_t | z_{0:t}, u_{0:t-1}) = bel(x_t) \qquad g(x_t) = p(x_t | z_{0:t-1}, u_{0:t-1}) = \overline{bel}(x_t)$
-:::
-
-::: {.column .small-font}
-For example, suppose we want to estimate the expected value of f given only samples from g.
-
-$$\begin{align*}
-w(x_t^{[m]}) & = \frac{f(x_t^{[m]})}{g(x_t^{[m]})} \\
-& \propto \frac{p(z_t|x_t^{[m]}) p(x_t^{[m]}|x_{t-1}^{[m]}, u_{t-1}) bel(x_{t-1}^{[m]})}{p(x_t^{[m]}|x_{t-1}^{[m]}, u_{t-1}) bel(x_t^{[m]})} \\
-& \propto p(z_t|x_t^{[m]})
-\end{align*}$$
-
-:::
-:::
-
-
-[Posterior belief after update $\qquad\qquad\qquad$ Belief after propagation, before update]{.red .small-font}
+In the limit the landmark estimates become fully correlated

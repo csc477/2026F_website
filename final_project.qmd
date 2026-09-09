@@ -1,0 +1,57 @@
+---
+title: "Final Project Guidelines"
+---
+
+### Introduction
+
+CSC477 involves a course project in which you will implement a research idea on a topic related to the course, for example state estimation, planning, or control. The purpose of the final project is to give you the chance to spend a significant amount of time focusing on a single research direction. The types of projects that we envision include (but are not limited to) the following:
+
+- Implement the main algorithm described in a paper on one of the topics above, try to replicate the results, and run it in 2-3 new scenarios. Contact the instructor for the paper you are looking at extending.
+- Familiarize yourself with frameworks such as [GTSAM](https://gtsam.org/) and implement a state estimator for a particular robotics-related problem of your choice.
+- Implement an optimal control method for a setting with nonlinear dynamics and nonlinear cost functions, where the dynamics is learned.
+- Extend and evaluate some of the Kalman filter methods that we will cover in class from Gaussian posteriors to Mixture of Gaussian posteriors (e.g. Ensemble Kalman Filter).
+- Extend the binary occupancy mapping method we will cover in Lecture 6 so that it does not make any simplifying independence assumptions.
+- Implement, compare, and contrast various asymptotically-optimal sampling-based motion planning algorithms, such as RRT*, [Informed RRT*](https://arxiv.org/abs/1404.2334), [BIT*](https://arxiv.org/abs/1405.5848), [Fast-Marching Trees](https://arxiv.org/abs/1306.3532), or other emerging variants of such algorithms.
+- Learn the sampling distribution of RRT or RRT* by trying to solve many instances of existing environments.
+- Implement a controller that will make the RC cars that we have in the course drive along a racetrack with increasing speed as they get more data. See [this video](https://www.youtube.com/watch?v=4kHDv9senpE&ab_channel=UgoRosolia) for more details.
+- Invent a new algorithm on any of the topics above, and provide sufficient evaluation to demonstrate the merit of the idea, at minimum 1-2 scenarios.
+- Propose any other project that might not be included on this list, but you feel excited about.
+
+You can get full marks for the project component by selecting any of these types of projects. You are not expected to produce a novel research idea, although courses like this are meant to create the conditions for students to attempt it. We encourage you to try.
+
+### Policy on Collaboration
+
+This year, we expect you to work individually for the course project.
+
+### Project Proposal (Optional)
+
+You may submit a project proposal (not for marks) to get feedback from the teaching staff before you embark on project implementation. If you do submit a proposal, you are expected to describe a well-defined goal in the proposal. When choosing this goal try to identify the minimum viable objective that you think is likely to work and you can accomplish, just to get you started, some nice-to-haves that you will do provided there is time, and a short review of related work. The definition of your research project may change during the course of a month and a half that you will be working on your project, but your proposal should be as specific and well-defined as possible, otherwise we cannot provide helpful feedback. If you are unsure about your plans, contact the instructor well before the proposal due date. **Proposals should not be based only on material covered in class by the due date. Students are encouraged to look further ahead in the schedule and to start planning their project definition well ahead of the due date.**
+
+Proposals are limited to 3 pages, with the following suggested structure: 1/4 page for abstract/introduction, 1 page for the problem, 1/2 page for related work, 1/2 page for the proposed method, 1/2 page for proposed evaluation, 1/4 page for references. Proposals should follow the template provided by the Conference on Robot Learning (CoRL): [https://bit.ly/38wLgmU](https://bit.ly/38wLgmU). Upload your proposal in pdf form on Quercus. 
+
+**Can I extend a project I completed in a previous class?** Yes, you are welcome to do this as long as you provide your final report from that class and include an appendix to the proposal that clarifies what is being added to the previous project.
+
+**Can I extend a project I completed or am working on as part of my research/thesis?** Yes, you are welcome to do this as long as you include an appendix to the proposal that clarifies what is being added to the research you have done so far outside this course.
+
+**Which simulator or dataset should I use?** Use the one that is going to allow you to quickly try ideas and prototype. In most cases that is Mujoco or PyBullet. I would not recommend starting with game engines like Unreal Engine 4 and Unity, unless you know what you are doing. Similarly, choose the easiest dataset to get started. Toy data is fine. So are simple scenarios. Start with the easiest and most predictable setting/environment, and only increase complexity if you are making progress. I do not suggest starting from the most complex environment and gradually moving to simpler ones.
+
+**I need a GPU but I don't have access to one. What should I do?** Email the instructor early on if this is a problem. You should also look into Google Colab, and any GPU desktops provided by your department (if any).
+
+### Final Project Report and Code
+
+The final report needs to have at least five pages that include: 1/4 page abstract, 1/2 page introduction, 1/2 page related works, 1.5+ pages describing your method, 1.5+ pages describing your results and evaluation, 1/2 page limitations. The final report may include as many references and appendices as you need. Figures and tables are encouraged. Final reports should follow the same paper template as the proposal. Submit your final project report in pdf form, and a zip file with your code or a link to a github repository to the instructor. The document must contain an appendix outlining what each team member contributed to the project.
+
+### Marking rubric for the final project report
+
+1. **Abstract** (2 pts) that summarizes the main idea of the project and your contributions.
+2. **Introduction** (3 pts) that states the problem being solved and any applications / implications.
+3. **Figure or diagram** (2 pts) that shows the overall idea.
+4. **Related work** (2 pts) and bibliography. Highlight how your method is different from other approaches. Present other approaches in the proper light without diminishing their contributions.
+5. **Methodology** (10 pts) Describe your method in detail as well as any assumptions it relies on. Explain prerequisite concepts clearly and succinctly. Include algorithm descriptions, figures, and equations as you wish.
+6. **Evaluation** (8 pts) Include any figures or tables that illustrate your experimental results. Do not forget to include error bars if applicable. Analyze your findings, and comment on their statistical significance. In your evaluation please take into account the [reproducibility checklist](https://www.cs.mcgill.ca/~jpineau/ReproducibilityChecklist.pdf).
+7. **Limitations** (2 pts) Describe some settings in which your approach performs poorly, and list a few ideas for how to address them. Describe opportunities for future work, as well as open problems.
+8. **Conclusions** (1 pts) A summary of what you accomplished.
+
+### Final remarks
+
+Do not forget to enjoy your project and have fun with it. This is an opportunity to learn and investigate what you find exciting!

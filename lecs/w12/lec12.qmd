@@ -1,0 +1,1929 @@
+---
+title: "CSC477 Introduction to Mobile Robotics"
+subtitle: "Week #12: Multiview Geometry, Visual Odometry, Visual SLAM"
+author: "Florian Shkurti"
+format: 
+  revealjs:
+    slide-number: true
+    smaller: true
+    footer: '<a href="https://csc477.github.io/2026F_website" target="_blank" style="font-size:0.8em; bottom: -5px;">↩ Back to Course Website</a>'
+    css: ../style.css
+    chalkboard:
+      buttons: true
+      boardmarker-width: 2
+      chalk-width: 2
+      chalk-effect: 1.0
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+---
+
+## Motivation
+- We have already seen quite successful SLAM methods based on laser sensors. Why bother with vision?
+    - Camera technology cheap and ubiquitous
+    - Camera is a passive sensor, lower energy
+    - Some environments/platforms can't support laser
+    - Vision is quite a "rich" source of information
+
+
+## How hard is computer vision?
+
+::: {.columns}
+::: {.column width="30%"}
+
+![](img/marvin-minsky.png)
+
+Marvin Minsky, MIT \
+Turing award, 1969
+:::
+
+::: {.column width="70%"}
+"In 1966, Minsky hired a first-year undergraduate (JS) student and assigned him a problem to solve over the summer: connect a television camera to a computer and get the machine to describe what it sees." 
+
+[Crevier 1993, pg. 88]{.small-font}
+:::
+::: 
+
+##
+![](img/Lecture11_3.png)
+
+##
+Depth perception can be ambiguous from just a single image
+
+![](img/Lecture11_4.png)
+
+## What do humans see?
+
+![](img/Lecture11_5.png)
+
+##
+
+![](img/Lecture11_6.png)
+
+Count the black dots! :0)
+
+## Peripheral drift illusion
+![](img/Lecture11_7.png)
+
+## Where do humans fixate?
+
+![](img/Lecture11_8.png)
+
+[Visual 
+saccades]{.absolute bottom="50%" right=0}
+
+## Camera obscura: dark room
+
+- Known during classical period in China and Greece (e.g., Mo-Ti, China, 470BC to 390BC)
+
+![](img/Lecture11_9.png)
+
+## 
+::: {.columns}
+::: {.column}
+![](img/Lecture11_10.png)
+
+Lens Based Camera Obscura, 1568
+:::
+
+::: {.column}
+Oldest surviving photograph \
+- Took 8 hours on pewter plate
+
+![](img/Lecture11_11.png)
+
+Joseph Niece, 1826
+:::
+:::
+
+## Lenses
+
+![](img/Lecture11_12.png)
+
+A lens focuses parallel rays onto a single focal point
+
+- focal point at a distance f beyond the plane of the lens
+    - f is a function of the shape and index of refraction of the lens
+- Aperture of diameter D restricts the range of rays
+    - aperture may be on either side of the lens
+- Lenses are typically spherical (easier to produce)
+
+
+## Depth of field
+
+![](img/Lecture11_13.png)
+
+Changing the aperture size affects depth of field
+
+- A smaller aperture increases the range in which the object is approximately in focus
+
+[Flower images from Wikipedia <http://en.wikipedia.org/wiki/Depth_of_field>]{.small-font}
+
+##
+
+::: {.columns}
+::: {.column}
+[To avoid thinking about \
+image inversion]{.blue .small-font .absolute top=0 left=350}
+
+![](img/pinhole-camera.png)
+
+Point aperture $\rightarrow$ nearly every pixel in the 
+
+image is in focus
+:::
+
+::: {.column}
+:::
+::: 
+
+
+##
+
+::: {.columns}
+::: {.column}
+[To avoid thinking about \
+image inversion]{.blue .small-font .absolute top=0 left=350}
+
+![](img/pinhole-camera.png)
+
+Point aperture $\rightarrow$ nearly every pixel in the
+
+image is in focus $\rightarrow$ almost infinite depth of field
+:::
+
+::: {.column}
+![](img/Lecture11_16.png)
+
+Aperture of nonzero diameter $\rightarrow$ only pixels corresponding to objects on the focal plane are in focus $\rightarrow$ narrow depth of field
+:::
+::: 
+
+
+:::{.absolute right=0 top="10" .small-font}
+Some times called the \
+thin\-lens model
+:::
+
+## Shrinking the aperture
+
+![](img/Lecture11_17.png)
+
+Why not make the aperture as small as possible?
+
+- Less light gets through
+- *Diffraction* effects...
+
+## Projective Geometry
+
+Length (and so area) is lost.
+
+![](img/Lecture11_18.png)
+
+## 
+Length and area are not preserved
+
+![](img/Lecture11_19.png)
+
+## Projective Geometry
+
+Angles are lost.
+
+![](img/Lecture11_20.png)
+
+## Projective Geometry
+
+What is preserved?
+
+- Straight lines are still straight.
+
+![](img/Lecture11_21.png)
+
+## Chromatic aberration
+
+Failure of a lens to focus all colors to the same convergence point\.
+
+Due to difference wavelengths having different refractive indeces
+
+![](img/Lecture11_22.png)
+
+## Field of View (Zoom, focal length)
+
+![](img/field-of-view.png)
+
+
+## Camera parameters
+
+Focus - Shifts the depth that is in focus.
+
+Focal length - Adjusts the zoom, i.e., wide angle or telephoto lens.
+
+Aperture - Adjusts the depth of field and amount of light let into the
+sensor.
+
+Exposure time - How long an image is exposed. The longer an image is exposed the more light, but could result in motion blur.
+
+ISO - Adjusts the sensitivity of the "film". Basically a gain function for digital cameras. Increasing ISO also increases noise.
+
+
+## How do we project 3D points to pixels? What is the measurement model? {.center}
+
+
+## From 3D points to pixels: pinhole camera
+
+::: {.columns}
+::: {.column width="45%"}
+![](img/3dpoints-pixels-camera.png)
+:::
+
+::: {.column  width="55%"}
+\(1\)  Perspective projection $\begin{bmatrix} x \\ y \end{bmatrix} = \pi(X, Y, Z)$
+
+\(2\)  Conversion from metric to pixel coordinates
+
+$$\begin{align}
+& u = m_x x + c_x \\
+& v = m_y y + c_y\end{align}$$
+
+
+$m_x, m_y$ represent number of pixels per mm for the two axes
+:::
+::: 
+
+## [Perspective projection [x, y] = $\pi$(X, Y, Z)]{.medium-font}
+
+::: {.columns}
+::: {.column}
+![<http://www.cim.mcgill.ca/%7Elanger/558.html>](img/Lecture11_29.png)
+:::
+
+::: {.column}
+By similar triangles:   x/f = X/Z
+
+So\, x = f \* X/Z and similarly y = f \* Y/Z
+
+Problem: we just lost depth \(Z\) information by doing this projection\, i\.e\. depth is now uncertain\.
+:::
+:::
+
+## From 3D points to pixels: pinhole camera
+
+::: {.columns}
+::: {.column width="45%"}
+![](img/3dpoints-pixels-camera.png)
+:::
+
+::: {.column width="55%" .medium-font}
+\(1\)  Perspective projection $\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} fX/Z \\ fY/Z \end{bmatrix} = \pi(X, Y, Z)$
+
+\(2\)  Conversion from metric to pixel coordinates
+
+$$\begin{align}
+& u = m_x x + c_x \\
+& v = m_y y + c_y\end{align}$$
+
+
+$h_{\text{pinhole}}(X,Y,Z) = \begin{bmatrix} \frac{fm_x X}{Z} + c_x \\ \frac{fm_y Y}{Z} + c_y \end{bmatrix} + \text{noise in pixels}$
+
+:::
+::: 
+
+## From 3D points to pixels: pinhole camera
+
+::: {.columns}
+::: {.column width="45%"}
+![](img/3dpoints-pixels-camera.png)
+:::
+
+::: {.column width="55%" .medium-font}
+\(1\)  Perspective projection $\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} fX/Z \\ fY/Z \end{bmatrix} = \pi(X, Y, Z)$
+
+\(2\)  Conversion from metric to pixel coordinates
+
+$$\begin{align}
+& u = m_x x + c_x \\
+& v = m_y y + c_y\end{align}$$
+
+<br>
+
+
+Usually presented as $s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \begin{bmatrix} fm_x & 0 & c_x \\ 0 & fm_y & c_y \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}$
+
+:::
+::: 
+
+:::{.red .semi-tiny-font .absolute right=300 bottom=200}
+Unknown depth/scale \
+$\qquad\qquad$ ![](img/small-arrow.png){height="50"}
+:::
+
+
+[Camera calibration matrix]{.red .semi-tiny-font .absolute right=100 bottom=270}
+
+
+## From 3D points to pixels: thin lens camera
+
+::: {.columns}
+::: {.column}
+![](img/Lecture11_38.png)
+:::
+
+::: {.column .medium-font}
+
+\(1\)  Perspective projection $\begin{bmatrix} x \\ y \end{bmatrix} = \pi(X, Y, Z)$
+
+\(2\)  Lens distortion $$[x^*, y^*] = D(x,y)$$
+
+
+\(3\)  Conversion from metric to pixel coordinates 
+
+$$\begin{align}
+& u = m_x x^* + c_x \\
+& v = m_y y^* + c_y\end{align}$$
+:::
+:::
+
+## (2) Lens distortion [$x^*, y^*$] = D(x,y)
+
+:::{layout-ncol="2"}
+![](img/Lecture11_42.jpg)
+
+![](img/Lecture11_43.jpg)
+:::
+
+## (2) Estimating parameters of lens distortion: $[x^*, y^*]$ = D(x,y)
+
+:::{layout="[48, 4 ,48]"}
+![](img/Lecture11_44.jpg)
+
+![](img/orange-arrow.png){fig-align="left"}
+
+![](img/Lecture11_45.jpg)
+:::
+
+$$\begin{align*}
+x^* &= x \frac{1 + k_1 r^2 + k_2 r^4 + k_3 r^6}{1 + k_4 r^2 + k_5 r^4 + k_6 r^6} \quad \text{where} \quad r = x^2 + y^2 \\
+y^* &= y \frac{1 + k_1 r^2 + k_2 r^4 + k_3 r^6}{1 + k_4 r^2 + k_5 r^4 + k_6 r^6} \quad \text{where} \quad r = x^2 + y^2
+\end{align*}$$
+
+## Correcting radial distortion
+
+![](img/Lecture11_48.png)
+
+
+## From 3D points to pixels: thin lens camera
+
+::: {.columns}
+::: {.column .red .medium-font}
+![](img/Lecture11_38.png)
+
+<br>
+
+If we have access to camera calibration parameters
+we can undo the lens distortion, and treat the measurement
+model as in the pinhole camera $\rightarrow$ single-camera image rectification 
+:::
+
+::: {.column .medium-font}
+
+\(1\)  Perspective projection $\begin{bmatrix} x \\ y \end{bmatrix} = \pi(X, Y, Z)$
+
+\(2\)  Lens distortion $$[x^*, y^*] = D(x,y)$$
+
+
+\(3\)  Conversion from metric to pixel coordinates 
+
+$$\begin{align}
+& u = m_x x^* + c_x \\
+& v = m_y y^* + c_y\end{align}$$
+:::
+:::
+
+## What visual or physiological cues help us to perceive 3D shape and depth? {.center}
+
+## Focus/defocus
+
+::: {.columns}
+::: {.column width="70%"}
+![](img/Lecture11_54.png){height="550"}
+
+:::
+
+::: {.column width="30%"}
+
+<br>
+
+Images from same point of view, different camera parameters
+
+<br><br><br><br>
+
+3d shape / depth estimates
+
+<br><br><br>
+
+[[figs from H. Jin and P. Favaro, 2002]]{.semi-tiny-font}
+:::
+::: 
+
+
+
+## 
+![](img/Lecture11_55.jpg)
+
+## Perspective effects 
+![](img/Lecture11_56.png)
+
+[Image credit: S. Seitz]{.small-font}
+
+## Stereo
+
+![](img/Lecture11_57.png)
+
+[Slides: James Hays and Kristen Grauman]{.small-font}
+
+## Why multiple views?
+Structure and depth can be ambiguous from single views...
+
+![](img/Lecture11_58.png)
+
+[Images from Lana Lazebnik]{.small-font}
+
+##
+
+![](img/Lecture11_59.png)
+
+If stereo were critical for depth
+perception, navigation, recognition, etc., then rabbits would never have evolved.
+
+## Shape from shading
+
+![](img/Lecture11_60.png){fig-align="center"}
+
+[“Numerical schemes for advanced reflectance models for Shape from Shading”\, Vogel\, Cristiani]{.small-font}
+
+## Texture
+
+![](img/texture.png){fig-align="center"}
+
+[[From A.M. Loh. The recovery of 3-D structure using visual texture patterns. PhD thesis]]{.small-font}
+
+## Occlusion
+
+![](img/Lecture11_62.png){fig-align="center"}
+
+[Rene Magritt'e famous painting Le Blanc-Seing (literal translation: "The Blank Signature") roughly translates as "free hand" or "free rein".]{.small-font}
+
+## Human stereopsis
+
+![](img/human-stereopsis.png){fig-align="center"}
+
+Human eyes **fixate** on point in space - rotate so that corresponding images form in centers of fovea.
+
+
+## Structure from Motion
+
+![](img/Lecture11_64.jpg)
+
+[“SFMedu: A Structure from Motion System for Education”\, Jianxiong Xiao]{.small-font}
+
+## {.center}
+
+Many depth from X methods\. We are going to focus on \
+structure from motion and stereo $\rightarrow$ part of multiple\-view geometry
+
+##
+
+* **Visual SLAM**
+  * Localization and mapping with measurements usually coming from tracking image features:
+    * keypoints/corners
+    * edges
+    * image intensity patches
+  * Can use one or more cameras
+
+* **Visual Odometry**
+  * Real\-time localization with measurements usually coming from tracking image features:
+    * keypoints/corners
+    * edges
+    * image intensity patches
+  * Can use one or more cameras
+
+## Multi-view geometry problems
+
+::: {.columns}
+::: {.column width="15%" .semi-tiny-font}
+
+:::{.absolute left=20 top=65 .red}
+A.k.a. mapping ![](img/right-arrow-red.png){width="50"}
+:::
+
+<br><br><br><br><br>
+
+<span style="color:#ff0000">3D point coordinates</span>
+<span style="color:#ff0000">are unknown and to </span>
+<span style="color:#ff0000">be estimated</span>
+
+<br><br><br><br><br><br><br><br>
+
+<span style="color:#ff0000">Camera frame </span>
+<span style="color:#ff0000">transformations</span>
+<span style="color:#ff0000">are known</span>
+
+:::
+
+::: {.column width="85%"}
+- **Structure**: Given projections of the same 3D point in two or more images, compute the 3D coordinates of that point
+
+![](img/Lecture11_65.png)
+:::
+::: 
+
+
+
+## Multi-view geometry problems
+
+::: {.columns}
+::: {.column width="15%" .semi-tiny-font}
+
+
+<br><br><br><br><br>
+
+<span style="color:#ff0000">3D point coordinates </span>
+<span style="color:#ff0000">are unknown\, but we </span>
+<span style="color:#ff0000">won’t try to estimate them</span>
+
+<br><br><br><br><br><br><br><br>
+
+
+<span style="color:#ff0000">Camera frame </span>
+<span style="color:#ff0000">transformations</span>
+<span style="color:#ff0000">are unknown and to </span>
+<span style="color:#ff0000">be estimated</span>
+
+:::
+
+::: {.column width="85%"}
+- **Motion**: Given a set of corresponding points in two or more images, compute the camera parameters
+
+![](img/Lecture11_66.png)
+:::
+::: 
+
+
+
+
+## Multi-view geometry problems
+
+::: {.columns}
+::: {.column width="15%" .semi-tiny-font}
+
+
+<br><br><br><br><br>
+
+<span style="color:#ff0000">3D point coordinates </span>
+<span style="color:#ff0000">are unknown\, but we </span>
+<span style="color:#ff0000">won’t try to estimate them</span>
+
+<br><br><br><br><br><br><br><br>
+
+
+<span style="color:#ff0000">Camera frame </span>
+<span style="color:#ff0000">transformations</span>
+<span style="color:#ff0000">are unknown\, but we</span>
+<span style="color:#ff0000">won’t try to estimate them </span>
+
+:::
+
+::: {.column width="85%"}
+- **Optical flow**: Given two images, find the location of a world point in a second close-by image with no camera info.
+
+![](img/Lecture11_67.png)
+:::
+::: 
+
+:::{.absolute .semi-tiny-font right=100 bottom=200}
+<span style="color:#ff0000">We are estimating pixel displacement</span> \
+<span style="color:#ff0000">from one image to the next</span>
+
+:::
+
+
+## Multi-view geometry problems
+
+- **Stereo correspondence**: Given a point in one of the images, where could its corresponding points be in the other images?
+
+![](img/Lecture11_68.png)
+
+## {.center}
+
+Basic underlying component in many of these problems:
+
+keypoint detection and
+
+matching across images
+
+## Local features: main components
+
+::: {.columns}
+::: {.column}
+1\) Detection:
+
+Find a set of distinctive key points.
+
+<br>
+
+2\) Description:
+
+Extract feature descriptor around each interest point as vector.
+
+![](img/local-component-descrip.png)
+
+
+3\) Matching:
+
+Compute distance between feature vectors to find correspondence.
+$$d(x_1, x_2) < T$$
+
+:::
+
+::: {.column}
+![](img/Lecture11_69.png){height="550"}
+:::
+::: 
+
+
+## Local features: main components
+
+::: {.columns}
+
+::: {.column width="10%" .tiny-font .red}
+
+:::{.absolute left=-80 top=250}
+Ideally\, we want the descriptor  \
+to be invariant \(i\.e\. little to \
+no change\) when there are \
+
+\- viewpoint changes \
+\(small rotation or translation \
+of the camera\) 
+
+\- scale\-changes 
+
+\- illumination changes 
+
+:::
+
+:::
+
+::: {.column width="45%"}
+1\) Detection:
+
+Find a set of distinctive key points.
+
+<br>
+
+2\) Description:
+
+Extract feature descriptor around each interest point as vector.
+
+![](img/local-component-descrip.png)
+
+
+3\) Matching:
+
+Compute distance between feature vectors to find correspondence.
+$$d(x_1, x_2) < T$$
+
+:::
+
+::: {.column width="45%"}
+![](img/Lecture11_69.png){height="550"}
+:::
+::: 
+
+## Local measures of uniqueness
+
+Suppose we only consider a small window of pixels
+
+- What defines whether a feature is a good or bad candidate?
+
+![](img/Lecture11_71.png)
+
+[Slide adapted from Darya Frolova, Denis Simakov, Weizmann Institute.]{.small-font}
+
+## Feature detection
+Local measure of feature uniqueness
+
+- How does the window change when you shift by a small amount?
+
+![](img/Lecture11_72.png)
+
+:::{layout-ncol="3"}
+["flat"]{.blue} region: \
+no change in all directions
+
+["edge":]{.blue} \
+no change along the edge direction
+
+["corner":]{.blue} \
+significant change in all directions
+:::
+
+
+[Slide adapted from Darya Frolova, Denis Simakov, Weizmann Institute.]{.small-font}
+
+
+
+## Corner detectors
+
+- Harris
+
+- FAST
+
+- Laplacian of Gaussian detector
+
+- SUSAN
+
+- Forstner
+
+## Superimposed Harris keypoints
+![](img/Lecture11_73.png)
+
+[500 strongest \
+keypoints]{.absolute right=0 top=200 .medium-font}
+
+
+## Scale-space representation
+
+![](img/Lecture11_74.png){fig-align="center"}
+
+:::{.small-font .red .absolute bottom="50" left=0}
+Feature detection:
+
+search for “corners”/keypoints \
+across many scales, and return \
+a list of (x, y, scale) keypoints
+
+:::
+
+## Characteristics of good features
+
+![](img/Lecture11_75.png){fig-align="center"}
+
+:::{.medium-font}
+- Repeatability
+    - The same feature can be found in several images despite geometric and photometric transformations
+- Saliency
+    - Each feature is distinctive
+- Compactness and efficiency
+    - Many fewer features than image pixels
+- Locality
+    - A feature occupies a relatively small area of the image; robust to clutter and occlusion
+
+:::
+
+[Kristen Grauman]{.tiny-font .absolute bottom=0 left=0}
+
+## SIFT descriptor formation
+- Compute on local 16 x 16 window around detection.
+- Rotate and scale window according to discovered orientation $\theta$ and scale $\sigma$ (gain invariance).
+- Compute gradients weighted by a Gaussian of variance half the window (for smooth falloff).
+
+![](img/Lecture11_76.png)
+
+$\qquad\qquad\qquad\qquad\qquad$[Actually 16x16, only showing 8x8]{.small-font}
+
+## SIFT vector formation
+- 4x4 array of gradient orientation histograms weighted by gradient magnitude.
+- Bin into 8 orientations x 4x4 array = 128 dimensions.
+
+![](img/Lecture11_77.png)
+
+## Reduce effect of illumination
+- 128-dim vector normalized to 1
+- Threshold gradient magnitudes to avoid excessive influence of high gradients
+    - After normalization, clamp gradients > 0.2
+    - Renormalize
+
+![](img/Lecture11_78.png)
+
+## Local Descriptors: SURF
+
+::: {.columns}
+::: {.column width="45%"}
+![](img/Lecture11_79.png)
+
+<br><br><br>
+
+[Bay, ECCV'06], [Cornelis, CVGPU'08]
+:::
+
+::: {.column width="55%"}
+**Fast approximation of SIFT idea**
+
+Efficient computation by 2D box filters & integral images
+
+→ 6 times faster than SIFT
+
+Equivalent quality for object identification
+
+<br><br>
+
+**GPU implementation available**
+
+Feature extraction @ 200Hz \
+(detector + descriptor, 640x480 img)
+
+<http://www.vision.ee.ethz.ch/~surf>
+
+:::
+::: 
+
+:::{.right-align}
+[K. Grauman, B. Leibe]{.small-font}
+:::
+
+
+## Many other local descriptors
+
+- ORB
+
+- BRIEF
+
+- FREAK
+
+- RootSIFT\-PCA
+
+## Feature matching
+
+![](img/Lecture11_80.png)
+
+
+## Overview of Keypoint Matching
+
+::: {.columns}
+::: {.column width="70%"}
+![](img/Lecture11_81.png)
+:::
+
+::: {.column width="30%"}
+1. Find a set of distinctive key-points
+2. Define a region around each keypoint
+3. Extract and normalize the region content
+4. Compute a local descriptor from the normalized region
+5. Match local descriptors
+:::
+::: 
+
+
+## Problem \#1: landmark triangulation {.center}
+
+
+## Multi-view geometry problems
+
+::: {.columns}
+::: {.column width="15%" .small-font}
+
+:::{.absolute left=-15 top=55 .red}
+A.k.a. mapping ![](img/right-arrow-red.png){width="50"}
+:::
+
+<br><br><br>
+
+<span style="color:#ff0000">3D point coordinates</span>
+<span style="color:#ff0000">are unknown and to </span>
+<span style="color:#ff0000">be estimated</span>
+
+<br><br><br><br><br><br><br><br>
+
+<span style="color:#ff0000">Camera frame </span>
+<span style="color:#ff0000">transformations</span>
+<span style="color:#ff0000">are known</span>
+
+:::
+
+::: {.column width="85%"}
+- **Structure**: Given projections of the same 3D point in two or more images, compute the 3D coordinates of that point
+
+![](img/Lecture11_65.png)
+:::
+::: 
+
+## Stereo
+
+**Epipolar geometry**
+
+- Case with two cameras with parallel optical axes [$\qquad \leftarrow$ First this]{.red} 
+- General case
+
+![](img/Lecture11_83.png)
+
+## Stereo: Parallel Calibrated Cameras
+
+- We assume that the two calibrated cameras (we know intrinsics and extrinsics) are parallel, i.e. the right camera is just some distance to the right of left camera. We assume we know this distance. We call it the **baseline**. 
+
+![](img/Lecture11_84.png)
+
+:::{.absolute right=300 bottom=40 .small-font}
+The right camera \
+is shifted to the \
+right in X direction
+:::
+
+## Stereo: Parallel Calibrated Cameras
+
+- Points $\mathbf{O_l, O_r}$ and **P** (and $\mathbf{p_l}$ and $\mathbf{p_r}$) lie on a plane. Since two image planes lie on the same plane (distance f from each camera), the lines $\mathbf{O_l O_r}$, and $\mathbf{p_l p_r}$, are parallel.
+
+![](img/Lecture11_85.png)
+
+
+## Stereo: Parallel Calibrated Cameras
+
+- Since lines $\mathbf{O_l O_r}$ and $\mathbf{p_l p_r}$, are parallel, and $\mathbf{O_l}$ and $\mathbf{O_r}$ have the same y, then
+also $\mathbf{p_l}$ and $\mathbf{p_r}$ have the same $y: y_r = y_i$!
+
+![](img/Lecture11_86.png)
+
+## Stereo: Parallel Calibrated Cameras
+
+- Another observation: No point from $\mathbf{O_l p_l}$, can project to the right of $x_l$, in the right image. **Why?**
+
+![](img/Lecture11_87.png)
+
+## Stereo: Parallel Calibrated Cameras
+
+- Because that would mean our image can see behind the camera...
+
+![](img/Lecture11_88.png)
+
+
+## Stereo: Parallel Calibrated Cameras
+
+- We can then use similar triangles to compute the depth of the point P
+
+![](img/Lecture11_89.png){height="550" .absolute bottom=20}
+
+
+:::{.red .semi-tiny-font .absolute bottom="80" right=-10 .right-align} 
+![](img/black-arrow.png){width=100} 
+In metric, not in pixel \
+coordinates. To convert \
+to pixel coordinates need \
+to use elements of the camera \
+calibration matrix.
+:::
+
+## {.center}
+
+Conclusion: if you have a well-calibrated and rectified (parallel) stereo camera you do not need to do least squares triangulation.
+
+You can estimate depth via the disparity map.
+
+## Stereo: Parallel Calibrated Cameras
+
+- For each point $p_l = (x_l, y_l)$, how do I get $p_r = (x_r, y_r)$? By matching. Patch around $(x_r, y_r)$ should look similar to the patch around $(x_l, y_l)$.
+
+![](img/Lecture11_90.png)
+
+
+Do this for all the points in the left image!
+
+## Stereo: Parallel Calibrated Cameras
+- We get a disparity map as a result
+
+![](img/Lecture11_91.png)
+
+Result: **Disparity map**
+(red values large disp., blue small disp.)
+
+## Stereo: Parallel Calibrated Cameras
+
+- Smaller patches: more detail, but noisy. Bigger: less detail, but smooth
+
+
+![](img/Lecture11_92.png)
+
+
+::: {.absolute right="250" bottom="100"}
+<br>
+
+patch size = 5
+
+<br><br><br>
+
+patch size = 35
+
+<br><br>
+
+patch size = 85
+:::
+
+
+## You Can Do It Much Better...
+
+[[K. Yamaguchi, D. McAllester and R. Urtasun, ECCV 2014]]{.small-font}
+
+![](img/Lecture11_93.png)
+
+
+## Multi-view geometry problems
+
+::: {.columns}
+::: {.column width="15%" .semi-tiny-font .red}
+
+<br><br><br><br>
+
+3 x 7 = 21 variables to be estimated
+
+<br><br><br><br><br><br><br><br>
+
+7 pixel observations in 
+each camera, so 21 pixel
+observations across all 
+cameras
+
+$\rightarrow$ 42 constraints in total
+
+
+:::
+
+::: {.column width="85%"}
+- **Structure**: Given projections of the same 3D point in two or more images, compute the 3D coordinates of that point
+
+![](img/Lecture11_65.png)
+:::
+::: 
+
+
+## Triangulation as a least squares problem
+
+$$^wX^*, ^wY^*, ^wZ^* = \underset{^wp=[^wX, ^wY, ^wZ]}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w p + ^kt_{kw}\right)\right]\right\|^2$$
+
+:::{.red .small-font .absolute bottom="250" right="430"}
+$\qquad\qquad\qquad\quad$ ![](img/red-uparrow1.png){height=120} \
+Actual pixel observation of a \
+keypoint by camera frame $\color{black}k$
+:::
+
+:::{.red .small-font .absolute bottom="220" right="150"}
+![](img/red-arrow2.png){height=150} \
+Expected pixel observation of \
+3D point $\color{black}^wp$ by camera frame $\color{black}k$
+:::
+
+:::{.absolute bottom=0 right=0}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Triangulation as a least squares problem
+
+$$^wX^*, ^wY^*, ^wZ^* = \underset{^wp=[^wX, ^wY, ^wZ]}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w \color{red}\boxed{\color{black}p} \color{black}+ ^kt_{kw}\right)\right]\right\|^2$$
+
+:::{.red .small-font .absolute bottom="250" left="70"}
+Enumerate all cameras that ![](img/left-arrow2.png){height=120} \
+observed the keypoint.
+:::
+
+:::{.red .small-font .absolute bottom="330" right="-100" .right-align}
+![](img/right-arrow3.png){width=150} The only term to be \
+optimized. The rest are known.  
+:::
+
+:::{.absolute bottom=0 right=0}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Triangulation as a least squares problem
+
+$$^wX^*, ^wY^*, ^wZ^* = \underset{^wp=[^wX, ^wY, ^wZ]}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(\color{red}\boxed{\color{black}_{w}^kR^w p + ^kt_{kw}}\color{black}\right)\right]\right\|^2$$
+
+:::{.red .small-font .absolute bottom="300" right="100"}
+$\qquad\qquad \Big\uparrow$ \
+3D point expressed in the frame \
+of camera k 
+
+$\color{black}^{k}p = {}^{k}_{w}R^{w}p + {}^{k}t_{kw}$
+:::
+
+
+:::{.absolute bottom=0 right=0}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Triangulation as a least squares problem
+
+$$^wX^*, ^wY^*, ^wZ^* = \underset{^wp=[^wX, ^wY, ^wZ]}{\operatorname{argmin}} \sum_{k=1}^{K} \color{red}\boxed{\color{black} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w p + ^kt_{kw}\right)\right]\right\|^2 }$$
+
+:::{.red .small-font .absolute bottom="300" right="100"}
+$\qquad\qquad \Big\uparrow$ \
+Reprojection error of point \
+$\color{black}^{k}p = {}^{k}_{w}R^{w}p + {}^{k}t_{kw}$ 
+
+into camera k’s frame
+:::
+
+
+:::{.absolute bottom=0 right=0}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Triangulation as a least squares problem
+
+$\begin{align}
+{}^w X^*, {}^w Y^*, {}^w Z^* &= \underset{{}^w p = [{}^w X, {}^w Y, {}^w Z]}{\text{argmin}} \sum_{k=1}^{K} \|\bar{z}^{(k)} - \mathbb{E}[h_{\text{pinhole}}({}^k_w R {}^w p + {}^k t_{kw})] \|^2 \\
+&= \underset{{}^w p = [{}^w X, {}^w Y, {}^w Z]}{\text{argmin}} \sum_{k=1, {}^w p \to {}^k p}^{K} \|\bar{z}^{(k)} - \mathbb{E}[h_{\text{pinhole}}({}^k p)] \|^2 \\
+\end{align}$
+
+:::{.absolute bottom=0 right=0}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Triangulation as a least squares problem
+
+$\begin{align}
+{}^w X^*, {}^w Y^*, {}^w Z^* &= \underset{{}^w p = [{}^w X, {}^w Y, {}^w Z]}{\text{argmin}} \sum_{k=1}^{K} \|\bar{z}^{(k)} - \mathbb{E}[h_{\text{pinhole}}({}^k_w R {}^w p + {}^k t_{kw})] \|^2 \\
+&= \underset{{}^w p = [{}^w X, {}^w Y, {}^w Z]}{\text{argmin}} \sum_{k=1, {}^w p \to {}^k p}^{K} \|\bar{z}^{(k)} - \mathbb{E}[h_{\text{pinhole}}({}^k p)] \|^2 \\
+&= \underset{{}^w p = [{}^w X, {}^w Y, {}^w Z]}{\text{argmin}} \sum_{k=1, {}^w p \to {}^k p}^{K} \left\| \begin{bmatrix} \bar{u}^{(k)} \\ \bar{v}^{(k)} \end{bmatrix} - \begin{bmatrix} \frac{f m_x {}^k X}{{}^k Z} + c_x \\ \frac{f m_y {}^k Y}{{}^k Z} + c_y \end{bmatrix} \right\|^2
+\end{align}$
+
+:::{.absolute bottom=0 right=0}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+. . .
+
+:::{.red .semi-tiny-font .absolute left="-50" bottom=100}
+Note: unconstrained optimization \
+does not guarantee that the solution \
+will be in the camera’s field of view. \
+For example, it could happen that \
+it returns $\color{black}^kZ < 0$ which is an invalid \
+solution (i.e. behind the camera) 
+:::
+
+
+## Potential pitfalls with triangulation:near parallel rays
+
+:::{layout="[15, 85]"}
+[<span style="color:#ff0000">“point at infinity”</span>]{.small-font}
+
+![](img/Lecture11_115.png)
+:::
+
+Intersection point is too far away\, dominated by noise and insufficient image resolution\.
+
+Triangulating these points is typically impossible without sufficient baseline between camera frames\.
+
+## Problem #2: camera localization/visual odometry {.center}
+
+## Multi-view geometry problems
+
+::: {.columns}
+::: {.column width="15%" .small-font}
+
+
+<br><br><br>
+
+<span style="color:#ff0000">3D point coordinates </span>
+<span style="color:#ff0000">are unknown\, but we </span>
+<span style="color:#ff0000">won’t try to estimate them</span>
+
+<br><br><br><br><br><br><br><br>
+
+
+<span style="color:#ff0000">Camera frame </span>
+<span style="color:#ff0000">transformations</span>
+<span style="color:#ff0000">are unknown and to </span>
+<span style="color:#ff0000">be estimated</span>
+
+:::
+
+::: {.column width="85%"}
+- **Motion**: Given a set of corresponding points in two or more images, compute the camera parameters
+
+![](img/Lecture11_66.png)
+:::
+::: 
+
+
+
+## Camera localization as a least squares problem?
+
+$$_{w}^{k}R^{*}, {}^{k}t^{*}_{kw} = \underset{_{w}^{k}R, ^{k}t_{kw}}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(\color{red}\boxed{\color{black}_{w}^kR}\color{black}^w p + \color{red}\boxed{\color{black}^kt_{kw}}\color{black}\right)\right]\right\|^2$$
+
+![](img/3arrows.png){width="250" .absolute top="220" right=60}
+
+:::{.red .semi-tiny-font .absolute top="400" right=170}
+But, 3D position is unknown!
+
+So, we cannot solve the problem \
+using the reprojection error \
+unless we know the 3D position \
+corresponding to the keypoint.
+:::
+
+:::{.red .semi-tiny-font .absolute top="300" right=-70}
+The only terms to be \
+optimized. 
+:::
+
+:::{.absolute bottom=0 right=0}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Working Principle
+
+![](img/Lecture11_119.png){fig-align="center"}
+
+:::{.absolute .semi-tiny-font bottom=40% left=0}
+<span style="color:#ff0000">Let’s restrict the discussion</span> \
+<span style="color:#ff0000">to two cameras only</span>
+
+:::
+
+## Key idea: Epipolar constraint
+![](img/Lecture11_120.png)
+
+:::{layout="[47, -6, 47]"}
+Potential matches for x' have to lie on the corresponding line *l*.
+
+Potential matches for x have to lie on the corresponding line *l'*.
+:::
+
+## Epipolar geometry: notation
+![](img/Lecture11_121.png)
+
+- <span style="color: #e91e63;">**Baseline** – line connecting the two camera centers</span>
+
+- <span style="color: #4caf50;">**Epipoles**  \
+= intersections of baseline with image planes  \
+= projections of the other camera center </span>
+
+- <span style="color: #9c27b0;">**Epipolar Plane** – plane containing baseline (1D family) </span>
+
+- <span style="color: #910019;">**Epipolar Lines** - intersections of epipolar plane with image planes (always come in corresponding pairs) </span>
+
+## Epipolar constraint: Calibrated case
+
+![](img/Lecture11_122.png)
+
+$\hat{x} \cdot [t \times (R\hat{x}')] = 0$
+
+(because $\hat{x}$, $R\hat{x}'$, and $t$ are co-planar)
+
+## Essential matrix
+
+![](img/Lecture11_123.png){fig-align="center"}
+
+::: {.columns .medium-font}
+
+::: {.column width=5%}
+:::
+
+::: {.column width=45%}
+E is a 3x3 matrix which relates corresponding pairs of normalized homogeneous image points across pairs of images - for K calibrated cameras.
+
+*Estimates relative position/orientation.*
+:::
+
+::: {.column width=45% .center-align}
+
+**Essential Matrix** \
+(Longuet-Higgins, 1981)
+
+[Note: $[t]_x$ is matrix representation of cross product]{.grey .small-font}
+:::
+
+::: {.column width=5%}
+:::
+::: 
+
+:::{.red .semi-tiny-font .absolute bottom=40% left=-50}
+“5-point algorithm” by \
+David Nister computes \
+essential matrix and then \
+decomposes it into rotation \
+and translation.
+:::
+
+:::{.red .semi-tiny-font .absolute bottom=40% right=-50}
+After estimating the \
+essential matrix, we \
+extract t, R.
+
+However, the \
+translation t, is only \
+estimated up to a \
+multiplicative scale.
+
+$\rightarrow$ Translation is not \
+fully observable with a \
+single camera.
+
+$\rightarrow$ To make it observable \
+we need stereo 
+
+:::
+
+
+:::{.absolute bottom="50" right="-50" .semi-tiny-font}
+$[t]_{\times}=\begin{bmatrix}0&-t_{2}&t_{1}\\ t_{2}&0&-t_{0}\\ -t_{1}&t_{0}&0\end{bmatrix}$
+:::
+
+
+## [Visual odometry with a single camera: translation is recovered only up to a scale]{.medium-font}
+
+- Scale = multiplier between real\-world metric distance units and estimated map distance units
+
+:::{layout="[40, 60]" .red .small-font}
+
+<br><br><br> Camera placements (1) and (2) generate 
+the same observation of P. In fact, infinitely 
+many possible placements of the two 
+camera frames along their projection rays
+could have generated the same measurement.   
+
+![](img/visual-odometry.png)
+:::
+
+## [Visual odometry with a single camera: translation is recovered only up to a scale]{.medium-font}
+
+- Scale = multiplier between real\-world metric distance units and estimated map distance units
+
+
+::: {.columns}
+::: {.column width="40%" .red .small-font}
+
+<br>
+
+Q: Is there a way to obtain true metric distances
+only with a single camera?
+
+A: The only way is to have an object of known 
+metric dimensions in the observed scene. For 
+example if you know distances AB, BC, CA then
+you can recover true translation. This is commonly
+referred to as the Perspective-3-Point (P3P), or in 
+General, the Perspective-n-Point (PnP) problem.  
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="50%"}
+![](img/Lecture11_126.png)
+:::
+::: 
+
+## [Visual odometry with a single camera: translation is recovered only up to a scale]{.medium-font}
+
+- Scale = multiplier between real\-world metric distance units and estimated map distance units
+
+
+::: {.columns}
+::: {.column width="40%" .red .small-font}
+
+<br>
+
+Q: Does scale remain constant throughout the trajectory
+of a single camera?
+
+A: No, there is **scale drift**, which is most apparent 
+during in-place rotations (i.e. pure rotation, no translation),
+because depth estimation for 3D points is unconstrained,
+so it is easily misestimated. 
+
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="50%"}
+![](img/camera-visual-odometry.png)
+:::
+::: 
+
+
+## 2D-to-2D Algorithm
+
+![](img/Lecture11_127.png)
+
+<!-- How do we compute the relative scale between $I_{k-2}, I_{k-1}$, and $I_k$ ? -->
+
+## VO Drift
+
+::: {.columns}
+::: {.column}
+- The errors introduced by each new frame-to-frame motion accumulate over time
+
+- This generates a drift of the estimated trajectory from the real path
+:::
+
+::: {.column .medium-font}
+![](img/Lecture11_128.png)
+
+The uncertainty of the camera pose at $C_k$ is a combination of the uncertainty at $C_{k-1}$ (black solid ellipse) and the uncertainty
+of the transformation $T_{k,k-1}$ (gray dashed ellipse)
+:::
+:::
+
+
+
+[Copyright of Davide Scaramuzza - davide.scaramuzza@ieee.org - https://sites.google.com/site/scarabotix/]{.tiny-font .absolute bottom=0}
+
+
+## Influence of Outliers on Motion Estimation
+
+::: {.columns}
+::: {.column}
+![](img/Lecture11_129.png)
+:::
+
+::: {.column}
+* Error at the loop closure: 6.5 m
+* Error in orientation: 5 deg
+* Trajectory length: 400 m
+:::
+:::
+
+
+## Are points-at-infinity useful for localization?
+
+::: {.columns}
+::: {.column width="15%"}
+:::
+
+::: {.column width="85%"}
+![](img/Lecture11_130.png)
+
+For estimating translation\, most likely no\. For estimating rotation\, yes\.
+
+Look up “Inverse Depth Parameterization for Monocular SLAM” for more info\.
+:::
+:::
+
+
+
+:::{.absolute bottom=250 left=-50 .semi-tiny-font}
+<span style="color:#ff0000">Points\-at\-infinity</span> \
+<span style="color:#ff0000">can help estimate</span> \
+<span style="color:#ff0000">the camera’s rotation\,</span> \
+<span style="color:#ff0000">similarly to how we use stars</span> \
+<span style="color:#ff0000">for navigation\, without </span> \
+<span style="color:#ff0000">estimating how far they are\.</span>
+
+:::
+
+## Problem #3: Visual SLAM {.center}
+
+## Structure from Motion
+
+How can we estimate both 3D point positions and the relative camera transformations?
+
+::: {.columns}
+::: {.column width="15%" .semi-tiny-font}
+
+
+<br><br><br>
+
+<span style="color:#ff0000">Sometimes also</span>
+<span style="color:#ff0000">called bundle </span>
+<span style="color:#ff0000">adjustment</span>
+
+<br><br><br>
+
+
+<span style="color:#ff0000">Q: Why is it different than</span>
+<span style="color:#ff0000">SLAM?</span>
+
+:::
+
+::: {.column width="85%"}
+![](img/structure-from-motion.png)
+:::
+:::
+
+
+## Structure from Motion
+
+How can we estimate both 3D point positions and the relative camera transformations?
+
+::: {.columns}
+::: {.column width="15%" .semi-tiny-font .red}
+
+
+<br><br><br>
+
+<span style="color:#ff0000">Sometimes also</span>
+<span style="color:#ff0000">called bundle </span>
+<span style="color:#ff0000">adjustment</span>
+
+<br><br><br>
+
+
+<span style="color:#ff0000">Q: Why is it different than</span>
+<span style="color:#ff0000">SLAM?</span>
+
+<br>
+
+A: SLAM potentially 
+includes 
+
+-   loop closure
+-   dynamics constraints
+-   velocities, accelerations
+
+:::
+
+::: {.column width="85%"}
+![](img/structure-from-motion.png)
+:::
+:::
+
+
+## Loop Closure in Visual SLAM
+
+:::{layout-ncol="2"}
+![](img/Lecture11_139.jpg)
+
+![](img/Lecture11_140.jpg)
+:::
+
+[ORB\-SLAM\, Mur\-Artal\, Tardos\, Montiel\, Galvez\-Lopez]{.small-font}
+
+## 
+Bundler \(bundle adjustment/structure from motion\)
+
+![](img/Lecture11_141.png)
+
+## Structure from Motion as Least Squares
+
+:::{.medium-font}
+$$\color{green}\boxed{\color{black}_w^k R^*, ^kt_{kw}^{*}}, \color{green}\boxed{\color{black}^wX^*, ^wY^*, ^wZ^*} \color{black} = \underset{^wp=[^wX, ^wY, ^wZ], _w^k R, ^kt_{kw}\quad}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w p + ^kt_{kw}\right)\right]\right\|^2$$
+:::
+
+:::{.red .semi-tiny-font .right-align .absolute bottom="293" right="210"}
+![](img/double-red-arrow.png){height=150} \
+Indicates the frame of the k-th camera.
+:::
+
+
+:::{.absolute bottom=0 right=0 .medium-font}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Structure from Motion as Least Squares
+
+:::{.medium-font}
+$$\color{black}_w^k R^*, ^kt_{kw}^{*}, \color{black}^wX^*, ^wY^*, ^wZ^* \color{black} = \underset{^wp=[^wX, ^wY, ^wZ], _w^k R, ^kt_{kw}\quad}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\color{blue}\boxed{\color{black}\bar{z}^{(k)}} \color{black}- \color{red}\boxed{\color{black}\mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w p + ^kt_{kw}\right)\right]}\color{black}\right\|^2$$
+:::
+
+:::{.absolute bottom="300" right="260"}
+![](img/red-blue-arrows.png){height=150} 
+:::
+
+:::{.red .semi-tiny-font .absolute bottom="330" right="200"}
+Expected pixel projection of \
+3D point $\color{black}^wp$ onto camera k
+:::
+
+:::{.blue .semi-tiny-font .absolute bottom="270" right="400"}
+Actual pixel measurement of \
+3D point $\color{black}^wp$ from camera k 
+:::
+
+:::{.absolute bottom=0 right=0 .medium-font}
+$h_{\text{pinhole}}(X, Y, Z) = \begin{bmatrix} \frac{f m_x X}{Z} + c_x \\ \frac{f m_y Y}{Z} + c_y \end{bmatrix} + n, \quad n \sim \mathcal{N}(0, R) \quad \text{noise (in pixels)}$
+:::
+
+## Structure from Motion as Least Squares
+
+:::{.medium-font}
+$$\color{black}_w^k R^*, ^kt_{kw}^{*}, \color{black}^wX^*, ^wY^*, ^wZ^* \color{black} = \underset{^wp=[^wX, ^wY, ^wZ], _w^k R, ^kt_{kw}\quad}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w p + ^kt_{kw}\right)\right]\right\|^2$$
+:::
+
+![](img/boxes-arrows.png){.absolute width="220" top=180 left="105"}
+
+:::{.red-annotation }
+
+<br><br>
+
+Q: Is the scale of these two estimates accurate/unambiguous \
+when measurements are done from a monocular (single) \
+camera in motion? I.e. is it observable?
+
+Note: **scale** = relationship between real-world metric distances \
+and estimated map distances. I.e. relationship between distance \
+units.  
+:::
+
+## Structure from Motion as Least Squares
+
+:::{.medium-font}
+$$\color{black}_w^k R^*, ^kt_{kw}^{*}, \color{black}^wX^*, ^wY^*, ^wZ^* \color{black} = \underset{^wp=[^wX, ^wY, ^wZ], _w^k R, ^kt_{kw}\quad}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w p + ^kt_{kw}\right)\right]\right\|^2$$
+:::
+
+![](img/boxes-arrows.png){.absolute width="220" top=180 left="105"}
+
+:::{.red-annotation }
+
+<br><br>
+
+Q: Is the scale of these two estimates accurate/unambiguous \
+when measurements are done from a monocular (single) \
+camera in motion? I.e. is it observable?
+
+A: No, regardless of how many common keypoints are \
+matched in between camera frames. Without external \
+reference distance, e.g. stereo baseline, or real size of \
+observed object, the scale is ambiguous and unobservable, \
+just as it was in Visual Odometry.  
+:::
+
+
+## Structure from Motion as Least Squares
+
+:::{.medium-font}
+$$\color{black}_w^k R^*, ^kt_{kw}^{*}, \color{black}^wX^*, ^wY^*, ^wZ^* \color{black} = \underset{^wp=[^wX, ^wY, ^wZ], _w^k R, ^kt_{kw}\quad}{\operatorname{argmin}} \sum_{k=1}^{K} \left\|\bar{z}^{(k)} - \mathbb{E}\left[h_\text{pinhole}\left(_{w}^kR^w p + ^kt_{kw}\right)\right]\right\|^2$$
+:::
+
+![](img/boxes-arrows.png){.absolute width="220" top=180 left="105"}
+
+:::{.red-annotation }
+
+<br><br>
+
+Q: Is the scale of these two estimates constant during the entire experiment, \
+if we use a monocular camera?
+
+:::{.fragment}
+A: No. During in-place rotations there is not enough baseline between \
+camera frames to triangulate new points. So, error in structure and in motion \
+accumulates $\rightarrow$ **scale drift** 
+
+Similarly to visual odometry with a single camera. 
+:::
+
+:::
+
+
+## Problem #4: optical flow {.center}
+
+## Multi-view geometry problems
+- Optical flow: Given two images, find the location of a world point in a second close-by image with no camera info.
+
+::: {.columns}
+::: {.column width="15%" .semi-tiny-font .red}
+
+<br><br>
+
+<span style="color:#ff0000">3D point coordinates </span>
+<span style="color:#ff0000">are unknown\, but we </span>
+<span style="color:#ff0000">won’t try to estimate them</span>
+
+<br><br><br><br><br>
+
+<span style="color:#ff0000">Camera frame </span>
+<span style="color:#ff0000">transformations</span>
+<span style="color:#ff0000">are unknown\, but we</span>
+<span style="color:#ff0000">won’t try to estimate them </span>
+
+
+:::
+
+::: {.column width="45%"}
+![](img/Lecture11_152.png)
+:::
+
+::: {.column width="40%" .semi-tiny-font}
+
+<br><br><br>
+
+<span style="color:#ff0000">We are estimating pixel displacement</span>
+<span style="color:#ff0000">from one image to the next</span>
+
+![](img/Lecture11_153.png)
+
+<http://tcr.amegroups.com/article/viewFile/3200>
+
+:::
+:::
+
+
+
+## Video
+- A video is a sequence of frames captured over time
+- Now our image data is a function of space (x, y) and time (t)
+
+![](img/Lecture11_154.png)
+
+## Motion estimation: Optical flow
+
+*Optic flow* is the **apparent** motion of objects or surfaces
+
+![](img/Lecture11_155.png)
+
+Will start by estimating motion of each pixel separately
+
+Then will consider motion of entire image
+
+
+## [Motion Applications: Segmentation of video]{.medium-font}
+
+* Background subtraction
+  * A static camera is observing a scene
+  * Goal: separate the static  _background_  from the moving   _foreground_
+
+:::{layout-ncol="2"}
+![](img/Lecture11_156.png)
+
+![](img/Lecture11_157.png)
+:::
+
+## [Motion Applications: Segmentation of video]{.medium-font}
+* Shot boundary detection in edited video
+  * Edited video is usually composed of  _shots_  or sequences showing the same objects or scene
+  * Goal: segment video into shots for summarization and browsing \(each shot can be represented by a single keyframe in a user interface\)
+  * Difference from background subtraction: the camera is not necessarily stationary
+
+
+![](img/Lecture11_158.png)
+
+
+## [Motion Applications: Segmentation of video]{.medium-font}
+* Background subtraction
+* Shot boundary detection
+* Motion segmentation
+  * Segment the video into multiple coherently moving objects
+
+
+![](img/Lecture11_159.png){fig-align="right"}
+
+## Motion and perceptual organization
+
+- Sometimes\, motion is the only cue
+
+![](img/Lecture11_160.png){fig-align="center"}
+
+## Motion and perceptual organization
+
+- Sometimes\, motion is the only cue
+
+![](img/Lecture11_161.gif){fig-align="center"}
+
+## Motion and perceptual organization
+
+{{< video https://youtu.be/VTNmLt7QX8E width=600 height="400" >}}
+
+[Experimental study of apparent behavior\. Fritz Heider & Marianne Simmel\. 1944]{.semi-tiny-font}
+
+
+## Problem definition: optical flow
+
+![](img/Lecture11_162.png){height="250"}
+
+:::{.medium-font}
+How to estimate pixel motion from image $I(x,y,t)$ to $I(x,y,t+ 1)$ ?
+
+- Solve pixel correspondence problem
+    - Given a pixel in l(x,y,t), look for nearby pixels of the same color in *l(x,y,t+1)*
+
+Key assumptions
+
+- [Small motion]{.red}: Points do not move very far
+- [Color constancy]{.blue}: A point in *l(x,y,t)* looks the same in *l(x,y,t+ 1)*
+    - For grayscale images, this is brightness constancy
+
+:::
+
+![](img/red-box.png){.absolute width="70" bottom="185" left="349"}
+
+![](img/blue-box.png){.absolute width="110" bottom="185" right=410}
+
+## [Optical flow constraints (grayscale images)]{.medium-font}
+
+![](img/Lecture11_163.png)
+
+- Let's look at these constraints more closely
+    - Brightness constancy constraint (equation) \
+        $I(x,y,t) = I(x+u,y+v,t+1)$
+
+    - Small motion: (u and v are less than 1 pixel, or smooth)
+
+
+From Taylor expansion of I
+
+$I(x+u,y+v,t+1)=I(x,y,t+1)+\frac{\partial I}{\partial x}u+\frac{\partial I}{\partial y}v+\text{ higher order terms}$
+
+## Optical flow equation
+- Combining these two equations
+
+:::{.medium-font}
+$$\begin{align}
+0 &= I(x + u, y + v, t + 1) - I(x, y, t) \\
+&\approx I(x, y, t + 1) + I_x u + I_y v - I(x, y, t) \quad \text{(Short hand: } I_x = \frac{\partial I}{\partial x} \text{ for } t \text{ or } t+1\text{)}
+\end{align}$$
+:::
+
+## Optical flow equation
+- Combining these two equations
+
+:::{.medium-font}
+$$\begin{align}
+0 &= I(x + u, y + v, t + 1) - I(x, y, t) \\
+&\approx I(x, y, t + 1) + I_x u + I_y v - I(x, y, t) \quad \text{(Short hand: } I_x = \frac{\partial I}{\partial x} \text{ for } t \text{ or } t+1\text{)} \\ 
+&\approx \left[I(x, y, t+1)-I(x, y, t)\right]+I_x u+I_y v \\
+& \approx I_t+I_x u+I_y v
+\end{align}$$
+:::
+
+
+## Optical flow equation
+- Combining these two equations
+
+:::{.medium-font}
+$$\begin{align}
+0 &= I(x + u, y + v, t + 1) - I(x, y, t) \\
+&\approx I(x, y, t + 1) + I_x u + I_y v - I(x, y, t) \quad \text{(Short hand: } I_x = \frac{\partial I}{\partial x} \text{ for } t \text{ or } t+1\text{)} \\ 
+&\approx \color{red}\boxed{\color{black}\left[I(x, y, t+1)-I(x, y, t)\right]}\color{black}+I_x u+I_y v \\
+& \approx \color{red}\boxed{\color{black}I_t}\color{black}+I_x u+I_y v
+\end{align}$$
+:::
+
+In the limit as u and v go to zero, this becomes exact
+
+:::{.bordered-box}
+*Brightness constancy constraint equation*
+$$I_{x}u+I_{y}v+I_{t}=0$$
+:::
+
+## The brightness constancy constraint
+
+Can we use this equation to recover image motion (u,v) at each pixel?
+
+$0 = I_t + \nabla I \cdot \langle u,v \rangle \quad \text{or} \quad I_x u + I_y v + I_t = 0$
+
+- How many equations and unknowns per pixel?
+    - One equation (this is a scalar equation!), two unknowns (u,v)
+
+The component of the motion perpendicular to the gradient (i.e., parallel to the edge) cannot be measured
+
+::: {.columns}
+::: {.column}
+If *(u, v)* satisfies the equation, so does *(u+u', v+v')* if 
+
+$\nabla I \cdot [u' v']^T = 0$
+:::
+
+::: {.column}
+![](img/Lecture11_168.png)
+:::
+::: 
+
+## Aperture problem
+
+![](img/Lecture11_169.png)
+
+## Aperture problem
+
+![](img/Lecture11_170.png)
+
+## Solving the ambiguity...
+[B. Lucas and T. Kanade. An iterative image registration technique with an application to stereo vision. In *Proceedings of the International Joint Conference on Artificial Intelligence*, pp. 674-679, 1981.]{.small-font}
+
+- How to get more equations for a pixel?
+- **Spatial coherence constraint**
+- Assume the pixel's neighbors have the same (u,v)
+- If we use a 5x5 window, that gives us 25 equations per pixel
+    $0 = I_t(\mathbf{p}_i) + \nabla I(\mathbf{p}_i) \cdot [u \quad v]$
+
+$$\begin{bmatrix}
+I_{x}(\mathbf{p}_{1}) & I_{y}(\mathbf{p}_{1}) \\
+I_{x}(\mathbf{p}_{2}) & I_{y}(\mathbf{p}_{2}) \\
+\vdots & \vdots \\
+I_{x}(\mathbf{p}_{25}) & I_{y}(\mathbf{p}_{25})
+\end{bmatrix}
+\begin{bmatrix}
+u \\
+v
+\end{bmatrix}
+= -
+\begin{bmatrix}
+I_{t}(\mathbf{p}_{1}) \\
+I_{t}(\mathbf{p}_{2}) \\
+\vdots \\
+I_{t}(\mathbf{p}_{25})
+\end{bmatrix}$$
+
+## Solving the ambiguity...
+- Least squares problem: 
+$$\begin{bmatrix}
+I_x(\mathbf{p}_1) & I_y(\mathbf{p}_1) \\
+I_x(\mathbf{p}_2) & I_y(\mathbf{p}_2) \\
+\vdots & \vdots \\
+I_x(\mathbf{p}_{25}) & I_y(\mathbf{p}_{25})
+\end{bmatrix} \begin{bmatrix} u \\ v \end{bmatrix} = -\begin{bmatrix}
+I_t(\mathbf{p}_1) \\
+I_t(\mathbf{p}_2) \\
+\vdots \\
+I_t(\mathbf{p}_{25})
+\end{bmatrix} \quad \underset{25 \times 2 \quad 2 \times 1 \quad 25 \times 1}{A \quad d = b}$$

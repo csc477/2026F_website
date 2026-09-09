@@ -4,7 +4,7 @@ format:
   revealjs:
     slide-number: true
     smaller: true
-    footer: '<a href="https://csc477.github.io/website_fall24" target="_blank" style="font-size:0.8em; bottom: -5px;">↩ Back to Course Website</a>'
+    footer: '<a href="https://csc477.github.io/2026F_website" target="_blank" style="font-size:0.8em; bottom: -5px;">↩ Back to Course Website</a>'
     css: ../style.css
     chalkboard:
       buttons: true

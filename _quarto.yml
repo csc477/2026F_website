@@ -4,11 +4,11 @@ project:
 
 website:
   page-navigation: true
-  title: "CSC477 - Fall 2024"
-  description: "Homepage for CSC477/CSC2630: Introduction to Mobile Robotics, Fall 2024"
-  site-url: "https://csc477.github.io/website_fall24"
+  title: "CSC477 - Fall 2026"
+  description: "Homepage for CSC477: Introduction to Mobile Robotics, Fall 2026"
+  site-url: "https://csc477.github.io/2026F_website"
 
-  repo-url: https://github.com/csc477/website_fall24
+  repo-url: https://github.com/csc477/2026F_website
   repo-actions: [issue]
 
   open-graph: true
@@ -18,7 +18,7 @@ website:
 
   page-footer:
     right: "This page is built with ❤️, [Quarto](https://quarto.org/) and inspiration from [STA210](https://sta210-s22.github.io/website/)."
-    left: "&copy; Copyright 2024, Florian Shkurti"
+    left: "&copy; Copyright 2026, Florian Shkurti"
     background: "#D9E3E4"
 
   sidebar:
@@ -26,7 +26,7 @@ website:
     logo: "images/mars-exploration-rover.png"
     pinned: true
     align: center
-    title: "CSC477/CSC2630 Introduction to Mobile Robotics"
+    title: "CSC477: Introduction to Mobile Robotics"
     
     tools:
       - icon: github
@@ -39,7 +39,7 @@ website:
         href: http://toolboxrenewal.utoronto.ca/
         text: "Official announcements on Quercus"
       - icon: envelope-at
-        href: course-team.html
+        href: index.html#teaching-staff
         text: "Email teaching staff"
    	
         
@@ -49,18 +49,18 @@ website:
     contents:
       - href: index.qmd
         text: Overview
+      - href: index.qmd#teaching-staff
+        text: Teaching Staff
+      - href: index.qmd#schedule
+        text: Schedule
       - href: http://piazza.com/utoronto.ca/fall2022/csc477
         text: Piazza
       - href: http://toolboxrenewal.utoronto.ca/
-        text: Quercus	
+        text: Quercus
+      - href: final_project.qmd
+        text: Final Project
       # - href: course-syllabus.qmd
       #   text: Syllabus
-      - href: course-team.qmd
-        text: Teaching Staff
-      - href: course-schedule.qmd
-        text: Schedule
-      # - href: project-description.qmd
-      #   text: Final Project
       
 format:
   html:
