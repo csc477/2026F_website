@@ -1120,6 +1120,13 @@
     "text": "Evaluation\nCSC477\n\n4 assignments, 10% each = 40%\n8 quizzes (best 6/8) = 10%\n1 midterm test = 30%\n1 final project = 20%"
   },
   {
+    "objectID": "lecs/w01/lec01.html#rc-racecars",
+    "href": "lecs/w01/lec01.html#rc-racecars",
+    "title": "CSC477 Introduction to Mobile Robotics",
+    "section": "RC Racecars",
+    "text": "RC Racecars\n\n\n5 cars with navigation sensors (Intel Realsense RGBD cameras, Hokuyo 2D LiDAR, IMU)\n\nonboard GPU computing (NVIDIA Jetson Xavier)"
+  },
+  {
     "objectID": "lecs/w01/lec01.html#recommended-textbooks-optional",
     "href": "lecs/w01/lec01.html#recommended-textbooks-optional",
     "title": "CSC477 Introduction to Mobile Robotics",
