@@ -1,5 +1,5 @@
 ---
-title: "CSC477 / CSC2630 Introduction to Mobile Robotics"
+title: "CSC477 Introduction to Mobile Robotics"
 subtitle: "Week #1: Introduction, Sensors & Actuators"
 author: "Florian Shkurti"
 format: 
@@ -34,27 +34,12 @@ html-math-method:
 
 :::::: columns
 ::: {.column .small-font width="30%"}
-Yewon Lee\
-MSc student\
-Computer Science, UofT\
-[csc477-tas\@cs.toronto.edu](mailto:csc477-tas@cs.toronto.edu){.email}
-:::
-
-::: {.column .small-font width="30%"}
-Yasasa Abeysirigoonawardena\
-MSc student\
-Computer Science, UofT\
-
-[csc477-tas\@cs.toronto.edu](mailto:csc477-tas@cs.toronto.edu){.email}
-:::
-
-::: {.column .small-font width="30%"}
-Radian Gondokaryono\
+Seyed Mohammad Sheikholeslami\
 PhD student\
-Computer Science, UofT\
-
+Engineering, UofT\
 [csc477-tas\@cs.toronto.edu](mailto:csc477-tas@cs.toronto.edu){.email}
 :::
+
 ::::::
 
 ## [My lab: Robot Vision and Learning (RVL)]{.medium-font}
@@ -254,9 +239,9 @@ Recommended: MAT224H5; CSC384H5; CSC311H5;
 {{< video https://www.youtube.com/watch?v=BH5XzmVVo1M start="120"  height=500 width=800 >}}
 
 
-## 7 Quizzes
+## 8 Quizzes (during tutorials, might be remote) 
 
--   5-10 mins to complete them
+-   30 mins to complete them
 
 -   Not cumulative in terms of material. They cover only one lecture
 
@@ -266,21 +251,14 @@ Recommended: MAT224H5; CSC384H5; CSC311H5;
 
 CSC477
 
--   4 assignments, 15% each = 60%
+-   4 assignments, 10% each = 40%
 
--   7 quizzes, 2% each = 14%
+-   8 quizzes (best 6/8) = 10%
 
--   1 final exam = 26%
+-   1 midterm test = 30%
 
-<br>
+-   1 final project = 20%
 
-CSC2630
-
--   3 assignments, 15% each = 45%
-
--   7 quizzes, 2% each = 14%
-
--   1 final project = 41%
 
 ## Recommended Textbooks (optional)
 
@@ -305,15 +283,6 @@ CSC2630
 
 -   <https://underactuated.mit.edu/> (more advanced, little overlap with 477)
 
-## Office Hours (Zoom)
-
--   Florian: Thursdays 3-4pm
--   Yewon: Tuesdays 11-12pm
--   Yasasa: Fridays 11-12pm
-
-{{< pagebreak >}}
-
--   [Office hours will begin next week]{.underline}
 
 ## Online communication
 

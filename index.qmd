@@ -38,7 +38,7 @@ Recommended: MAT224H5; CSC384H5; CSC311H5;
 | Assignment 2 | Oct 29 | 10% |
 | Assignment 3 | Nov 19 | 10% |
 | Assignment 4 | Dec 4 | 10% |
-| Midterm Test | Nov 11 | 20% |
+| Midterm Test | Nov 11 | 30% |
 | Tutorial / Lab Activities / Quizzes (best 6 / 8) | during PRA sessions (*) | 10% |
 | Final project | Dec 8 | 20% |
 (*) Sept 23, Sep 30, Oct 7, Oct 14, Oct 21, Nov 4, Nov 18, Nov 25
