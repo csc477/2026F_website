@@ -9,7 +9,7 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.6.42">
 
-  <title>CSC477 - Fall 2026 – Introduction to ROS</title>
+  <title>CSC477 - Fall 2026 – Introduction to ROS 2</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -27,6 +27,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-2f366650f320edcfcf53d73c80250a32.css">
   <link rel="stylesheet" href="../style.css">
@@ -123,9 +188,16 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="Introduction to ROS – CSC477 - Fall 2026">
+  <script src="../../site_libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="../../site_libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<meta property="og:title" content="Introduction to ROS 2 – CSC477 - Fall 2026">
+<meta property="og:description" content="CSC477 Tutorial #2
+Concepts, tools, and the plumbing of a robot controller">
 <meta property="og:site_name" content="CSC477 - Fall 2026">
-<meta name="twitter:title" content="Introduction to ROS – CSC477 - Fall 2026">
+<meta name="twitter:title" content="Introduction to ROS 2 – CSC477 - Fall 2026">
+<meta name="twitter:description" content="CSC477 Tutorial #2
+Concepts, tools, and the plumbing of a robot controller">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="quarto-light">
@@ -133,7 +205,9 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Introduction to ROS</h1>
+  <h1 class="title">Introduction to ROS 2</h1>
+  <p class="subtitle"></p><p>CSC477 Tutorial #2<br>
+Concepts, tools, and the plumbing of a robot controller</p><p></p>
 
 <div class="quarto-title-authors">
 </div>
@@ -141,7 +215,28 @@
 </section>
 <section id="section" class="slide level2 center">
 <h2></h2>
-<p>Slides adapted from: <a href="http://courses.csail.mit.edu/6.141/spring2014/pub/lectures/Lec05-ROS-Lecture.pptm" class="uri">http://courses.csail.mit.edu/6.141/spring2014/pub/lectures/Lec05-ROS-Lecture.pptm</a></p>
+<p>Conceptual slides adapted from: <a href="http://courses.csail.mit.edu/6.141/spring2014/pub/lectures/Lec05-ROS-Lecture.pptm" class="uri">http://courses.csail.mit.edu/6.141/spring2014/pub/lectures/Lec05-ROS-Lecture.pptm</a></p>
+<p>Updated for ROS 2, with the tools and concepts you will need for Assignment 1.</p>
+</section>
+<section id="outline" class="slide level2">
+<h2>Outline</h2>
+<ol type="1">
+<li>What is ROS, and why does robotics use it?</li>
+<li>ROS 1 vs.&nbsp;ROS 2: what changed, what did not</li>
+<li>Setting up ROS 2 for Assignment 1</li>
+<li>Anatomy of a ROS 2 node in Python (<code>rclpy</code>)</li>
+<li>The messages you need: <code>LaserScan</code>, <code>Twist</code>, <code>Float32</code></li>
+<li>Working with laser scans: geometry, sectors, frames</li>
+<li>Anatomy of a controller node</li>
+<li>Parameters, launch files, bags, and debugging tools</li>
+<li>Gazebo and rviz2</li>
+<li>Exercises in <code>tutorials/w02/code</code></li>
+</ol>
+</section>
+<section>
+<section id="part-1-what-is-ros" class="title-slide slide level1 center">
+<h1>Part 1: What is ROS?</h1>
+
 </section>
 <section id="a-meta-operating-system-for-robots" class="slide level2">
 <h2>A meta-operating system for robots</h2>
@@ -150,21 +245,17 @@
 <section id="what-is-ros" class="slide level2">
 <h2>What is ROS?</h2>
 <ul>
-<li><p>A “Meta” Operating System.</p>
+<li>A “meta” operating system: not a kernel, but the glue between processes on one or many computers.</li>
+<li>Open source (Apache 2.0 for ROS 2 core; BSD for ROS 1).</li>
+<li>Runs best on Ubuntu Linux; ROS 2 also has Windows and macOS support.</li>
+<li><strong>Nodes</strong>: small processes, each doing one job.</li>
+<li><strong>Message passing</strong>
 <ul>
-<li>Open source</li>
-<li>Runs in Linux (esp.&nbsp;Ubuntu)</li>
-<li>OS X support</li>
-<li>Ongoing Windows implementation</li>
+<li>Publish / subscribe on <em>topics</em> (asynchronous streams)</li>
+<li><em>Services</em> (request / response)</li>
+<li><em>Actions</em> (long-running goals with feedback; ROS 2 makes these first class)</li>
 </ul></li>
-<li><p>Nodes</p></li>
-<li><p>Message passing</p>
-<ul>
-<li>Publish</li>
-<li>Subscribe</li>
-<li>Services via remote invocation</li>
-</ul></li>
-<li><p>Supports numerous programming languages (C++, Python, Lisp, Java)</p></li>
+<li>Many languages: C++ (<code>rclcpp</code>) and Python (<code>rclpy</code>) are the official ones; Rust, Java and others exist.</li>
 </ul>
 </section>
 <section id="what-is-ros-1" class="slide level2">
@@ -183,11 +274,11 @@
 </ul></li>
 <li>Application building blocks
 <ul>
-<li>Coordinate system transforms</li>
-<li>Visualization tools</li>
-<li>Debugging tools</li>
-<li>Robust navigation stack (SLAM with loop closure)</li>
-<li>Arm path planning</li>
+<li>Coordinate system transforms (<code>tf2</code>)</li>
+<li>Visualization tools (<code>rviz2</code>, <code>rqt</code>)</li>
+<li>Debugging tools (<code>ros2 topic</code>, <code>ros2 bag</code>)</li>
+<li>Robust navigation stack (Nav2, SLAM Toolbox)</li>
+<li>Arm path planning (MoveIt 2)</li>
 <li>Object recognition</li>
 <li>…</li>
 </ul></li>
@@ -199,18 +290,17 @@
 <section id="what-is-ros-2" class="slide level2">
 <h2>What is ROS?</h2>
 <ul>
-<li>Software management (compiling, packaging)</li>
+<li>Software management (compiling, packaging, dependency resolution)</li>
 <li>Remote communication and control</li>
 </ul>
 
 <img data-src="img/ros-stages.png" class="r-stretch"></section>
 <section id="what-is-ros-3" class="slide level2">
 <h2>What is ROS?</h2>
-<p><img data-src="img/Lec05-ROS-Lecture_13.jpg" class="absolute" style="top: 50px; right: 100px; width: 200px; "></p>
 <ul>
-<li>Founded by Willow Garage</li>
+<li>Started at Stanford (2007), developed by Willow Garage, now maintained by Open Robotics / the OSRA.</li>
 <li>Exponential adoption</li>
-<li>Countless commercial, hobby, and academic robots use ROS (<a href="http://wiki.ros.org/Robots" class="uri">http://wiki.ros.org/Robots</a>)</li>
+<li>Countless commercial, hobby, and academic robots use ROS (<a href="https://robots.ros.org" class="uri">https://robots.ros.org</a>)</li>
 </ul>
 <div>
 
@@ -230,20 +320,16 @@
 </div>
 </section>
 <section id="ros-philosophical-goals" class="slide level2">
-<h2>ROS Philosophical goals</h2>
+<h2>ROS philosophical goals</h2>
 <ul>
-<li>“Hardware agnosticism”</li>
+<li>“Hardware agnosticism”: the same controller code runs in Gazebo and on a real Husky.</li>
 <li>Peer to peer</li>
 <li>Tools based software design</li>
-<li>Multiple language support (C++/Java/Python)</li>
+<li>Multiple language support (C++ / Python)</li>
 <li>Lightweight: runs only at the edge of your modules</li>
-<li>Free</li>
-<li>Open source</li>
+<li>Free and open source</li>
 <li>Suitable for large scale research and industry</li>
 </ul>
-</section>
-<section id="ros-software-development" class="slide level2 center">
-<h2>ROS software development</h2>
 </section>
 <section id="conceptual-levels-of-design" class="slide level2">
 <h2>Conceptual levels of design</h2>
@@ -264,10 +350,11 @@ build instructions, and message definitions.</p>
 <h2>Tools-based software design</h2>
 <p>Tools for:</p>
 <ul>
-<li>Building ROS nodes (catkin_make)</li>
-<li>Running ROS nodes (rosrun, roslaunch)</li>
-<li>Viewing network topology (rqt_graph)</li>
-<li>Monitoring network traffic (rostopic)</li>
+<li>Building ROS packages (<code>colcon build</code>)</li>
+<li>Running ROS nodes (<code>ros2 run</code>, <code>ros2 launch</code>)</li>
+<li>Viewing network topology (<code>rqt_graph</code>)</li>
+<li>Monitoring network traffic (<code>ros2 topic</code>)</li>
+<li>Recording and replaying data (<code>ros2 bag</code>)</li>
 </ul>
 <p>Many cooperating processes, instead of a single monolithic program.</p>
 </section>
@@ -276,8 +363,8 @@ build instructions, and message definitions.</p>
 <div class="columns">
 <div class="column" style="width:30%;">
 <ul>
-<li>ROS is implemented natively in each language.</li>
-<li>Quickly define messages in language-independent format.</li>
+<li>ROS is implemented natively in each language, on top of a shared C core (<code>rcl</code>).</li>
+<li>Quickly define messages in a language-independent format (<code>.msg</code> files).</li>
 </ul>
 <p><img data-src="img/file-pointcloud.png"></p>
 </div><div class="column" style="width:70%;">
@@ -289,173 +376,755 @@ build instructions, and message definitions.</p>
 <ul>
 <li><p>Encourages standalone libraries with no ROS dependencies:<br>
 <em>Don’t</em> <em>put ROS dependencies in the core of your algorithm!</em></p></li>
-<li><p>Use ROS only at the <em>edges</em> of your interconnected software modules: Downstream/Upstream interface</p></li>
+<li><p>Use ROS only at the <em>edges</em> of your interconnected software modules: Downstream/Upstream interface.</p>
+<ul>
+<li>For Assignment 1: write your <code>PID</code> class as plain Python. Only the node that subscribes and publishes should import <code>rclpy</code>.</li>
+</ul></li>
 <li><p>ROS re-uses code from a variety of projects:</p>
 <ul>
 <li>OpenCV : Computer Vision Library</li>
 <li>Point Cloud Library (PCL) : 3D Data Processing</li>
-<li>Movelt : Motion Planning</li>
+<li>MoveIt 2 : Motion Planning</li>
 </ul></li>
 </ul>
 <p><img data-src="img/ros-community.png" class="absolute" style="bottom: 50px; right: 50px; width: 250px; "></p>
 </section>
 <section id="peer-to-peer-messaging" class="slide level2">
-<h2>Peer to Peer Messaging</h2>
+<h2>Peer to peer messaging</h2>
 <ul>
-<li>No Central Server through which all messages are routed.</li>
-<li>“Master” service run on 1 machine for name registration + lookup</li>
-<li>Messaging Types:
+<li>No central server through which messages are routed.</li>
+<li>ROS 2: <strong>no master at all</strong>. Nodes discover each other automatically through DDS (Data Distribution Service) on the local network.</li>
+<li>Messaging types:
 <ul>
-<li>Topics : <em>Asynchronous</em> data streaming</li>
-<li>Parameter Server</li>
+<li>Topics : <em>asynchronous</em> data streaming (many-to-many)</li>
+<li>Services : synchronous request / reply</li>
+<li>Actions : goals with feedback and cancellation</li>
+<li>Parameters : per-node configuration values, settable at runtime</li>
 </ul></li>
 </ul>
-<p><img data-src="img/computation-graph.png" class="absolute" style="bottom: 50px; right: 50px; width: 250px; "></p>
+<p><img data-src="img/computation-graph.png" class="absolute" style="bottom: 50px; right: 50px; width: 150px; "></p>
 </section>
 <section id="peer-to-peer-messaging-1" class="slide level2">
-<h2>Peer to Peer Messaging</h2>
+<h2>Peer to peer messaging</h2>
 <ul>
-<li><p><u><strong>Master:</strong></u> Lookup information, think DNS<br>
-<em>roscore</em> command <span class="math inline">\(\rightarrow\)</span> starts master, parameter server, logging</p></li>
+<li><p><u><strong>Discovery:</strong></u> DDS multicasts “I exist, I publish X”; nodes on the same <code>ROS_DOMAIN_ID</code> find each other. No <code>roscore</code>.</p></li>
 <li><p><u><strong>Publish:</strong></u> Will not block until receipt, messages get queued.</p></li>
-<li><p><u><strong>Delivery Guarantees:</strong></u> Specify a queue size for publishers: If publishing too quickly, will buffer a maximum of X messages before throwing away old ones</p></li>
-<li><p><u><strong>Transport Mechanism:</strong></u> TCPROS, uses TCP/IP</p></li>
-<li><p><u><strong>Bandwidth:</strong></u> Consider where your data’s going, and how</p></li>
+<li><p><u><strong>Quality of Service (QoS):</strong></u> Each publisher and subscriber declares a QoS profile: history depth (queue size), <em>reliable</em> vs.&nbsp;<em>best effort</em>, durability. <strong>Publisher and subscriber QoS must be compatible or you silently receive nothing.</strong></p>
+<ul>
+<li>Sensor drivers and Gazebo publish laser scans as <em>best effort</em>. Subscribe with <code>qos_profile_sensor_data</code>.</li>
+</ul></li>
+<li><p><u><strong>Transport:</strong></u> UDP by default (DDS), shared memory on the same machine.</p></li>
 </ul>
-<p><img data-src="img/computation-graph.png" class="absolute" style="bottom: 50px; right: 50px; width: 250px; "></p>
+<p><img data-src="img/computation-graph.png" class="absolute" style="bottom: 50px; right: 50px; width: 150px; "></p>
 </section>
 <section id="free-open-source" class="slide level2">
-<h2>Free &amp; Open Source</h2>
+<h2>Free &amp; open source</h2>
 <ul>
-<li>BSD License : Can develop commercial applications</li>
-<li>Drivers (Kinect, Joystick, Lasers, and others)</li>
-<li>Perception, Planning, Control libraries</li>
+<li>Permissive licenses : can develop commercial applications</li>
+<li>Drivers (cameras, lidars, joysticks, IMUs, and others)</li>
+<li>Perception, planning, control libraries (Nav2, MoveIt 2, ros2_control)</li>
 <li>Interfaces to other libraries: OpenCV, PCL, etc.</li>
 </ul>
+</section></section>
+<section>
+<section id="part-2-ros-1-vs.-ros-2" class="title-slide slide level1 center">
+<h1>Part 2: ROS 1 vs.&nbsp;ROS 2</h1>
+
 </section>
-<section id="ros-debugging" class="slide level2">
-<h2>ROS Debugging</h2>
+<section id="why-ros-2" class="slide level2">
+<h2>Why ROS 2?</h2>
+<p>ROS 1 (2007 to 2025) was built for a single robot, on a single trusted network, with a single central master.</p>
+<p>ROS 2 (2017 onwards) was redesigned for:</p>
 <ul>
-<li>Shutdown “Object” node <span class="math inline">\(\rightarrow\)</span> re-compile <span class="math inline">\(\rightarrow\)</span> restart : won’t disturb system</li>
+<li><strong>Multi-robot systems and unreliable networks</strong>: DDS middleware, no master, QoS policies.</li>
+<li><strong>Real time and embedded</strong>: C core, deterministic executors, micro-ROS on microcontrollers.</li>
+<li><strong>Security</strong>: authentication and encryption between nodes (SROS2).</li>
+<li><strong>Production use</strong>: lifecycle-managed nodes, first-class actions, typed parameters.</li>
+<li><strong>Cross platform</strong>: Linux, Windows, macOS.</li>
+</ul>
+<p>ROS 1 Noetic reached end of life in <strong>May 2025</strong>. Everything new is ROS 2.</p>
+</section>
+<section id="ros-2-distributions" class="slide level2">
+<h2>ROS 2 distributions</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Distro</th>
+<th>Ubuntu</th>
+<th>Released</th>
+<th>Supported until</th>
+<th>Gazebo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Humble Hawksbill (LTS)</td>
+<td>22.04</td>
+<td>May 2022</td>
+<td>May 2027</td>
+<td>Fortress</td>
+</tr>
+<tr class="even">
+<td>Jazzy Jalisco (LTS)</td>
+<td>24.04</td>
+<td>May 2024</td>
+<td>May 2029</td>
+<td>Harmonic</td>
+</tr>
+<tr class="odd">
+<td>Kilted Kaiju</td>
+<td>24.04</td>
+<td>May 2025</td>
+<td>Nov 2026</td>
+<td>Ionic</td>
+</tr>
+<tr class="even">
+<td>Lyrical Luth (LTS)</td>
+<td>26.04</td>
+<td>May 2026</td>
+<td>May 2031</td>
+<td>Jetty</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>One distro per Ubuntu release; <strong>do not</strong> mix a distro with a different Ubuntu version.</li>
+<li>For this course we recommend <strong>Jazzy on Ubuntu 24.04</strong>. Humble also works. Lyrical is very new, so fewer packages are available yet.</li>
+<li>Check yours with <code>echo $ROS_DISTRO</code>.</li>
+</ul>
+</section>
+<section id="what-stays-the-same" class="slide level2">
+<h2>What stays the same</h2>
+<p>The <em>concepts</em> from ROS 1 carry over almost unchanged:</p>
+<ul>
+<li>Nodes, topics, publishers, subscribers, services, messages, parameters</li>
+<li>Message definitions: <code>sensor_msgs/LaserScan</code>, <code>geometry_msgs/Twist</code>, <code>std_msgs/Float32</code> are the same fields</li>
+<li><code>tf2</code> coordinate frame tree, <code>rviz</code> (now <code>rviz2</code>), <code>rqt</code> tools, bag files</li>
+<li>Gazebo simulation, URDF robot descriptions</li>
+<li>Package structure: a folder with <code>package.xml</code> and build instructions</li>
+</ul>
+<p>So old ROS 1 tutorials and Stack Overflow answers are still useful for <em>ideas</em>; only the commands and the client-library API differ.</p>
+</section>
+<section id="command-cheat-sheet-ros-1-to-ros-2" class="slide level2">
+<h2>Command cheat sheet: ROS 1 to ROS 2</h2>
+<div class="columns">
+<div class="column medium-font" style="width:50%;">
+<ul>
+<li><code>roscore</code> → <em>(nothing; no master)</em></li>
+<li><code>catkin_make</code> → <code>colcon build</code></li>
+<li><code>source devel/setup.bash</code> → <code>source install/setup.bash</code></li>
+<li><code>rosrun pkg node</code> → <code>ros2 run pkg node</code></li>
+<li><code>roslaunch pkg f.launch</code> → <code>ros2 launch pkg f.launch.py</code></li>
+<li><code>rostopic list / echo / hz</code> → <code>ros2 topic list / echo / hz</code></li>
+<li><code>rosnode list / info</code> → <code>ros2 node list / info</code></li>
+<li><code>rosmsg show T</code> → <code>ros2 interface show T</code></li>
+</ul>
+</div><div class="column medium-font" style="width:50%;">
+<ul>
+<li><code>rosparam set</code> → <code>ros2 param set</code></li>
+<li><code>dynamic_reconfigure</code> → node parameters + <code>rqt_reconfigure</code></li>
+<li><code>rosbag record / play</code> → <code>ros2 bag record / play</code></li>
+<li><code>rosrun rviz rviz</code> → <code>rviz2</code></li>
+<li><code>rosrun tf tf_echo a b</code> → <code>ros2 run tf2_ros tf2_echo a b</code></li>
+<li><code>rqt_graph</code> → <code>rqt_graph</code> (unchanged)</li>
+<li><code>import rospy</code> → <code>import rclpy</code></li>
+<li><code>#include &lt;ros/ros.h&gt;</code> → <code>#include &lt;rclcpp/rclcpp.hpp&gt;</code></li>
+</ul>
+</div></div>
+</section>
+<section id="python-api-rospy-vs.-rclpy" class="slide level2">
+<h2>Python API: <code>rospy</code> vs.&nbsp;<code>rclpy</code></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>ROS 1</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="im">import</span> rospy</span>
+<span id="cb1-2"><a></a><span class="im">from</span> std_msgs.msg <span class="im">import</span> Float32</span>
+<span id="cb1-3"><a></a></span>
+<span id="cb1-4"><a></a>rospy.init_node(<span class="st">"scan_stats"</span>)</span>
+<span id="cb1-5"><a></a>pub <span class="op">=</span> rospy.Publisher(<span class="st">"/closest"</span>, Float32,</span>
+<span id="cb1-6"><a></a>                      queue_size<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb1-7"><a></a></span>
+<span id="cb1-8"><a></a><span class="kw">def</span> cb(scan):</span>
+<span id="cb1-9"><a></a>    pub.publish(Float32(data<span class="op">=</span><span class="bu">min</span>(scan.ranges)))</span>
+<span id="cb1-10"><a></a></span>
+<span id="cb1-11"><a></a>rospy.Subscriber(<span class="st">"/scan"</span>, LaserScan, cb)</span>
+<span id="cb1-12"><a></a>rospy.spin()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column" style="width:50%;">
+<p>ROS 2</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="im">import</span> rclpy</span>
+<span id="cb2-2"><a></a><span class="im">from</span> rclpy.node <span class="im">import</span> Node</span>
+<span id="cb2-3"><a></a><span class="im">from</span> std_msgs.msg <span class="im">import</span> Float32</span>
+<span id="cb2-4"><a></a></span>
+<span id="cb2-5"><a></a><span class="kw">class</span> ScanStats(Node):</span>
+<span id="cb2-6"><a></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb2-7"><a></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(<span class="st">"scan_stats"</span>)</span>
+<span id="cb2-8"><a></a>        <span class="va">self</span>.pub <span class="op">=</span> <span class="va">self</span>.create_publisher(</span>
+<span id="cb2-9"><a></a>            Float32, <span class="st">"/closest"</span>, <span class="dv">10</span>)</span>
+<span id="cb2-10"><a></a>        <span class="va">self</span>.create_subscription(</span>
+<span id="cb2-11"><a></a>            LaserScan, <span class="st">"/scan"</span>, <span class="va">self</span>.cb, <span class="dv">10</span>)</span>
+<span id="cb2-12"><a></a></span>
+<span id="cb2-13"><a></a>    <span class="kw">def</span> cb(<span class="va">self</span>, scan):</span>
+<span id="cb2-14"><a></a>        <span class="va">self</span>.pub.publish(Float32(data<span class="op">=</span><span class="bu">min</span>(scan.ranges)))</span>
+<span id="cb2-15"><a></a></span>
+<span id="cb2-16"><a></a>rclpy.init()</span>
+<span id="cb2-17"><a></a>rclpy.spin(ScanStats())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div>
+<p>Main difference: in ROS 2 everything hangs off a <code>Node</code> object instead of module-level functions.</p>
+</section></section>
+<section>
+<section id="part-3-setting-up-ros-2-for-assignment-1" class="title-slide slide level1 center">
+<h1>Part 3: Setting up ROS 2 for Assignment 1</h1>
+
+</section>
+<section id="install-options" class="slide level2">
+<h2>Install options</h2>
+<ol type="1">
+<li><strong>Ubuntu 24.04 (native or dual boot)</strong> with Jazzy. Best experience, especially for Gazebo and rviz2.
+<ul>
+<li>Follow <a href="https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html" class="uri">https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html</a></li>
+<li><code>sudo apt install ros-jazzy-desktop ros-jazzy-ros-gz python3-colcon-common-extensions python3-rosdep</code></li>
+</ul></li>
+<li><strong>Lab machines</strong>: ROS 2 and Gazebo are installed. Use VNC or run locally in the lab.</li>
+<li><strong>macOS / Windows</strong>: run Ubuntu 24.04 in a VM (UTM, VirtualBox, WSL2 with WSLg) or in Docker (<code>osrf/ros:jazzy-desktop-full</code>). Gazebo needs a GPU or software rendering (<code>LIBGL_ALWAYS_SOFTWARE=1</code>), so expect it to be slow.</li>
+</ol>
+<p>Sanity check after installing:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a></a><span class="bu">source</span> /opt/ros/jazzy/setup.bash</span>
+<span id="cb3-2"><a></a><span class="ex">ros2</span> run demo_nodes_cpp talker      <span class="co"># terminal 1</span></span>
+<span id="cb3-3"><a></a><span class="ex">ros2</span> run demo_nodes_py listener     <span class="co"># terminal 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="workspace-layout" class="slide level2">
+<h2>Workspace layout</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/csc477_ws/src</span>
+<span id="cb4-2"><a></a><span class="bu">cd</span> ~/csc477_ws/src</span>
+<span id="cb4-3"><a></a><span class="fu">git</span> clone <span class="op">&lt;</span>assignment starter code repo<span class="op">&gt;</span></span>
+<span id="cb4-4"><a></a><span class="bu">cd</span> ~/csc477_ws</span>
+<span id="cb4-5"><a></a><span class="ex">rosdep</span> install <span class="at">--from-paths</span> src <span class="at">--ignore-src</span> <span class="at">-r</span> <span class="at">-y</span>   <span class="co"># pull in dependencies</span></span>
+<span id="cb4-6"><a></a><span class="ex">colcon</span> build <span class="at">--symlink-install</span></span>
+<span id="cb4-7"><a></a><span class="bu">source</span> install/setup.bash</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>src/</code> holds packages; <code>build/</code>, <code>install/</code>, <code>log/</code> are generated by <code>colcon</code>.</li>
+<li><code>--symlink-install</code> means edits to Python files and launch files take effect without rebuilding.</li>
+<li>Add to <code>~/.bashrc</code> so every new terminal is ready:</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a></a><span class="bu">source</span> /opt/ros/jazzy/setup.bash</span>
+<span id="cb5-2"><a></a><span class="bu">source</span> ~/csc477_ws/install/setup.bash</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Rebuild only what changed: <code>colcon build --packages-select wall_following_assignment</code>.</li>
+</ul>
+</section>
+<section id="anatomy-of-a-python-package" class="slide level2">
+<h2>Anatomy of a Python package</h2>
+<pre><code>csc477_tut02/
+├── package.xml            # name, version, dependencies (rclpy, sensor_msgs, ...)
+├── setup.py               # entry points: "obstacle_monitor = csc477_tut02.obstacle_monitor:main"
+├── setup.cfg
+├── resource/csc477_tut02  # marker file used by ament
+├── launch/
+│   └── tut02.launch.py
+└── csc477_tut02/
+    ├── __init__.py
+    ├── minimal_publisher.py
+    └── obstacle_monitor.py</code></pre>
+<ul>
+<li><code>ros2 pkg create --build-type ament_python --dependencies rclpy sensor_msgs my_pkg</code> generates this skeleton.</li>
+<li>Each entry point in <code>setup.py</code> becomes an executable: <code>ros2 run csc477_tut02 obstacle_monitor</code>.</li>
+<li>C++ packages use <code>ament_cmake</code> and a <code>CMakeLists.txt</code> instead of <code>setup.py</code>.</li>
+</ul>
+</section></section>
+<section>
+<section id="part-4-anatomy-of-a-ros-2-node" class="title-slide slide level1 center">
+<h1>Part 4: Anatomy of a ROS 2 node</h1>
+
+</section>
+<section id="a-minimal-publisher" class="slide level2">
+<h2>A minimal publisher</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a><span class="im">import</span> rclpy</span>
+<span id="cb7-2"><a></a><span class="im">from</span> rclpy.node <span class="im">import</span> Node</span>
+<span id="cb7-3"><a></a><span class="im">from</span> std_msgs.msg <span class="im">import</span> String</span>
+<span id="cb7-4"><a></a></span>
+<span id="cb7-5"><a></a><span class="kw">class</span> MinimalPublisher(Node):</span>
+<span id="cb7-6"><a></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb7-7"><a></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(<span class="st">"minimal_publisher"</span>)          <span class="co"># node name</span></span>
+<span id="cb7-8"><a></a>        <span class="va">self</span>.pub <span class="op">=</span> <span class="va">self</span>.create_publisher(String, <span class="st">"chatter"</span>, <span class="dv">10</span>)   <span class="co"># type, topic, queue depth</span></span>
+<span id="cb7-9"><a></a>        <span class="va">self</span>.timer <span class="op">=</span> <span class="va">self</span>.create_timer(<span class="fl">0.5</span>, <span class="va">self</span>.on_timer)        <span class="co"># period in seconds</span></span>
+<span id="cb7-10"><a></a>        <span class="va">self</span>.count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-11"><a></a></span>
+<span id="cb7-12"><a></a>    <span class="kw">def</span> on_timer(<span class="va">self</span>):</span>
+<span id="cb7-13"><a></a>        msg <span class="op">=</span> String()</span>
+<span id="cb7-14"><a></a>        msg.data <span class="op">=</span> <span class="ss">f"Hello ROS 2: </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>count<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb7-15"><a></a>        <span class="va">self</span>.pub.publish(msg)</span>
+<span id="cb7-16"><a></a>        <span class="va">self</span>.get_logger().info(<span class="ss">f'Publishing: "</span><span class="sc">{</span>msg<span class="sc">.</span>data<span class="sc">}</span><span class="ss">"'</span>)</span>
+<span id="cb7-17"><a></a>        <span class="va">self</span>.count <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb7-18"><a></a></span>
+<span id="cb7-19"><a></a><span class="kw">def</span> main():</span>
+<span id="cb7-20"><a></a>    rclpy.init()</span>
+<span id="cb7-21"><a></a>    node <span class="op">=</span> MinimalPublisher()</span>
+<span id="cb7-22"><a></a>    rclpy.spin(node)          <span class="co"># blocks; runs timer and subscription callbacks</span></span>
+<span id="cb7-23"><a></a>    node.destroy_node()</span>
+<span id="cb7-24"><a></a>    rclpy.shutdown()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="a-minimal-subscriber" class="slide level2">
+<h2>A minimal subscriber</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a></a><span class="im">import</span> rclpy</span>
+<span id="cb8-2"><a></a><span class="im">from</span> rclpy.node <span class="im">import</span> Node</span>
+<span id="cb8-3"><a></a><span class="im">from</span> std_msgs.msg <span class="im">import</span> String</span>
+<span id="cb8-4"><a></a></span>
+<span id="cb8-5"><a></a><span class="kw">class</span> MinimalSubscriber(Node):</span>
+<span id="cb8-6"><a></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb8-7"><a></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(<span class="st">"minimal_subscriber"</span>)</span>
+<span id="cb8-8"><a></a>        <span class="va">self</span>.sub <span class="op">=</span> <span class="va">self</span>.create_subscription(String, <span class="st">"chatter"</span>, <span class="va">self</span>.on_msg, <span class="dv">10</span>)</span>
+<span id="cb8-9"><a></a></span>
+<span id="cb8-10"><a></a>    <span class="kw">def</span> on_msg(<span class="va">self</span>, msg: String):</span>
+<span id="cb8-11"><a></a>        <span class="va">self</span>.get_logger().info(<span class="ss">f'I heard: "</span><span class="sc">{</span>msg<span class="sc">.</span>data<span class="sc">}</span><span class="ss">"'</span>)</span>
+<span id="cb8-12"><a></a></span>
+<span id="cb8-13"><a></a><span class="kw">def</span> main():</span>
+<span id="cb8-14"><a></a>    rclpy.init()</span>
+<span id="cb8-15"><a></a>    rclpy.spin(MinimalSubscriber())</span>
+<span id="cb8-16"><a></a>    rclpy.shutdown()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Callbacks are only run while the node is being <em>spun</em>. If your node never prints anything, check that you called <code>rclpy.spin</code>.</li>
+<li>Topic names and types must match exactly: <code>ros2 topic info /chatter</code> shows publishers, subscribers, and the type.</li>
+</ul>
+</section>
+<section id="execution-model" class="slide level2">
+<h2>Execution model</h2>
+<ul>
+<li><code>rclpy.spin(node)</code>: single-threaded executor. Callbacks run one at a time, in the order events arrive. Simple and sufficient for Assignment 1.</li>
+<li>A long computation inside a callback delays <em>all</em> other callbacks (including the next laser scan). Keep callbacks short.</li>
+<li><code>rclpy.spin_once(node, timeout_sec=...)</code> if you need your own loop.</li>
+<li>Multi-threaded executors and callback groups exist for when you need concurrency; not needed here.</li>
+</ul>
+<p>Logging levels: <code>self.get_logger().debug / info / warn / error</code>. Filter at runtime with <code>--ros-args --log-level debug</code>.</p>
+</section>
+<section id="time-and-timestamps" class="slide level2">
+<h2>Time and timestamps</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a>now <span class="op">=</span> <span class="va">self</span>.get_clock().now()                 <span class="co"># rclpy.time.Time</span></span>
+<span id="cb9-2"><a></a>t   <span class="op">=</span> rclpy.time.Time.from_msg(scan.header.stamp)</span>
+<span id="cb9-3"><a></a>dt  <span class="op">=</span> (now <span class="op">-</span> <span class="va">self</span>.last_time).nanoseconds <span class="op">*</span> <span class="fl">1e-9</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Every sensor message has a <code>header.stamp</code> (when it was measured) and <code>header.frame_id</code> (which coordinate frame).</li>
+<li>Use timestamps, not <code>time.time()</code>, to compute <code>dt</code> in a controller: simulation may run slower or faster than wall clock.</li>
+<li>In Gazebo, nodes should use <em>simulated</em> time: launch with parameter <code>use_sim_time: true</code> and the <code>/clock</code> topic drives <code>get_clock()</code>. WHY?</li>
+</ul>
+</section></section>
+<section>
+<section id="part-5-the-messages-you-need" class="title-slide slide level1 center">
+<h1>Part 5: The messages you need</h1>
+
+</section>
+<section id="inspecting-message-types" class="slide level2">
+<h2>Inspecting message types</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a></a><span class="ex">ros2</span> interface show sensor_msgs/msg/LaserScan</span>
+<span id="cb10-2"><a></a><span class="ex">ros2</span> interface show geometry_msgs/msg/Twist</span>
+<span id="cb10-3"><a></a><span class="ex">ros2</span> interface show std_msgs/msg/Float32</span>
+<span id="cb10-4"><a></a><span class="ex">ros2</span> interface list <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-i</span> laser</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Assignment 1 data flow:</p>
+<div class="cell" data-reveal="true" data-fig-width="10" data-fig-height="5" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    Gazebo["Gazebo: Husky + lidar"] --&gt;|"LaserScan"| Scan["/husky_1/scan"]
+    Scan --&gt; Node["your node"]
+    Node --&gt;|"Float32"| Cte["/husky_1/cte"]
+    Node --&gt;|"Twist"| Cmd["/husky_1/cmd_vel"]
+    Cmd --&gt; Gazebo
+    Cte --&gt; Bag["ros2 bag / rqt_plot"]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="sensor_msgsmsglaserscan" class="slide level2">
+<h2><code>sensor_msgs/msg/LaserScan</code></h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb11-1"><a></a>std_msgs/Header header      # stamp, frame_id (e.g. "laser")</span>
+<span id="cb11-2"><a></a>float32 angle_min           # start angle of the scan [rad]</span>
+<span id="cb11-3"><a></a>float32 angle_max           # end angle of the scan [rad]</span>
+<span id="cb11-4"><a></a>float32 angle_increment     # angular distance between measurements [rad]</span>
+<span id="cb11-5"><a></a>float32 time_increment      # time between measurements [s]</span>
+<span id="cb11-6"><a></a>float32 scan_time           # time between scans [s]</span>
+<span id="cb11-7"><a></a>float32 range_min           # minimum valid range [m]</span>
+<span id="cb11-8"><a></a>float32 range_max           # maximum valid range [m]</span>
+<span id="cb11-9"><a></a>float32[] ranges            # range data [m]  (len = (angle_max-angle_min)/angle_increment + 1)</span>
+<span id="cb11-10"><a></a>float32[] intensities       # may be empty</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Beam <code>i</code> is at angle <span class="math inline">\(\theta_i = \text{angle_min} + i \cdot \text{angle_increment}\)</span> in the <code>frame_id</code> frame.</li>
+<li>Values outside <code>[range_min, range_max]</code>, or <code>inf</code> / <code>nan</code>, mean “no return”: <strong>filter them out</strong> before taking a minimum.</li>
+</ul>
+</section>
+<section id="frame-conventions-rep-103" class="slide level2">
+<h2>Frame conventions (REP 103)</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<ul>
+<li>Robot body frame <code>base_link</code>: <strong>x forward, y left, z up</strong>.</li>
+<li>Angles are counter-clockwise about z: <span class="math inline">\(\theta = 0\)</span> is straight ahead, <span class="math inline">\(\theta = +\pi/2\)</span> is the <strong>left</strong>, <span class="math inline">\(\theta = -\pi/2\)</span> is the right.</li>
+<li>The Husky lidar frame is usually aligned with <code>base_link</code> (check with <code>ros2 run tf2_ros tf2_echo base_link laser</code>).</li>
+<li>So the wall on the robot’s left shows up in the beams with <span class="math inline">\(\theta \approx +\pi/2\)</span>.</li>
+<li>Units: meters, radians, seconds. <code>Twist.linear.x</code> is m/s, <code>Twist.angular.z</code> is rad/s (positive = turn left).</li>
+</ul>
+</div><div class="column" style="width:45%;">
+<p><img data-src="img/Lec05-ROS-Lecture_39.png"></p>
+</div></div>
+</section>
+<section id="geometry_msgsmsgtwist-and-std_msgsmsgfloat32" class="slide level2">
+<h2><code>geometry_msgs/msg/Twist</code> and <code>std_msgs/msg/Float32</code></h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a></a><span class="im">from</span> geometry_msgs.msg <span class="im">import</span> Twist</span>
+<span id="cb12-2"><a></a><span class="im">from</span> std_msgs.msg <span class="im">import</span> Float32</span>
+<span id="cb12-3"><a></a></span>
+<span id="cb12-4"><a></a>cmd <span class="op">=</span> Twist()</span>
+<span id="cb12-5"><a></a>cmd.linear.x  <span class="op">=</span> <span class="fl">1.0</span>       <span class="co"># forward speed [m/s]; differential drive: linear.y is ignored</span></span>
+<span id="cb12-6"><a></a>cmd.angular.z <span class="op">=</span> omega     <span class="co"># yaw rate [rad/s], output of your controller</span></span>
+<span id="cb12-7"><a></a><span class="va">self</span>.cmd_pub.publish(cmd)</span>
+<span id="cb12-8"><a></a></span>
+<span id="cb12-9"><a></a>err_msg <span class="op">=</span> Float32()</span>
+<span id="cb12-10"><a></a>err_msg.data <span class="op">=</span> <span class="bu">float</span>(error) <span class="co"># ROS 2 checks types: numpy.float64 must be cast to float</span></span>
+<span id="cb12-11"><a></a><span class="va">self</span>.err_pub.publish(err_msg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>A differential drive robot can only realize <code>linear.x</code> and <code>angular.z</code>.</li>
+<li>The velocity controller stops the robot if it does not receive commands for a while: publish on every scan callback.</li>
+</ul>
+</section></section>
+<section>
+<section id="part-6-working-with-laser-scans" class="title-slide slide level1 center">
+<h1>Part 6: Working with laser scans</h1>
+
+</section>
+<section id="from-ranges-to-geometry" class="slide level2">
+<h2>From ranges to geometry</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-2"><a></a></span>
+<span id="cb13-3"><a></a><span class="kw">def</span> scan_to_arrays(scan):</span>
+<span id="cb13-4"><a></a>    ranges <span class="op">=</span> np.asarray(scan.ranges, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb13-5"><a></a>    angles <span class="op">=</span> scan.angle_min <span class="op">+</span> np.arange(<span class="bu">len</span>(ranges)) <span class="op">*</span> scan.angle_increment</span>
+<span id="cb13-6"><a></a>    valid <span class="op">=</span> np.isfinite(ranges) <span class="op">&amp;</span> (ranges <span class="op">&gt;=</span> scan.range_min) <span class="op">&amp;</span> (ranges <span class="op">&lt;=</span> scan.range_max)</span>
+<span id="cb13-7"><a></a>    <span class="cf">return</span> angles[valid], ranges[valid]</span>
+<span id="cb13-8"><a></a></span>
+<span id="cb13-9"><a></a><span class="kw">def</span> polar_to_cartesian(angles, ranges):</span>
+<span id="cb13-10"><a></a>    <span class="co"># points in the laser frame: x forward, y left</span></span>
+<span id="cb13-11"><a></a>    <span class="cf">return</span> ranges <span class="op">*</span> np.cos(angles), ranges <span class="op">*</span> np.sin(angles)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Work with <code>numpy</code> arrays, not Python loops: scans have 700+ beams at 10 to 50 Hz.</li>
+<li>Always filter first. A single <code>inf</code> in <code>np.min</code> or <code>np.mean</code> silently poisons the result.</li>
+<li>Cartesian points are what you need for fitting lines (least squares, Tutorial 3), building maps, or drawing in <code>rviz2</code> as a <code>Marker</code>.</li>
+</ul>
+</section>
+<section id="sector-summaries" class="slide level2">
+<h2>Sector summaries</h2>
+<p>Robots rarely need all 700 beams. Summarize a scan by angular sectors:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a></a><span class="kw">def</span> sector_min(angles, ranges, center, half_width):</span>
+<span id="cb14-2"><a></a>    <span class="co">"""Closest valid return within +/- half_width of `center` (radians), or None."""</span></span>
+<span id="cb14-3"><a></a>    window <span class="op">=</span> np.<span class="bu">abs</span>(angles <span class="op">-</span> center) <span class="op">&lt;</span> half_width</span>
+<span id="cb14-4"><a></a>    <span class="cf">return</span> <span class="bu">float</span>(ranges[window].<span class="bu">min</span>()) <span class="cf">if</span> window.<span class="bu">any</span>() <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb14-5"><a></a></span>
+<span id="cb14-6"><a></a>front_clearance <span class="op">=</span> sector_min(angles, ranges, center<span class="op">=</span><span class="fl">0.0</span>, half_width<span class="op">=</span>np.deg2rad(<span class="dv">15</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Front clearance is the basis of every emergency stop: <code>if front_clearance &lt; 0.5: stop</code>.</li>
+<li>A sector minimum is robust to single noisy beams; a single beam is not. Consider a low percentile instead of <code>min</code> for very noisy sensors.</li>
+<li>Handle the <code>None</code> case: an open doorway or an out-of-range wall is not an error.</li>
+<li>Assignment 1 asks you to turn a scan into a scalar error for a controller. Which beams, which statistic, and what sign convention is your design decision; think about it with the sim in Gazebo and <code>ros2 topic echo</code> in front of you.</li>
+</ul>
+</section>
+<section id="points-live-in-frames" class="slide level2">
+<h2>Points live in frames</h2>
+<p>A lidar mounted at <span class="math inline">\((x_L, y_L)\)</span> with yaw <span class="math inline">\(\psi_L\)</span> on the robot reports points in the <code>laser</code> frame. To use them together with odometry or a map they must be expressed in <code>base_link</code> or <code>odom</code>:</p>
+<p><span class="math display">\[
+\begin{bmatrix} x_b \\ y_b \\ 1 \end{bmatrix}
+=
+\underbrace{\begin{bmatrix} \cos\psi_L &amp; -\sin\psi_L &amp; x_L \\ \sin\psi_L &amp; \cos\psi_L &amp; y_L \\ 0 &amp; 0 &amp; 1 \end{bmatrix}}_{T^{b}_{L}}
+\begin{bmatrix} x_L' \\ y_L' \\ 1 \end{bmatrix}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(T^{b}_{L}\)</span> reads “the pose of <code>laser</code> expressed in <code>base_link</code>”; it maps laser-frame points to body-frame points.</li>
+<li>Chain transforms by multiplication: <span class="math inline">\(T^{o}_{L} = T^{o}_{b}\, T^{b}_{L}\)</span>. Invert to go back: <span class="math inline">\(T^{L}_{b} = (T^{b}_{L})^{-1}\)</span>.</li>
+<li>This is exactly what <code>tf2</code> stores and looks up for you, over time. <code>ros2 run tf2_ros tf2_echo base_link laser</code> prints <span class="math inline">\(T^{b}_{L}\)</span>.</li>
+<li>Exercise 2 in <code>code/standalone</code> makes you build, chain, and invert these matrices by hand.</li>
+</ul>
+</section></section>
+<section>
+<section id="part-7-anatomy-of-a-controller-node" class="title-slide slide level1 center">
+<h1>Part 7: Anatomy of a controller node</h1>
+
+</section>
+<section id="the-plumbing-not-the-math" class="slide level2">
+<h2>The plumbing, not the math</h2>
+<p>A closed-loop controller in ROS 2 is a subscriber callback that publishes a command:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a></a><span class="kw">class</span> MyController(Node):</span>
+<span id="cb15-2"><a></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb15-3"><a></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(<span class="st">"my_controller"</span>)</span>
+<span id="cb15-4"><a></a>        <span class="va">self</span>.declare_parameter(<span class="st">"gain"</span>, <span class="fl">1.0</span>)                       <span class="co"># tunable at runtime</span></span>
+<span id="cb15-5"><a></a>        <span class="va">self</span>.cmd_pub <span class="op">=</span> <span class="va">self</span>.create_publisher(Twist, <span class="st">"cmd_vel"</span>, <span class="dv">10</span>)</span>
+<span id="cb15-6"><a></a>        <span class="va">self</span>.dbg_pub <span class="op">=</span> <span class="va">self</span>.create_publisher(Float32, <span class="st">"error"</span>, <span class="dv">10</span>)  <span class="co"># for plotting / bagging</span></span>
+<span id="cb15-7"><a></a>        <span class="va">self</span>.create_subscription(LaserScan, <span class="st">"scan"</span>, <span class="va">self</span>.on_scan, qos_profile_sensor_data)</span>
+<span id="cb15-8"><a></a>        <span class="va">self</span>.last_stamp <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb15-9"><a></a></span>
+<span id="cb15-10"><a></a>    <span class="kw">def</span> on_scan(<span class="va">self</span>, scan: LaserScan):</span>
+<span id="cb15-11"><a></a>        stamp <span class="op">=</span> Time.from_msg(scan.header.stamp)</span>
+<span id="cb15-12"><a></a>        dt <span class="op">=</span> <span class="fl">0.0</span> <span class="cf">if</span> <span class="va">self</span>.last_stamp <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> (stamp <span class="op">-</span> <span class="va">self</span>.last_stamp).nanoseconds <span class="op">*</span> <span class="fl">1e-9</span></span>
+<span id="cb15-13"><a></a>        <span class="va">self</span>.last_stamp <span class="op">=</span> stamp</span>
+<span id="cb15-14"><a></a>        error <span class="op">=</span> ...                       <span class="co"># your perception code: scan -&gt; scalar</span></span>
+<span id="cb15-15"><a></a>        u <span class="op">=</span> ...                           <span class="co"># your control law: error, dt, gains -&gt; command</span></span>
+<span id="cb15-16"><a></a>        <span class="va">self</span>.dbg_pub.publish(Float32(data<span class="op">=</span><span class="bu">float</span>(error)))</span>
+<span id="cb15-17"><a></a>        cmd <span class="op">=</span> Twist()<span class="op">;</span> cmd.linear.x <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span> cmd.angular.z <span class="op">=</span> <span class="bu">float</span>(u)</span>
+<span id="cb15-18"><a></a>        <span class="va">self</span>.cmd_pub.publish(cmd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Perception and control are plain functions with no <code>rclpy</code> in them: unit test them without ROS.</li>
+<li>Publish your intermediate signal (the error) on its own topic. It costs nothing and you will need it for tuning, <code>rqt_plot</code>, and <code>ros2 bag</code>.</li>
+</ul>
+</section>
+<section id="practical-control-details-in-ros-2" class="slide level2">
+<h2>Practical control details in ROS 2</h2>
+<ul>
+<li><strong><code>dt</code> from timestamps</strong>, not wall-clock time: Gazebo may run slower or faster than real time. With <code>use_sim_time: true</code>, <code>get_clock().now()</code> follows <code>/clock</code>.</li>
+<li><strong>Rate</strong>: you publish one command per scan (10 to 50 Hz). Missing messages (QoS mismatch) or a slow callback shows up as a lower rate in <code>ros2 topic hz cmd_vel</code>.</li>
+<li><strong>Saturation</strong>: real robots have velocity limits. Clamp your output and know when it is clamped.</li>
+<li><strong>Integrators and windup</strong>: if you accumulate anything over time, clamp it and reset it when parameters change or the robot is teleoperated.</li>
+<li><strong>Startup</strong>: the first callback has no history (<code>dt = 0</code>, no previous error). Guard against division by zero.</li>
+<li><strong>Watchdogs</strong>: velocity controllers stop the robot when commands stop arriving. Publishing nothing is a safe default; publishing a stale command is not.</li>
+</ul>
+</section>
+<section id="a-workflow-for-assignment-1" class="slide level2">
+<h2>A workflow for Assignment 1</h2>
+<ol type="1">
+<li><strong>Bring up the simulation and look before you code</strong>: <code>ros2 topic list</code>, <code>ros2 topic echo --once /husky_1/scan</code>, <code>ros2 topic hz</code>, <code>rviz2</code> with the <code>LaserScan</code> display.</li>
+<li><strong>Teleoperate</strong> and watch the scan change as you drive toward and away from walls. Convince yourself which beam indices see which side of the robot.</li>
+<li><strong>Perception first</strong>: write and test the scan-to-scalar function on a recorded bag (<code>ros2 bag record /husky_1/scan</code>, then replay), publish it, plot it with <code>rqt_plot</code>.</li>
+<li><strong>Control second</strong>: start with one gain, make it a parameter, tune with <code>ros2 param set</code> while the robot drives. Record the error topic for every run.</li>
+<li>Only then worry about corners and edge cases. Keep a log of what each parameter set did.</li>
+</ol>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a></a><span class="ex">ros2</span> run teleop_twist_keyboard teleop_twist_keyboard <span class="at">--ros-args</span> <span class="at">-r</span> cmd_vel:=/husky_1/cmd_vel</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section></section>
+<section>
+<section id="part-8-parameters-launch-files-bags-debugging" class="title-slide slide level1 center">
+<h1>Part 8: Parameters, launch files, bags, debugging</h1>
+
+</section>
+<section id="configuring-parameters" class="slide level2">
+<h2>Configuring Parameters</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a></a><span class="im">from</span> rcl_interfaces.msg <span class="im">import</span> SetParametersResult</span>
+<span id="cb17-2"><a></a></span>
+<span id="cb17-3"><a></a><span class="kw">class</span> MyController(Node):</span>
+<span id="cb17-4"><a></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb17-5"><a></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(<span class="st">"my_controller"</span>)</span>
+<span id="cb17-6"><a></a>        <span class="va">self</span>.declare_parameter(<span class="st">"gain"</span>, <span class="fl">1.0</span>)</span>
+<span id="cb17-7"><a></a>        <span class="va">self</span>.gain <span class="op">=</span> <span class="va">self</span>.get_parameter(<span class="st">"gain"</span>).value</span>
+<span id="cb17-8"><a></a>        <span class="va">self</span>.add_on_set_parameters_callback(<span class="va">self</span>.on_params)   <span class="co"># runs BEFORE the change is applied</span></span>
+<span id="cb17-9"><a></a></span>
+<span id="cb17-10"><a></a>    <span class="kw">def</span> on_params(<span class="va">self</span>, params):</span>
+<span id="cb17-11"><a></a>        <span class="cf">for</span> p <span class="kw">in</span> params:</span>
+<span id="cb17-12"><a></a>            <span class="cf">if</span> p.name <span class="op">==</span> <span class="st">"gain"</span>:</span>
+<span id="cb17-13"><a></a>                <span class="cf">if</span> p.value <span class="op">&lt;</span> <span class="fl">0.0</span>:</span>
+<span id="cb17-14"><a></a>                    <span class="cf">return</span> SetParametersResult(successful<span class="op">=</span><span class="va">False</span>, reason<span class="op">=</span><span class="st">"gain must be &gt;= 0"</span>)</span>
+<span id="cb17-15"><a></a>                <span class="va">self</span>.gain <span class="op">=</span> p.value                              <span class="co"># reset any accumulated state here too</span></span>
+<span id="cb17-16"><a></a>                <span class="va">self</span>.get_logger().info(<span class="ss">f"gain &lt;- </span><span class="sc">{</span>p<span class="sc">.</span>value<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb17-17"><a></a>        <span class="cf">return</span> SetParametersResult(successful<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a></a><span class="ex">ros2</span> param list /my_controller</span>
+<span id="cb18-2"><a></a><span class="ex">ros2</span> param get /my_controller gain</span>
+<span id="cb18-3"><a></a><span class="ex">ros2</span> param set /my_controller gain 2.5        <span class="co"># takes effect immediately via the callback</span></span>
+<span id="cb18-4"><a></a><span class="ex">ros2</span> param dump /my_controller <span class="op">&gt;</span> tuned.yaml   <span class="co"># save what worked; load with --params-file</span></span>
+<span id="cb18-5"><a></a><span class="ex">ros2</span> run rqt_reconfigure rqt_reconfigure      <span class="co"># GUI sliders (Part C of A1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Parameters are typed: declaring <code>gain</code> as <code>1.0</code> (float) means <code>ros2 param set gain 2</code> (int) is rejected. Always pass <code>2.0</code>.</li>
+<li>Give parameters a <code>ParameterDescriptor</code> with a <code>floating_point_range</code> and <code>rqt_reconfigure</code> shows a slider (see <code>param_demo.py</code>).</li>
+</ul>
+</section>
+<section id="launch-files-python" class="slide level2">
+<h2>Launch files (Python)</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a></a><span class="co"># launch/wall_follower.launch.py</span></span>
+<span id="cb19-2"><a></a><span class="im">from</span> launch <span class="im">import</span> LaunchDescription</span>
+<span id="cb19-3"><a></a><span class="im">from</span> launch.actions <span class="im">import</span> DeclareLaunchArgument</span>
+<span id="cb19-4"><a></a><span class="im">from</span> launch.substitutions <span class="im">import</span> LaunchConfiguration</span>
+<span id="cb19-5"><a></a><span class="im">from</span> launch_ros.actions <span class="im">import</span> Node</span>
+<span id="cb19-6"><a></a></span>
+<span id="cb19-7"><a></a><span class="kw">def</span> generate_launch_description():</span>
+<span id="cb19-8"><a></a>    <span class="cf">return</span> LaunchDescription([</span>
+<span id="cb19-9"><a></a>        DeclareLaunchArgument(<span class="st">"desired_distance"</span>, default_value<span class="op">=</span><span class="st">"1.0"</span>),</span>
+<span id="cb19-10"><a></a>        Node(</span>
+<span id="cb19-11"><a></a>            package<span class="op">=</span><span class="st">"wall_following_assignment"</span>,</span>
+<span id="cb19-12"><a></a>            executable<span class="op">=</span><span class="st">"wall_follower"</span>,</span>
+<span id="cb19-13"><a></a>            name<span class="op">=</span><span class="st">"wall_follower"</span>,</span>
+<span id="cb19-14"><a></a>            output<span class="op">=</span><span class="st">"screen"</span>,</span>
+<span id="cb19-15"><a></a>            parameters<span class="op">=</span>[{</span>
+<span id="cb19-16"><a></a>                <span class="st">"use_sim_time"</span>: <span class="va">True</span>,</span>
+<span id="cb19-17"><a></a>                <span class="st">"desired_distance"</span>: LaunchConfiguration(<span class="st">"desired_distance"</span>),</span>
+<span id="cb19-18"><a></a>                <span class="st">"kp"</span>: <span class="fl">1.0</span>, <span class="st">"ki"</span>: <span class="fl">0.0</span>, <span class="st">"kd"</span>: <span class="fl">0.1</span>,</span>
+<span id="cb19-19"><a></a>            }],</span>
+<span id="cb19-20"><a></a>            remappings<span class="op">=</span>[(<span class="st">"/scan"</span>, <span class="st">"/husky_1/scan"</span>)],</span>
+<span id="cb19-21"><a></a>        ),</span>
+<span id="cb19-22"><a></a>    ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a></a><span class="ex">ros2</span> launch wall_following_assignment wall_follower.launch.py desired_distance:=1.5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="recording-and-playback-with-ros2-bag" class="slide level2">
+<h2>Recording and playback with <code>ros2 bag</code></h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a></a><span class="ex">ros2</span> bag record <span class="at">-o</span> run1 /husky_1/cte /husky_1/cmd_vel     <span class="co"># Ctrl-C to stop</span></span>
+<span id="cb21-2"><a></a><span class="ex">ros2</span> bag info run1</span>
+<span id="cb21-3"><a></a><span class="ex">ros2</span> bag play run1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Export the cross-track error to CSV (Part D of A1). In one terminal:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a></a><span class="ex">ros2</span> topic echo <span class="at">--csv</span> /husky_1/cte <span class="op">&gt;</span> walls_one_sided.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and in another:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a></a><span class="ex">ros2</span> bag play run1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Bags are directories (<code>.db3</code> SQLite or <code>.mcap</code>) plus a <code>metadata.yaml</code>, not a single <code>.bag</code> file.</li>
+<li>Alternatively read the bag from Python with <code>rosbag2_py</code> or the <code>rosbags</code> pip package and plot with matplotlib.</li>
+</ul>
+</section>
+<section id="debugging-tools-the-ros2-cli" class="slide level2">
+<h2>Debugging tools: the <code>ros2</code> CLI</h2>
+<ul>
+<li><code>ros2 node list</code>, <code>ros2 node info /wall_follower</code> : what does the node publish and subscribe to?</li>
+<li><code>ros2 topic list -t</code> : active topics with types</li>
+<li><code>ros2 topic echo /husky_1/cte</code> : print messages</li>
+<li><code>ros2 topic hz /husky_1/scan</code> : is the scan arriving, and at what rate?</li>
+<li><code>ros2 topic info -v /husky_1/scan</code> : shows QoS of publishers and subscribers. <strong>If your subscriber is not in the list, the QoS is incompatible.</strong></li>
+<li><code>ros2 topic pub /husky_1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}}"</code> : inject a command by hand</li>
+<li><code>ros2 doctor</code> : environment sanity check</li>
+<li><code>ros2 run rqt_plot rqt_plot /husky_1/cte/data</code> : live plot</li>
+</ul>
+</section>
+<section id="debugging-tools-the-ros2-cli-1" class="slide level2">
+<h2>Debugging tools: the <code>ros2</code> CLI</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/Lec05-ROS-Lecture_36.png" class="quarto-figure quarto-figure-center" height="200"></p>
+</figure>
+</div>
+</section>
+<section id="debugging-tools-rqt_graph" class="slide level2">
+<h2>Debugging tools: <code>rqt_graph</code></h2>
+<p><code>rqt_graph</code> shows nodes (ellipses) and topics (rectangles). Use it to confirm your node is connected to both the laser and the velocity controller.</p>
+
+<img data-src="img/Lec05-ROS-Lecture_37.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="ros-debugging-workflow" class="slide level2">
+<h2>ROS debugging workflow</h2>
+<ul>
+<li>Shutdown one node <span class="math inline">\(\rightarrow\)</span> edit <span class="math inline">\(\rightarrow\)</span> restart : the rest of the system (Gazebo, rviz2) keeps running.</li>
+<li>With <code>--symlink-install</code>, Python edits do not even need a rebuild.</li>
+<li>Record a bag of the inputs (<code>/husky_1/scan</code>) once; replay it to test your scan-processing code deterministically without the simulator.</li>
 </ul>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="img/logging.png" class="quarto-figure quarto-figure-center" height="270"></p>
+<p><img data-src="img/logging.png" class="quarto-figure quarto-figure-center" height="230"></p>
 </figure>
 </div>
-<p><img data-src="img/logger-playback.png" height="190"></p>
-<div class="absolute" style="top: 200px; left: 0px; ">
-<ul>
-<li>Logging <a href="http://youtu.be/pwlbArh_neU">(VIDEO)</a></li>
-</ul>
-</div>
-<div class="absolute" style="left: 0px; bottom: 110px; ">
-<ul>
-<li>Playback <a href="http://youtu.be/HacG_FWWPOw">(VIDEO)</a></li>
-</ul>
-</div>
-</section>
-<section id="useful-ros-debugging-tools" class="slide level2">
-<h2>Useful ROS Debugging Tools</h2>
-<ul>
-<li><p><code>rostopic:</code> Display debug information about ROS topics: publishers, subscribers, publishing rate, and message content.<br>
-<code>rostopic echo [topic name]</code> <span class="math inline">\(\rightarrow\)</span> <em>prints messages to console</em></p>
-<p><code>rostopic list</code> <span class="math inline">\(\rightarrow\)</span> <em>prints active topics</em></p>
-<p>… <em>(several more commands)</em></p></li>
-<li><p><code>rqt_plot</code>: Plot data from one or more ROS topic fields using matplotlib.</p>
-<p><code>rqt_plot /turtle1/pose/x,/turtle1/pose/y</code> <span class="math inline">\(\rightarrow\)</span> graph data from 2 topics in 1 plot</p></li>
-</ul>
+</section></section>
+<section>
+<section id="part-9-visualization-and-simulation" class="title-slide slide level1 center">
+<h1>Part 9: Visualization and simulation</h1>
 
-<img data-src="img/Lec05-ROS-Lecture_36.png" class="quarto-figure quarto-figure-center r-stretch"></section>
-<section id="section-1" class="slide level2 center">
-<h2></h2>
-<p>Record data from published to topics<br>
-<span class="medium-font">rosbag record [topics] -o &lt; output_file &gt;</span></p>
-<p><br></p>
-<p>Play back recording<br>
-<span class="medium-font">rosbag play &lt; input_file &gt; –clock</span></p>
 </section>
-<section id="useful-ros-debugging-tools-1" class="slide level2">
-<h2>Useful ROS Debugging Tools</h2>
-<p><span class="absolute" style="top: 150px; ">rqt_graph</span></p>
-
-<img data-src="img/Lec05-ROS-Lecture_37.png" class="quarto-figure quarto-figure-center r-stretch"></section>
-<section id="ros-visualization" class="slide level2">
-<h2>ROS Visualization</h2>
+<section id="ros-visualization-rviz2" class="slide level2">
+<h2>ROS visualization: <code>rviz2</code></h2>
 <div class="columns">
 <div class="column">
 <p>Visualize:</p>
 <ul>
-<li>Sensor data</li>
-<li>Robot joint states</li>
-<li>Coordinate frames</li>
+<li>Sensor data (<code>LaserScan</code> as colored points)</li>
+<li>Robot model and joint states</li>
+<li>Coordinate frames (<code>tf2</code>)</li>
 <li>Maps being built</li>
-<li>Debugging 3D markers</li>
+<li>Debugging 3D markers (<code>visualization_msgs/Marker</code>)</li>
 </ul>
-<p><a href="http://youtu.be/i--Sd4xH9ZE"><strong>VIDEO</strong></a></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a></a><span class="ex">rviz2</span> <span class="at">-d</span> csc477.rviz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Set <em>Fixed Frame</em> to <code>odom</code> or <code>base_link</code>; add a <em>LaserScan</em> display and set its topic and QoS to <em>Best Effort</em>.</p>
 </div><div class="column">
 <p><img data-src="img/Lec05-ROS-Lecture_38.png"></p>
 </div></div>
 </section>
-<section id="rviz" class="slide level2">
-<h2><code>rviz</code></h2>
-</section>
-<section id="ros-transformations" class="slide level2">
-<h2>ROS Transformations</h2>
+<section id="ros-transformations-tf2" class="slide level2">
+<h2>ROS transformations: <code>tf2</code></h2>
 <div class="columns">
 <div class="column" style="width:60%;">
 <ul>
-<li><p>“TF” = Name of Transform package</p></li>
-<li><p>TF Handles transforms between coordinate frames : space + time</p></li>
-<li><p>tf_echo : print updated transforms in console</p></li>
+<li><p><code>tf2</code> maintains a tree of coordinate frames over time (<code>odom</code> → <code>base_link</code> → <code>laser</code>).</p></li>
+<li><p>Query it from the command line:</p></li>
+</ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a></a><span class="ex">ros2</span> run tf2_ros tf2_echo base_link laser</span>
+<span id="cb25-2"><a></a><span class="ex">ros2</span> run tf2_tools view_frames      <span class="co"># writes frames.pdf</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>From Python: <code>tf2_ros.Buffer</code> + <code>TransformListener</code>, then <code>buffer.lookup_transform("base_link", "laser", Time())</code>.</li>
+<li>For A1 you can assume the lidar frame is aligned with the body frame; check once with <code>tf2_echo</code>.</li>
 </ul>
 </div><div class="column" style="width:40%;">
 <p><img data-src="img/Lec05-ROS-Lecture_39.png"></p>
 </div></div>
-<p><em>Example:</em></p>
-<p><code>rosrun tf tf_echo [reference_frame] [target_frame]</code></p>
 </section>
-<section id="packages" class="slide level2">
-<h2>Packages</h2>
+<section id="simulation-gazebo" class="slide level2">
+<h2>Simulation: Gazebo</h2>
+<p><img data-src="img/gazebo.png" class="absolute" style="top: 50px; right: 50px; height: 150px; "></p>
+<p><br></p>
+<ul>
+<li>Modern Gazebo (<code>gz sim</code>, formerly “Ignition”): Harmonic pairs with Jazzy, Jetty with Lyrical. The old “Gazebo Classic” reached end of life with ROS 1.</li>
+<li>Gazebo is a separate process; <code>ros_gz_bridge</code> translates between Gazebo transport and ROS 2 topics (<code>/husky_1/scan</code>, <code>/husky_1/cmd_vel</code>, <code>/clock</code>).</li>
+<li>Can simulate different robots, sensors, and environments.</li>
+<li>Develop and test in the simulator; if the model is good enough, the same code will work on the real robot with similar performance.</li>
+</ul>
+<div class="sourceCode" id="cb26"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a></a><span class="ex">ros2</span> launch wall_following_assignment gazebo_world.launch.py world_name:=walls_one_sided</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="packages-you-will-meet-later" class="slide level2">
+<h2>Packages you will meet later</h2>
 <div class="columns">
 <div class="column">
 <ul>
 <li>Perception
 <ul>
 <li>Point Cloud Library (PCL)</li>
-<li>OpenCV</li>
-<li>Kinect/OpenNI</li>
+<li>OpenCV (<code>cv_bridge</code>)</li>
+<li>Depth cameras (RealSense, OAK)</li>
 </ul></li>
+<li>Navigation: Nav2, SLAM Toolbox</li>
+<li>Manipulation: MoveIt 2</li>
+<li>Control: <code>ros2_control</code></li>
 </ul>
 </div><div class="column">
 <p><img data-src="img/Lec05-ROS-Lecture_40.png" height="150"></p>
 <p><img data-src="img/Lec05-ROS-Lecture_41.jpg" height="150"></p>
 <p><img data-src="img/Lec05-ROS-Lecture_42.png" height="200"></p>
 </div></div>
+</section></section>
+<section>
+<section id="part-10-exercises" class="title-slide slide level1 center">
+<h1>Part 10: Exercises</h1>
+
 </section>
-<section id="ros-simulator" class="slide level2">
-<h2>ROS Simulator</h2>
-<p><img data-src="img/gazebo.png" class="absolute" style="top: 50px; right: 50px; height: 150px; "></p>
-<p><br></p>
-<p>Gazebo</p>
+<section id="exercises-tutorialsw02code" class="slide level2">
+<h2>Exercises: <code>tutorials/w02/code</code></h2>
+<p><a href="https://github.com/csc477/2026F_website/tree/main/tutorials/w02/code">GitHub</a> <strong>ROS 2 needed</strong> (<code>colcon build</code> the package <code>ros2_ws_src/csc477_tut02</code>):</p>
+<ol start="3" type="1">
+<li><code>minimal_publisher</code> / <code>minimal_subscriber</code>: run them, then inspect with <code>ros2 topic</code>, <code>ros2 node</code>, <code>rqt_graph</code>.</li>
+<li><code>fake_laser_publisher</code> + <code>obstacle_monitor</code>: complete the monitor so it publishes <code>/front_clearance</code> (<code>Float32</code>) and <code>/obstacle_ahead</code> (<code>Bool</code>); move the simulated obstacle with <code>ros2 param set</code> and watch the topics follow.</li>
+<li><code>param_demo</code>: change <code>gain</code> at runtime from the CLI and from <code>rqt_reconfigure</code>.</li>
+<li><code>ros2 launch csc477_tut02 tut02.launch.py</code>, then <code>ros2 bag record /front_clearance</code> and export to CSV.</li>
+</ol>
+</section>
+<section id="common-pitfalls" class="slide level2">
+<h2>Common pitfalls</h2>
 <ul>
-<li>Can simulate different robots, sensors, and environments</li>
-<li>Develop algorithms and test in the simulator</li>
-<li>If model is good enough, same code will work on the real robot with similar performance.</li>
+<li>Forgot to <code>source install/setup.bash</code> after building → <code>Package 'x' not found</code>.</li>
+<li>Subscriber receives nothing → QoS mismatch (<code>ros2 topic info -v</code>), or wrong topic name (<code>ros2 topic list</code>), or you never called <code>rclpy.spin</code>.</li>
+<li><code>AssertionError: The 'data' field must be of type 'float'</code> → cast <code>numpy</code> scalars with <code>float()</code>.</li>
+<li>Robot does not move → the velocity topic name is wrong, or <code>linear.x</code> is 0, or the simulation is paused.</li>
+<li>Everything oscillates wildly → <code>kp</code> too large, or <code>dt</code> is wrong (check with <code>ros2 topic hz</code>), or the sign of <code>angular.z</code> is flipped.</li>
+<li>Parameters silently ignored → set an <code>int</code> where a <code>float</code> was declared, or set them before the node declared them.</li>
 </ul>
 </section>
 <section id="ros-resources" class="slide level2">
-<h2>ROS Resources</h2>
-<p><img data-src="img/Lec05-ROS-Lecture_47.png" class="absolute" style="top: 70px; right: 50px; width: 450px; "></p>
+<h2>ROS resources</h2>
+<p><img data-src="img/Lec05-ROS-Lecture_47.png" class="absolute" style="top: 70px; right: 50px; width: 150px; "></p>
 <ul>
-<li><p><a href="http://www.ros.org/">http://www.ros.org</a></p></li>
-<li><p><a href="http://wiki.ros.org/">http://wiki.ros.org</a></p></li>
-<li><p>ROS Tutorials: <a href="http://wiki.ros.org/ROS/Tutorials" class="uri">http://wiki.ros.org/ROS/Tutorials</a></p></li>
-<li><p>Gazebo: <a href="http://gazebosim.org/" class="uri">http://gazebosim.org/</a></p></li>
+<li>ROS 2 documentation and tutorials: <a href="https://docs.ros.org/en/jazzy/" class="uri">https://docs.ros.org/en/jazzy/</a></li>
+<li>Beginner tutorials (CLI tools, then client libraries): <a href="https://docs.ros.org/en/jazzy/Tutorials.html" class="uri">https://docs.ros.org/en/jazzy/Tutorials.html</a></li>
+<li><code>rclpy</code> API: <a href="https://docs.ros.org/en/jazzy/p/rclpy/" class="uri">https://docs.ros.org/en/jazzy/p/rclpy/</a></li>
+<li>Message definitions: <a href="https://docs.ros.org/en/jazzy/p/sensor_msgs/" class="uri">https://docs.ros.org/en/jazzy/p/sensor_msgs/</a></li>
+<li>REP 103 (units and coordinate conventions): <a href="https://www.ros.org/reps/rep-0103.html" class="uri">https://www.ros.org/reps/rep-0103.html</a></li>
+<li>Gazebo: <a href="https://gazebosim.org/docs" class="uri">https://gazebosim.org/docs</a></li>
+<li>Q&amp;A: <a href="https://robotics.stackexchange.com/" class="uri">https://robotics.stackexchange.com/</a> (tag <code>ros2</code>)</li>
 </ul>
 
 
-</section>
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
@@ -647,7 +1316,7 @@ build instructions, and message definitions.</p>
         margin: 0.1,
 
         math: {
-          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js',
           config: 'TeX-AMS_HTML-full',
           tex2jax: {
             inlineMath: [['\\(','\\)']],
