@@ -374,7 +374,7 @@ _B^W\mathbf{R}^{-1} = _B^W\mathbf{R}^t = _W^B\mathbf{R}
 <li>Given angle theta and axis v the equivalent rotation matrix is</li>
 </ul>
 <p><span class="math display">\[
-\mathbf{R} = \mathbf{I}\cos\theta + (1 - \cos\theta)\mathbf{v}\mathbf{v}^t + [\mathbf{v}]_\times
+\mathbf{R} = \mathbf{I}\cos\theta + (1 - \cos\theta)\mathbf{v}\mathbf{v}^t + [\mathbf{v}]_\times \sin\theta
 \]</span></p>
 <ul>
 <li><p>Where I is the 3x3 identity and <span class="math display">\[[\mathbf{a}]_\times \stackrel{\text{def}}{=} \begin{bmatrix} 0 &amp; -a_3 &amp; a_2 \\ a_3 &amp; 0 &amp; -a_1 \\ -a_2 &amp; a_1 &amp; 0 \end{bmatrix}\]</span></p></li>
@@ -620,7 +620,7 @@ _F^W\mathbf{R(q)} = _C^W\mathbf{R(q)} _F^C\mathbf{R(q)}
 <li>Suppose you have a vector in the Body frame, <span class="math inline">\(^B\mathbf{v}\)</span> which you want to transform/express in the World frame. Then</li>
 </ul>
 <p><span class="math display">\[
-^W\mathbf{v} = _B^W\mathbf{R} ^B_\mathbf{v}
+^W\mathbf{v} = _B^W\mathbf{R} ^B\mathbf{v}
 \]</span></p>
 </section>
 <section id="combining-rotations-and-translation-into-one-transformation" class="slide level2">
@@ -653,9 +653,22 @@ _B^W\mathbf{T} = _A^W\mathbf{T} _B^A\mathbf{T}
 <li>Be careful:</li>
 </ul>
 <p><span class="math display">\[
-_B^W\mathbf{T}^{-1} \neq _A^W\mathbf{T}^t
+_B^W\mathbf{T}^{-1} \neq {}_B^W\mathbf{T}^t
 \]</span></p>
 <p>as was the case with rotation matrices.</p>
+<ul>
+<li>The inverse is instead</li>
+</ul>
+<p><span class="math display">\[
+_B^W\mathbf{T}^{-1} = {}_W^B\mathbf{T} = \begin{bmatrix}
+_B^W\mathbf{R}^t &amp; -{}_B^W\mathbf{R}^t \, ^W\mathbf{t}_{WB} \\
+0 &amp; 1 \\
+\end{bmatrix}
+\]</span></p>
+<ul>
+<li><p>Only the rotation block is transposed. The translation block must also be rotated into the new frame and negated, because <span class="math inline">\(^B\mathbf{t}_{BW} = -{}_B^W\mathbf{R}^t \, ^W\mathbf{t}_{WB}\)</span></p></li>
+<li><p>Cheaper and more accurate than calling a general matrix inversion routine. Use it.</p></li>
+</ul>
 </section>
 <section id="physical-models-of-how-systems-move" class="slide level2">
 <h2>Physical models of how systems move</h2>

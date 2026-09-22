@@ -7381,7 +7381,7 @@
     "href": "lecs/w02/lec02.html#converting-axis-angle-to-rotation-matrix",
     "title": "CSC477 Introduction to Mobile Robotics",
     "section": "Converting axis-angle to rotation matrix",
-    "text": "Converting axis-angle to rotation matrix\n\nGiven angle theta and axis v the equivalent rotation matrix is\n\n\\[\n\\mathbf{R} = \\mathbf{I}\\cos\\theta + (1 - \\cos\\theta)\\mathbf{v}\\mathbf{v}^t + [\\mathbf{v}]_\\times\n\\]\n\nWhere I is the 3x3 identity and \\[[\\mathbf{a}]_\\times \\stackrel{\\text{def}}{=} \\begin{bmatrix} 0 & -a_3 & a_2 \\\\ a_3 & 0 & -a_1 \\\\ -a_2 & a_1 & 0 \\end{bmatrix}\\]\nThis is called the “Rodrigues formula”"
+    "text": "Converting axis-angle to rotation matrix\n\nGiven angle theta and axis v the equivalent rotation matrix is\n\n\\[\n\\mathbf{R} = \\mathbf{I}\\cos\\theta + (1 - \\cos\\theta)\\mathbf{v}\\mathbf{v}^t + [\\mathbf{v}]_\\times \\sin\\theta\n\\]\n\nWhere I is the 3x3 identity and \\[[\\mathbf{a}]_\\times \\stackrel{\\text{def}}{=} \\begin{bmatrix} 0 & -a_3 & a_2 \\\\ a_3 & 0 & -a_1 \\\\ -a_2 & a_1 & 0 \\end{bmatrix}\\]\nThis is called the “Rodrigues formula”"
   },
   {
     "objectID": "lecs/w02/lec02.html#example-finding-a-rotation-matrix-that-rotates-one-vector-to-another",
@@ -7563,7 +7563,7 @@
     "href": "lecs/w02/lec02.html#transforming-vectors-from-one-frame-to-another",
     "title": "CSC477 Introduction to Mobile Robotics",
     "section": "Transforming vectors from one frame to another",
-    "text": "Transforming vectors from one frame to another\n\n\nVERY IMPORTANT AND USEFUL\n\n\n\nSuppose you have a vector in the Body frame, \\(^B\\mathbf{v}\\) which you want to transform/express in the World frame. Then\n\n\\[\n^W\\mathbf{v} = _B^W\\mathbf{R} ^B_\\mathbf{v}\n\\]"
+    "text": "Transforming vectors from one frame to another\n\n\nVERY IMPORTANT AND USEFUL\n\n\n\nSuppose you have a vector in the Body frame, \\(^B\\mathbf{v}\\) which you want to transform/express in the World frame. Then\n\n\\[\n^W\\mathbf{v} = _B^W\\mathbf{R} ^B\\mathbf{v}\n\\]"
   },
   {
     "objectID": "lecs/w02/lec02.html#combining-rotations-and-translation-into-one-transformation",
@@ -7584,7 +7584,7 @@
     "href": "lecs/w02/lec02.html#inverting-a-homogeneous-transformation",
     "title": "CSC477 Introduction to Mobile Robotics",
     "section": "Inverting a homogeneous transformation",
-    "text": "Inverting a homogeneous transformation\n\nBe careful:\n\n\\[\n_B^W\\mathbf{T}^{-1} \\neq _A^W\\mathbf{T}^t\n\\]\nas was the case with rotation matrices."
+    "text": "Inverting a homogeneous transformation\n\nBe careful:\n\n\\[\n_B^W\\mathbf{T}^{-1} \\neq {}_B^W\\mathbf{T}^t\n\\]\nas was the case with rotation matrices.\n\nThe inverse is instead\n\n\\[\n_B^W\\mathbf{T}^{-1} = {}_W^B\\mathbf{T} = \\begin{bmatrix}\n_B^W\\mathbf{R}^t & -{}_B^W\\mathbf{R}^t \\, ^W\\mathbf{t}_{WB} \\\\\n0 & 1 \\\\\n\\end{bmatrix}\n\\]\n\nOnly the rotation block is transposed. The translation block must also be rotated into the new frame and negated, because \\(^B\\mathbf{t}_{BW} = -{}_B^W\\mathbf{R}^t \\, ^W\\mathbf{t}_{WB}\\)\nCheaper and more accurate than calling a general matrix inversion routine. Use it."
   },
   {
     "objectID": "lecs/w02/lec02.html#physical-models-of-how-systems-move",
