@@ -20,7 +20,7 @@ Recommended: MAT224H5; CSC384H5; CSC311H5;
 * **Lectures**: Wednesdays @ 11am-1pm ET, IB260 + Zoom
 * **Tutorials**: Wednesdays @ 1pm-2pm ET, MN3110 + Zoom
 * **Instructor Office Hours**: Wednesdays @ 10am-11am ET, DH3066 + Zoom
-* **TA Office Hours**: TBA, Zoom
+* **TA Office Hours**: Mondays @ 12pm-1pm ET, Zoom
 * Announcements will be posted on [Quercus](https://q.utoronto.ca/courses/444079)
 * Discussions will take place on Piazza
 * [Anonymous feedback form](https://www.surveymonkey.com/r/H8QH65F) for suggested improvements
