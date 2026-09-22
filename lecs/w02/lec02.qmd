@@ -6,7 +6,7 @@ format:
   revealjs:
     slide-number: true
     smaller: true
-    footer: '<a href="https://csc477.github.io/website_fall24" target="_blank" style="font-size:0.8em; bottom: -5px;">↩ Back to Course Website</a>'
+    footer: '<a href="https://csc477.github.io/2026F_website" target="_blank" style="font-size:0.8em; bottom: -5px;">↩ Back to Course Website</a>'
     css: ../style.css
     chalkboard:
       buttons: true
@@ -15,7 +15,7 @@ format:
       chalk-effect: 1.0
 html-math-method:
   method: mathjax
-  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js"
 ---
 
 ##  {.center}
@@ -264,7 +264,7 @@ $${}^W_B\mathbf{R}^{t} {}^W_B\mathbf{R} = \mathbf{I}$$
 -   Given angle theta and axis v the equivalent rotation matrix is
 
 $$
-\mathbf{R} = \mathbf{I}\cos\theta + (1 - \cos\theta)\mathbf{v}\mathbf{v}^t + [\mathbf{v}]_\times
+\mathbf{R} = \mathbf{I}\cos\theta + (1 - \cos\theta)\mathbf{v}\mathbf{v}^t + [\mathbf{v}]_\times \sin\theta
 $$
 
 -   Where I is the 3x3 identity and $$[\mathbf{a}]_\times \stackrel{\text{def}}{=} \begin{bmatrix} 0 & -a_3 & a_2 \\ a_3 & 0 & -a_1 \\ -a_2 & a_1 & 0 \end{bmatrix}$$
@@ -523,7 +523,7 @@ $${}^W\mathbf{p} = {}^W_B\mathbf{R} {}^B\mathbf{p} + {}^W\mathbf{t}_{WB} \qquad 
 -   Suppose you have a vector in the Body frame, $^B\mathbf{v}$ which you want to transform/express in the World frame. Then
 
 $$
-^W\mathbf{v} = _B^W\mathbf{R} ^B_\mathbf{v}
+^W\mathbf{v} = _B^W\mathbf{R} ^B\mathbf{v}
 $$
 
 ## Combining rotations and translation into one transformation
@@ -554,10 +554,23 @@ Composing rigid motions now becomes a series of matrix multiplications
 -   Be careful:
 
 $$
-_B^W\mathbf{T}^{-1} \neq _A^W\mathbf{T}^t
+_B^W\mathbf{T}^{-1} \neq {}_B^W\mathbf{T}^t
 $$
 
 as was the case with rotation matrices.
+
+-   The inverse is instead
+
+$$
+_B^W\mathbf{T}^{-1} = {}_W^B\mathbf{T} = \begin{bmatrix}
+_B^W\mathbf{R}^t & -{}_B^W\mathbf{R}^t \, ^W\mathbf{t}_{WB} \\
+0 & 1 \\
+\end{bmatrix}
+$$
+
+-   Only the rotation block is transposed. The translation block must also be rotated into the new frame and negated, because $^B\mathbf{t}_{BW} = -{}_B^W\mathbf{R}^t \, ^W\mathbf{t}_{WB}$
+
+-   Cheaper and more accurate than calling a general matrix inversion routine. Use it.
 
 ## Physical models of how systems move
 

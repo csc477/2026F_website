@@ -1,0 +1,114 @@
+---
+title: "Tutorial 2 exercises: ROS 2 basics"
+---
+
+Companion exercises for the [Tutorial 2 slides](../tut02.html). Two kinds:
+
+- **`standalone/`**: plain Python scripts that need only `numpy` (and optionally `matplotlib`). Run them anywhere, no ROS install needed. Each file has `TODO` blocks and built-in self-checks.
+- **`ros2_ws_src/csc477_tut02/`**: a small ROS 2 package with complete example nodes and one node for you to finish. Needs a ROS 2 install (Jazzy on Ubuntu 24.04 recommended; Humble also works).
+
+All files: [GitHub folder](https://github.com/csc477/2026F_website/tree/main/tutorials/w02/code).
+
+## Part A: standalone exercises (no ROS)
+
+```bash
+pip install numpy matplotlib          # if needed
+cd tutorials/w02/code/standalone
+python3 ex1_laser_scan_geometry.py
+python3 ex2_frames_and_transforms.py
+```
+
+Each script prints `[TODO]`, `[FAIL]`, or `[PASS]` for every function, and shows a small demo plot once everything passes.
+
+### `ex1_laser_scan_geometry.py`: from a `LaserScan` to geometry
+
+Uses a `FakeLaserScan` dataclass with exactly the fields of `sensor_msgs/msg/LaserScan`, so your code will work unchanged inside a ROS 2 node.
+
+1. `beam_angles`: beam index to angle, `angle_min + i * angle_increment`.
+2. `valid_mask`: drop `inf` / `nan` and out-of-range returns.
+3. `scan_to_points`: polar to Cartesian `(x, y)` in the laser frame.
+4. `nearest_obstacle`: range and bearing of the closest valid return.
+5. `front_clearance`: minimum range in a sector around straight ahead (the quantity behind every emergency stop).
+
+### `ex2_frames_and_transforms.py`: coordinate frames by hand
+
+What `tf2` does for you at runtime, as 3x3 homogeneous matrices.
+
+1. `make_transform(x, y, yaw)` and 2. `pose_from_transform(T)`.
+3. `transform_points(T, pts)`: move many points between frames without loops.
+4. `invert_transform(T)`: the closed-form inverse of a rigid transform.
+5. `laser_points_in_odom`: chain `odom -> base_link -> laser` to place lidar points in the world.
+
+The demo re-projects four scans of the same wall, taken from different robot poses with a rear-facing lidar, into `odom`: they line up.
+
+## Part B: ROS 2 package
+
+### Build
+
+```bash
+source /opt/ros/jazzy/setup.bash                    # or humble
+mkdir -p ~/csc477_ws/src
+cp -r tutorials/w02/code/ros2_ws_src/csc477_tut02 ~/csc477_ws/src/
+cd ~/csc477_ws
+rosdep install --from-paths src --ignore-src -r -y  # installs rclpy, sensor_msgs, numpy, ...
+colcon build --symlink-install
+source install/setup.bash                           # do this in every new terminal
+```
+
+`--symlink-install` means edits to the Python files take effect without rebuilding. If you add a new entry point in `setup.py`, rebuild.
+
+### 1. Talker and listener
+
+```bash
+ros2 run csc477_tut02 minimal_publisher     # terminal 1
+ros2 run csc477_tut02 minimal_subscriber    # terminal 2
+ros2 topic list
+ros2 topic echo /chatter
+ros2 topic hz /chatter
+ros2 node info /minimal_publisher
+rqt_graph
+```
+
+Try remapping without changing code: `ros2 run csc477_tut02 minimal_subscriber --ros-args -r chatter:=other`. The listener now hears nothing; `rqt_graph` shows why.
+
+### 2. Fake laser and obstacle monitor (your turn)
+
+`fake_laser_publisher` publishes a synthetic `sensor_msgs/LaserScan` of a scene of circular obstacles on `/scan`, with the best-effort QoS that real sensors and Gazebo use. `obstacle_monitor.py` has three `TODO`s: subscribe with the right QoS, compute the front clearance (reuse your `ex1` code), and publish `/front_clearance` (`Float32`) and `/obstacle_ahead` (`Bool`).
+
+```bash
+ros2 run csc477_tut02 fake_laser_publisher                      # terminal 1
+ros2 run csc477_tut02 obstacle_monitor                          # terminal 2
+ros2 topic echo /front_clearance                                # terminal 3
+ros2 topic echo /obstacle_ahead
+ros2 param set /fake_laser_publisher obstacles "[0.8, 0.0, 0.3]"  # obstacle 0.8 m ahead -> True
+ros2 param set /obstacle_monitor stop_distance 0.3                 # -> False again
+ros2 topic info -v /scan                                           # both nodes should be listed
+```
+
+Things to try: subscribe with the default QoS (`10`) instead of `qos_profile_sensor_data` and see what happens; look at `/scan` in `rviz2` (Fixed Frame `laser`, add a *LaserScan* display, set Reliability to *Best Effort*).
+
+### 3. Parameters (the `dynamic_reconfigure` replacement)
+
+```bash
+ros2 run csc477_tut02 param_demo
+ros2 param list /param_demo
+ros2 param set /param_demo gain 2.5        # 2 (int) is rejected: parameters are typed
+ros2 param set /param_demo gain -1.0       # rejected by the node's validation callback
+ros2 param dump /param_demo                # YAML you can pass back with --params-file
+ros2 run rqt_reconfigure rqt_reconfigure   # sliders, thanks to the ParameterDescriptor ranges
+```
+
+### 4. Launch file, bags, CSV export
+
+```bash
+ros2 launch csc477_tut02 tut02.launch.py stop_distance:=1.5
+ros2 bag record -o run1 /front_clearance /obstacle_ahead        # Ctrl-C to stop
+ros2 bag info run1
+# export to CSV: echo in one terminal while playing back in another
+ros2 topic echo --csv /front_clearance > front_clearance.csv
+ros2 bag play run1
+```
+
+## Notes
+
+- The ROS 2 nodes were written against the Jazzy `rclpy` API and syntax-checked, but this repository is built on a machine without ROS, so please report anything that does not run as described on Piazza.
