@@ -35,7 +35,7 @@ Recommended: MAT224H5; CSC384H5; CSC311H5;
 
 | Item | Due Date | % of Final Grade |
 |-----------|-----------|-----------|
-| Assignment 1 | Oct 8 | 10% |
+| Assignment 1 | Oct 12 | 10% |
 | Assignment 2 | Oct 29 | 10% |
 | Assignment 3 | Nov 19 | 10% |
 | Assignment 4 | Dec 4 | 10% |
