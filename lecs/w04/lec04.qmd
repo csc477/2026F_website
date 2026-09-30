@@ -86,6 +86,23 @@ use u(sensory observation)=…
 
 ![](img/Lecture5_6.gif){fig-align="center"}
 
+## Subsumption Architecture: How It Works
+
+-   Rodney Brooks (MIT, 1986): *"A Robust Layered Control System for a Mobile Robot"*
+-   Decompose the robot by **behaviors** (avoid obstacles, wander, explore, ...), not by functional modules (perception → world model → planner → controller)
+-   Each layer is a set of simple, reactive finite state machines that map sensor readings directly to actions
+-   Higher layers **subsume** lower layers: they can suppress their inputs or inhibit their outputs, but lower layers keep running
+-   Build incrementally: get "avoid obstacles" working, then add "wander" on top of it, etc.
+
+. . .
+
+-   No central world model or state estimate: [*"The world is its own best model"*]{.red}
+-   Led to Genghis (six-legged walking robot, 1989) and, via iRobot, the Roomba
+
+. . .
+
+-   [Limitation: hard to scale to tasks that need long-horizon reasoning, e.g. finding the shortest path to a goal across a building. That is where planning comes in.]{.red}
+
 ## Planning as graph search
 
 -   Graph nodes represent discrete states
@@ -109,26 +126,63 @@ use u(sensory observation)=…
 ## Dynamic Programming
 
 $$
-D(v) = \min_{u \in N(v)} [d(v, u) + D(u)] 
+D(v, v_{dest}) = \min_{u \in N(v)} [d(v, u) + D(u, v_{dest})] 
 $$
 
 $$
-D(v_{\text{dest}}) = 0
+D(v_{dest}, v_{dest}) = 0
 $$
 
-![](img/dynamic-program-text.png){.absolute width="750" top="110" left="150"}
+::: {.red-annotation .absolute top="235" left="170" style="padding: 2px 12px;"}
+Cost-to-go from $v$ to $v_{dest}$ 
+:::
+
+::: {.red-annotation .absolute top="225" left="660" width="300" style="padding: 2px 12px;"}
+Instantaneous transition\
+cost (non-negative)
+:::
+
+<svg class="annotation-layer">
+<defs><marker id="dp-arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"/></marker></defs>
+<line x1="250" y1="232" x2="338" y2="145" marker-end="url(#dp-arrow)"/>
+<line x1="695" y1="222" x2="570" y2="151" marker-end="url(#dp-arrow)"/>
+</svg>
 
 ## Dynamic Programming
 
 $$
-D(v) = \min_{u \in N(v)} [d(v, u) + D(u)] 
+D(v, v_{dest}) = \min_{u \in N(v)} [d(v, u) + D(u, v_{dest})] 
 $$
 
 $$
-D(v_{\text{dest}}) = 0
+D(v_{dest}, v_{dest}) = 0
 $$
 
-![](img/dp-text2.png){.absolute width="800" height="180" top="110" left="150"}
+::: {.red-annotation .absolute top="240" left="150" width="280"}
+Cost-to-go from $v$ to $v_{dest}$
+:::
+
+::: {.red-annotation .absolute top="128" left="800" width="220"}
+Neighbors of $v$,\
+i.e. available actions
+:::
+
+::: {.red-annotation .absolute top="225" left="660" width="300"}
+Instantaneous transition\
+cost (non-negative)
+:::
+
+::: {.red-annotation .absolute top="268" left="480"}
+Base case
+:::
+
+<svg class="annotation-layer">
+<defs><marker id="dp2-arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"/></marker></defs>
+<line x1="250" y1="236" x2="338" y2="145" marker-end="url(#dp2-arrow)"/>
+<line x1="795" y1="141" x2="515" y2="141" marker-end="url(#dp2-arrow)"/>
+<line x1="695" y1="222" x2="570" y2="151" marker-end="url(#dp2-arrow)"/>
+<line x1="530" y1="262" x2="530" y2="228" marker-end="url(#dp2-arrow)"/>
+</svg>
 
 <br>
 
@@ -149,11 +203,11 @@ $$
 ## Dynamic Programming
 
 $$
-D(v) = \min_{u \in N(v)} [d(v, u) + D(u)] 
+D(v, v_{dest}) = \min_{u \in N(v)} [d(v, u) + D(u, v_{dest})] 
 $$
 
 $$
-D(v_{\text{dest}}) = 0
+D(v_{dest}, v_{dest}) = 0
 $$
 
 ::: {.small-font .absolute left="0" top="100"}
@@ -165,11 +219,29 @@ In 2D grid world\
 $O(|V|)$
 :::
 
-![](img/dp-text3.png){.absolute width="750" top="130" left="150"}
+::: {.red-annotation .absolute top="240" left="150" width="320"}
+Cost-to-go from $v$ to $v_{dest}$
+:::
+
+::: {.red-annotation .absolute top="225" left="660" width="300"}
+Instantaneous transition\
+cost (non-negative)
+:::
+
+::: {.red-annotation .absolute top="268" left="480"}
+Base case
+:::
+
+<svg class="annotation-layer">
+<defs><marker id="dp3-arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"/></marker></defs>
+<line x1="250" y1="236" x2="338" y2="145" marker-end="url(#dp3-arrow)"/>
+<line x1="695" y1="222" x2="570" y2="151" marker-end="url(#dp3-arrow)"/>
+<line x1="530" y1="262" x2="530" y2="228" marker-end="url(#dp3-arrow)"/>
+</svg>
 
 ## Dijkstra’s algorithm: example runs
 
-{{< video vid/dijkstra.mp4 width=600 height="400" >}}
+{{< video vid/dijkstra.mp4 width="800" height="600" >}}
 
 ## Dijkstra’s algorithm
 
@@ -179,31 +251,30 @@ $O(|V|)$
 :::
 
 ::: {.column width="96%"}
--   Let $D(v)$ denote the length of the optimal path from the source node to node $v$ (i.e. cost-to-come, not cost-to-go like before)
+-   Let $D(v_{src}, v)$ denote the length of the optimal path from the source node to node $v$ (i.e. cost-to-come, not cost-to-go like before)
 
--   Set $D(v) = \infty$ for all nodes except the source: $D(v_{\text{src}}) = 0$
+-   Set $D(v_{src}, v) = \infty$ for all nodes except the source: $D(v_{src}, v_{src}) = 0$
 
 -   Add all nodes to priority queue Q with cost-to-come as priority
 
 -   While Q is not empty:
 
     ::: fragment
-    -   Extract the node with minimum cost-to-come from the queue Q
+    -   Extract the node with minimum cost-to-come from the queue Q  [(time complexity $O(1)$)]{.light-grey}
     -   If found goal then done
-    -   Remove from the queue\
+    -   Remove from the queue [(time complexity $O(\text{log}|V|)$)]{.light-grey}\
         [The cost-to-come of $v$ is final at this point.]{.red} [Need to check if we can reduce the cost-to-come of its neighbors.]{.red}
     :::
 
     ::: fragment
     -   For $u$ in neighborhood of $v$:
-        -   If $d(u, v) + D(v) < D(u)$ then
-            -   Update priority $u$ of in Q to be $d(u,v) + D(v)$
+        -   If $D(v_{src}, v) + d(v, u) < D(v_{src}, u)$ then
+            -   Update priority $u$ of in Q to be $D(v_{src}, v) + d(v, u)$   [(time complexity $O(1)$)]{.light-grey}
     :::
 :::
 :::::
 
 :::: fragment
-![](img/dij-algo-pointers.png){.absolute top="255" left="0" width="195" height="280"}
 
 ::: right-align
 [For Fibonacci heaps]{.red}
@@ -224,20 +295,21 @@ the solution.]{.red}
 {{< video vid/dijkstra.mp4 width=600 height="400" >}}
 :::
 
-## A\* Search: Main Idea
+## A\* Search: Main Ideas
 
 -   Modifies Dijkstra’s algorithm to be more efficient
 
 -   Expands fewer nodes than Dijkstra’s by using a heuristic
 
--   While Dijkstra prioritizes nodes based on cost-to-come
+-   While Dijkstra prioritizes nodes based on cost-to-come $D(v_{src}, v)$
 
--   A\* prioritizes them based on:\
-    cost-to-come to $v$ + lower bound on cost-to-go from $v$ to $v_{\text{dest}}$
+-   A\* prioritizes them based on: $D(v_{src}, v)$ + lower bound on $D(v, v_{dest})$
 
 ::::: columns
-::: {.column width="50%"}
-![](img/arrow-equation.png)
+::: {.column style="width: 50%; font-size: 1.6em;"}
+<br>
+
+$$f(v) = g(v) + h(v)$$
 :::
 
 ::: {.column .red-annotation width="30%"}
@@ -245,27 +317,36 @@ Optimistic search: explore node with smallest f(v) next
 :::
 :::::
 
+<svg class="annotation-layer">
+<defs>
+<marker id="astar-arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"/></marker>
+<marker id="astar-arrow-blue" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="blue"/></marker>
+</defs>
+<line x1="0" y1="440" x2="54" y2="440" stroke="blue" stroke-width="3" marker-end="url(#astar-arrow-blue)"/>
+</svg>
+
 ::: {.blue .small-font .absolute left="0" bottom="80"}
 Lower bound on\
 cost of path from\
-source to destination\
+$v_{src}$ to $v_{dest}$\
 that passes through $v$
 :::
 
-## A\* Search: Main Idea
+## A\* Search: Main Ideas
 
 -   Modifies Dijkstra’s algorithm to be more efficient
 
 -   Expands fewer nodes than Dijkstra’s by using a heuristic
 
--   While Dijkstra prioritizes nodes based on cost-to-come
-
--   A\* prioritizes them based on:\
-    cost-to-come to $v$ + lower bound on cost-to-go from $v$ to $v_{\text{dest}}$
+-   While Dijkstra prioritizes nodes based on cost-to-come $D(v_{src}, v)$
+ 
+-   A\* prioritizes them based on: $D(v_{src}, v)$ + lower bound on $D(v, v_{dest})$
 
 ::::: columns
-::: {.column width="60%"}
-![](img/arrow-equations.png)
+::: {.column style="width: 50%; font-size: 1.6em;"}
+<br>
+
+$$f(v) = g(v) + h(v)$$
 :::
 
 ::: {.column .red-annotation width="30%"}
@@ -273,10 +354,19 @@ h() is called a heuristic. h() must be **admissible,** i.e. underestimate the co
 :::
 :::::
 
+<svg class="annotation-layer">
+<defs>
+<marker id="astar2-arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"/></marker>
+<marker id="astar2-arrow-blue" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="blue"/></marker>
+</defs>
+<line x1="0" y1="440" x2="54" y2="440" stroke="blue" stroke-width="3" marker-end="url(#astar2-arrow-blue)"/>
+<line x1="515" y1="440" x2="460" y2="440" stroke-width="3" marker-end="url(#astar2-arrow)"/>
+</svg>
+
 ::: {.blue .small-font .absolute left="0" bottom="80"}
 Lower bound on\
 cost of path from\
-source to destination\
+$v_{src}$ to $v_{dest}$\
 that passes through $v$
 :::
 
@@ -302,11 +392,11 @@ that passes through $v$
 
 ## Dijkstra vs A\*
 
-{{< video vid/dijkstra-a.mp4 width=600 height="400" >}}
+{{< video vid/dijkstra-a.mp4 width=900 height="600" >}}
 
 ## A\* for cars
 
-{{< video https://www.youtube.com/watch?v=qXZt-B7iUyw width=600 height="400" >}}
+{{< video https://www.youtube.com/watch?v=qXZt-B7iUyw width=900 height="600" >}}
 
 ## Configuration Space
 
@@ -571,7 +661,7 @@ Can query in O(logn)]{.red-annotation .absolute right="0" top="30%"}
 
 ## RRT example: moving a piano
 
-{{< video https://www.youtube.com/watch?v=rPgZyq15Z-Q width=600 height="400" >}}
+{{< video https://www.youtube.com/watch?v=rPgZyq15Z-Q width=900 height="600" >}}
 
 ## RRT: properties of the planning algorithm
 
@@ -619,7 +709,7 @@ This problem has been addressed in recent years by RRT\*, BIT\*, Fast-Marching T
 
 ## RRT variants: bidirectional search
 
-{{< video https://www.youtube.com/watch?v=rPgZyq15Z-Q width=600 height="400" >}}
+{{< video https://www.youtube.com/watch?v=rPgZyq15Z-Q width=900 height="600" >}}
 
 ## Probabilistic RoadMaps (PRMs)
 

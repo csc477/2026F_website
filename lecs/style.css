@@ -71,6 +71,10 @@ font-size: 0.5em;
   color: grey;
 }
 
+.light-grey{
+  color: #a6a6a6;
+}
+
 .blue{
   color: blue;
 }
@@ -109,4 +113,25 @@ font-size: 0.5em;
 
 .yellow-box{
     background-color: #fdfd98;
+}
+
+/* Overlay for hand-placed annotation arrows. Coordinates are in
+   revealjs slide units, i.e. the 1050x700 canvas. */
+.annotation-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1050px;
+    height: 700px;
+    overflow: visible;
+    pointer-events: none;
+    stroke: red;
+    stroke-width: 1.5;
+    fill: red;
+}
+
+/* Inherited above so that individual lines and arrowheads can override
+   stroke/fill/stroke-width with presentation attributes. */
+.annotation-layer marker path {
+    stroke: none;
 }
