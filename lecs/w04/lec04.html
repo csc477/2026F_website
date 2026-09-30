@@ -228,6 +228,27 @@ use u(sensory observation)=…</p>
 <h2>Subsumption Architecture: Planning Is Not Necessary</h2>
 
 <img data-src="img/Lecture5_6.gif" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="subsumption-architecture-how-it-works" class="slide level2">
+<h2>Subsumption Architecture: How It Works</h2>
+<ul>
+<li>Rodney Brooks (MIT, 1986): <em>“A Robust Layered Control System for a Mobile Robot”</em></li>
+<li>Decompose the robot by <strong>behaviors</strong> (avoid obstacles, wander, explore, …), not by functional modules (perception → world model → planner → controller)</li>
+<li>Each layer is a set of simple, reactive finite state machines that map sensor readings directly to actions</li>
+<li>Higher layers <strong>subsume</strong> lower layers: they can suppress their inputs or inhibit their outputs, but lower layers keep running</li>
+<li>Build incrementally: get “avoid obstacles” working, then add “wander” on top of it, etc.</li>
+</ul>
+<div class="fragment">
+<ul>
+<li>No central world model or state estimate: <span class="red"><em>“The world is its own best model”</em></span></li>
+<li>Led to Genghis (six-legged walking robot, 1989) and, via iRobot, the Roomba</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><span class="red">Limitation: hard to scale to tasks that need long-horizon reasoning, e.g.&nbsp;finding the shortest path to a goal across a building. That is where planning comes in.</span></li>
+</ul>
+</div>
+</section>
 <section id="planning-as-graph-search" class="slide level2">
 <h2>Planning as graph search</h2>
 <ul>
@@ -254,22 +275,47 @@ use u(sensory observation)=…</p>
 <section id="dynamic-programming" class="slide level2">
 <h2>Dynamic Programming</h2>
 <p><span class="math display">\[
-D(v) = \min_{u \in N(v)} [d(v, u) + D(u)]
+D(v, v_{dest}) = \min_{u \in N(v)} [d(v, u) + D(u, v_{dest})]
 \]</span></p>
 <p><span class="math display">\[
-D(v_{\text{dest}}) = 0
+D(v_{dest}, v_{dest}) = 0
 \]</span></p>
-<p><img data-src="img/dynamic-program-text.png" class="absolute" style="top: 110px; left: 150px; width: 750px; "></p>
+<div class="red-annotation absolute" style="padding: 2px 12px;top: 235px; left: 170px; ">
+<p>Cost-to-go from <span class="math inline">\(v\)</span> to <span class="math inline">\(v_{dest}\)</span></p>
+</div>
+<div class="red-annotation absolute" style="padding: 2px 12px;top: 225px; left: 660px; width: 300px; ">
+<p>Instantaneous transition<br>
+cost (non-negative)</p>
+</div>
+<svg class="annotation-layer">
+<defs><marker id="dp-arrow" markerwidth="6" markerheight="6" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"></path></marker></defs> <line x1="250" y1="232" x2="338" y2="145" marker-end="url(#dp-arrow)"></line> <line x1="695" y1="222" x2="570" y2="151" marker-end="url(#dp-arrow)"></line>
+</svg>
 </section>
 <section id="dynamic-programming-1" class="slide level2">
 <h2>Dynamic Programming</h2>
 <p><span class="math display">\[
-D(v) = \min_{u \in N(v)} [d(v, u) + D(u)]
+D(v, v_{dest}) = \min_{u \in N(v)} [d(v, u) + D(u, v_{dest})]
 \]</span></p>
 <p><span class="math display">\[
-D(v_{\text{dest}}) = 0
+D(v_{dest}, v_{dest}) = 0
 \]</span></p>
-<p><img data-src="img/dp-text2.png" class="absolute" style="top: 110px; left: 150px; width: 800px; height: 180px; "></p>
+<div class="red-annotation absolute" style="top: 240px; left: 150px; width: 280px; ">
+<p>Cost-to-go from <span class="math inline">\(v\)</span> to <span class="math inline">\(v_{dest}\)</span></p>
+</div>
+<div class="red-annotation absolute" style="top: 128px; left: 800px; width: 220px; ">
+<p>Neighbors of <span class="math inline">\(v\)</span>,<br>
+i.e.&nbsp;available actions</p>
+</div>
+<div class="red-annotation absolute" style="top: 225px; left: 660px; width: 300px; ">
+<p>Instantaneous transition<br>
+cost (non-negative)</p>
+</div>
+<div class="red-annotation absolute" style="top: 268px; left: 480px; ">
+<p>Base case</p>
+</div>
+<svg class="annotation-layer">
+<defs><marker id="dp2-arrow" markerwidth="6" markerheight="6" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"></path></marker></defs> <line x1="250" y1="236" x2="338" y2="145" marker-end="url(#dp2-arrow)"></line> <line x1="795" y1="141" x2="515" y2="141" marker-end="url(#dp2-arrow)"></line> <line x1="695" y1="222" x2="570" y2="151" marker-end="url(#dp2-arrow)"></line> <line x1="530" y1="262" x2="530" y2="228" marker-end="url(#dp2-arrow)"></line>
+</svg>
 <p><br></p>
 <p><br></p>
 <div>
@@ -295,10 +341,10 @@ J_0(\mathbf{x}) &amp;= \mathbf{x}^T Q\mathbf{x}
 <section id="dynamic-programming-2" class="slide level2">
 <h2>Dynamic Programming</h2>
 <p><span class="math display">\[
-D(v) = \min_{u \in N(v)} [d(v, u) + D(u)]
+D(v, v_{dest}) = \min_{u \in N(v)} [d(v, u) + D(u, v_{dest})]
 \]</span></p>
 <p><span class="math display">\[
-D(v_{\text{dest}}) = 0
+D(v_{dest}, v_{dest}) = 0
 \]</span></p>
 <div class="small-font absolute" style="top: 100px; left: 0px; ">
 <p>Worst-Case<br>
@@ -307,11 +353,23 @@ Complexity:<br>
 <p>In 2D grid world<br>
 <span class="math inline">\(O(|V|)\)</span></p>
 </div>
-<p><img data-src="img/dp-text3.png" class="absolute" style="top: 130px; left: 150px; width: 750px; "></p>
+<div class="red-annotation absolute" style="top: 240px; left: 150px; width: 320px; ">
+<p>Cost-to-go from <span class="math inline">\(v\)</span> to <span class="math inline">\(v_{dest}\)</span></p>
+</div>
+<div class="red-annotation absolute" style="top: 225px; left: 660px; width: 300px; ">
+<p>Instantaneous transition<br>
+cost (non-negative)</p>
+</div>
+<div class="red-annotation absolute" style="top: 268px; left: 480px; ">
+<p>Base case</p>
+</div>
+<svg class="annotation-layer">
+<defs><marker id="dp3-arrow" markerwidth="6" markerheight="6" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"></path></marker></defs> <line x1="250" y1="236" x2="338" y2="145" marker-end="url(#dp3-arrow)"></line> <line x1="695" y1="222" x2="570" y2="151" marker-end="url(#dp3-arrow)"></line> <line x1="530" y1="262" x2="530" y2="228" marker-end="url(#dp3-arrow)"></line>
+</svg>
 </section>
 <section id="dijkstras-algorithm-example-runs" class="slide level2">
 <h2>Dijkstra’s algorithm: example runs</h2>
-<video id="video_shortcode_videojs_video1" width="600" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/dijkstra.mp4"></video>
+<video id="video_shortcode_videojs_video1" width="800" height="600" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/dijkstra.mp4"></video>
 </section>
 <section id="dijkstras-algorithm" class="slide level2">
 <h2>Dijkstra’s algorithm</h2>
@@ -321,15 +379,15 @@ Complexity:<br>
 
 </div><div class="column" style="width:96%;">
 <ul>
-<li><p>Let <span class="math inline">\(D(v)\)</span> denote the length of the optimal path from the source node to node <span class="math inline">\(v\)</span> (i.e.&nbsp;cost-to-come, not cost-to-go like before)</p></li>
-<li><p>Set <span class="math inline">\(D(v) = \infty\)</span> for all nodes except the source: <span class="math inline">\(D(v_{\text{src}}) = 0\)</span></p></li>
+<li><p>Let <span class="math inline">\(D(v_{src}, v)\)</span> denote the length of the optimal path from the source node to node <span class="math inline">\(v\)</span> (i.e.&nbsp;cost-to-come, not cost-to-go like before)</p></li>
+<li><p>Set <span class="math inline">\(D(v_{src}, v) = \infty\)</span> for all nodes except the source: <span class="math inline">\(D(v_{src}, v_{src}) = 0\)</span></p></li>
 <li><p>Add all nodes to priority queue Q with cost-to-come as priority</p></li>
 <li><p>While Q is not empty:</p>
 <div class="fragment">
 <ul>
-<li>Extract the node with minimum cost-to-come from the queue Q</li>
+<li>Extract the node with minimum cost-to-come from the queue Q <span class="light-grey">(time complexity <span class="math inline">\(O(1)\)</span>)</span></li>
 <li>If found goal then done</li>
-<li>Remove from the queue<br>
+<li>Remove from the queue <span class="light-grey">(time complexity <span class="math inline">\(O(\text{log}|V|)\)</span>)</span><br>
 <span class="red">The cost-to-come of <span class="math inline">\(v\)</span> is final at this point.</span> <span class="red">Need to check if we can reduce the cost-to-come of its neighbors.</span></li>
 </ul>
 </div>
@@ -337,9 +395,9 @@ Complexity:<br>
 <ul>
 <li>For <span class="math inline">\(u\)</span> in neighborhood of <span class="math inline">\(v\)</span>:
 <ul>
-<li>If <span class="math inline">\(d(u, v) + D(v) &lt; D(u)\)</span> then
+<li>If <span class="math inline">\(D(v_{src}, v) + d(v, u) &lt; D(v_{src}, u)\)</span> then
 <ul>
-<li>Update priority <span class="math inline">\(u\)</span> of in Q to be <span class="math inline">\(d(u,v) + D(v)\)</span></li>
+<li>Update priority <span class="math inline">\(u\)</span> of in Q to be <span class="math inline">\(D(v_{src}, v) + d(v, u)\)</span> <span class="light-grey">(time complexity <span class="math inline">\(O(1)\)</span>)</span></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -347,7 +405,6 @@ Complexity:<br>
 </ul>
 </div></div>
 <div class="fragment">
-<p><img data-src="img/dij-algo-pointers.png" class="absolute" style="top: 255px; left: 0px; width: 195px; height: 280px; "></p>
 <div class="right-align">
 <p><span class="red">For Fibonacci heaps</span></p>
 <p><span class="math inline">\(O(|E|T_{\text{update priority}} + |V|T_{\text{remove min}}) = O(|E| + |V|\log|V|)\)</span></p>
@@ -377,47 +434,53 @@ the solution.</span></p>
 </div>
 </div>
 </section>
-<section id="a-search-main-idea" class="slide level2">
-<h2>A* Search: Main Idea</h2>
+<section id="a-search-main-ideas" class="slide level2">
+<h2>A* Search: Main Ideas</h2>
 <ul>
 <li><p>Modifies Dijkstra’s algorithm to be more efficient</p></li>
 <li><p>Expands fewer nodes than Dijkstra’s by using a heuristic</p></li>
-<li><p>While Dijkstra prioritizes nodes based on cost-to-come</p></li>
-<li><p>A* prioritizes them based on:<br>
-cost-to-come to <span class="math inline">\(v\)</span> + lower bound on cost-to-go from <span class="math inline">\(v\)</span> to <span class="math inline">\(v_{\text{dest}}\)</span></p></li>
+<li><p>While Dijkstra prioritizes nodes based on cost-to-come <span class="math inline">\(D(v_{src}, v)\)</span></p></li>
+<li><p>A* prioritizes them based on: <span class="math inline">\(D(v_{src}, v)\)</span> + lower bound on <span class="math inline">\(D(v, v_{dest})\)</span></p></li>
 </ul>
 <div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="img/arrow-equation.png"></p>
+<div class="column" style="width: 50%; font-size: 1.6em;">
+<p><br></p>
+<p><span class="math display">\[f(v) = g(v) + h(v)\]</span></p>
 </div><div class="column red-annotation" style="width:30%;">
 <p>Optimistic search: explore node with smallest f(v) next</p>
 </div></div>
+<svg class="annotation-layer">
+<defs> <marker id="astar-arrow" markerwidth="6" markerheight="6" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"></path></marker> <marker id="astar-arrow-blue" markerwidth="6" markerheight="6" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="blue"></path></marker> </defs> <line x1="0" y1="440" x2="54" y2="440" stroke="blue" stroke-width="3" marker-end="url(#astar-arrow-blue)"></line>
+</svg>
 <div class="blue small-font absolute" style="left: 0px; bottom: 80px; ">
 <p>Lower bound on<br>
 cost of path from<br>
-source to destination<br>
+<span class="math inline">\(v_{src}\)</span> to <span class="math inline">\(v_{dest}\)</span><br>
 that passes through <span class="math inline">\(v\)</span></p>
 </div>
 </section>
-<section id="a-search-main-idea-1" class="slide level2">
-<h2>A* Search: Main Idea</h2>
+<section id="a-search-main-ideas-1" class="slide level2">
+<h2>A* Search: Main Ideas</h2>
 <ul>
 <li><p>Modifies Dijkstra’s algorithm to be more efficient</p></li>
 <li><p>Expands fewer nodes than Dijkstra’s by using a heuristic</p></li>
-<li><p>While Dijkstra prioritizes nodes based on cost-to-come</p></li>
-<li><p>A* prioritizes them based on:<br>
-cost-to-come to <span class="math inline">\(v\)</span> + lower bound on cost-to-go from <span class="math inline">\(v\)</span> to <span class="math inline">\(v_{\text{dest}}\)</span></p></li>
+<li><p>While Dijkstra prioritizes nodes based on cost-to-come <span class="math inline">\(D(v_{src}, v)\)</span></p></li>
+<li><p>A* prioritizes them based on: <span class="math inline">\(D(v_{src}, v)\)</span> + lower bound on <span class="math inline">\(D(v, v_{dest})\)</span></p></li>
 </ul>
 <div class="columns">
-<div class="column" style="width:60%;">
-<p><img data-src="img/arrow-equations.png"></p>
+<div class="column" style="width: 50%; font-size: 1.6em;">
+<p><br></p>
+<p><span class="math display">\[f(v) = g(v) + h(v)\]</span></p>
 </div><div class="column red-annotation" style="width:30%;">
 <p>h() is called a heuristic. h() must be <strong>admissible,</strong> i.e.&nbsp;underestimate the cost-to-go from v to destination. h() must also be <strong>monotonic,</strong> i.e.&nbsp;satisfy the triangle inequality.</p>
 </div></div>
+<svg class="annotation-layer">
+<defs> <marker id="astar2-arrow" markerwidth="6" markerheight="6" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 z"></path></marker> <marker id="astar2-arrow-blue" markerwidth="6" markerheight="6" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="blue"></path></marker> </defs> <line x1="0" y1="440" x2="54" y2="440" stroke="blue" stroke-width="3" marker-end="url(#astar2-arrow-blue)"></line> <line x1="515" y1="440" x2="460" y2="440" stroke-width="3" marker-end="url(#astar2-arrow)"></line>
+</svg>
 <div class="blue small-font absolute" style="left: 0px; bottom: 80px; ">
 <p>Lower bound on<br>
 cost of path from<br>
-source to destination<br>
+<span class="math inline">\(v_{src}\)</span> to <span class="math inline">\(v_{dest}\)</span><br>
 that passes through <span class="math inline">\(v\)</span></p>
 </div>
 </section>
@@ -453,11 +516,11 @@ that passes through <span class="math inline">\(v\)</span></p>
 </section>
 <section id="dijkstra-vs-a" class="slide level2">
 <h2>Dijkstra vs A*</h2>
-<video id="video_shortcode_videojs_video3" width="600" height="400" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/dijkstra-a.mp4"></video>
+<video id="video_shortcode_videojs_video3" width="900" height="600" class="video-js vjs-default-skin " controls="" preload="auto" data-setup="{}" title=""><source src="vid/dijkstra-a.mp4"></video>
 </section>
 <section id="a-for-cars" class="slide level2">
 <h2>A* for cars</h2>
-<iframe data-external="1" src="https://www.youtube.com/embed/qXZt-B7iUyw" width="600" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe data-external="1" src="https://www.youtube.com/embed/qXZt-B7iUyw" width="900" height="600" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </section>
 <section id="configuration-space" class="slide level2">
 <h2>Configuration Space</h2>
@@ -686,7 +749,7 @@ Can query in O(logn)</span></p>
 </section>
 <section id="rrt-example-moving-a-piano" class="slide level2">
 <h2>RRT example: moving a piano</h2>
-<iframe data-external="1" src="https://www.youtube.com/embed/rPgZyq15Z-Q" width="600" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe data-external="1" src="https://www.youtube.com/embed/rPgZyq15Z-Q" width="900" height="600" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </section>
 <section id="rrt-properties-of-the-planning-algorithm" class="slide level2">
 <h2>RRT: properties of the planning algorithm</h2>
@@ -723,7 +786,7 @@ Can query in O(logn)</span></p>
 </section>
 <section id="rrt-variants-bidirectional-search" class="slide level2">
 <h2>RRT variants: bidirectional search</h2>
-<iframe data-external="1" src="https://www.youtube.com/embed/rPgZyq15Z-Q" width="600" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe data-external="1" src="https://www.youtube.com/embed/rPgZyq15Z-Q" width="900" height="600" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </section>
 <section id="probabilistic-roadmaps-prms" class="slide level2">
 <h2>Probabilistic RoadMaps (PRMs)</h2>

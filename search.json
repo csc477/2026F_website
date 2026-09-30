@@ -6852,6 +6852,13 @@
     "text": "Subsumption Architecture: Planning Is Not Necessary"
   },
   {
+    "objectID": "lecs/w04/lec04.html#subsumption-architecture-how-it-works",
+    "href": "lecs/w04/lec04.html#subsumption-architecture-how-it-works",
+    "title": "CSC477 Introduction to Mobile Robotics",
+    "section": "Subsumption Architecture: How It Works",
+    "text": "Subsumption Architecture: How It Works\n\nRodney Brooks (MIT, 1986): “A Robust Layered Control System for a Mobile Robot”\nDecompose the robot by behaviors (avoid obstacles, wander, explore, …), not by functional modules (perception → world model → planner → controller)\nEach layer is a set of simple, reactive finite state machines that map sensor readings directly to actions\nHigher layers subsume lower layers: they can suppress their inputs or inhibit their outputs, but lower layers keep running\nBuild incrementally: get “avoid obstacles” working, then add “wander” on top of it, etc.\n\n\n\nNo central world model or state estimate: “The world is its own best model”\nLed to Genghis (six-legged walking robot, 1989) and, via iRobot, the Roomba\n\n\n\n\nLimitation: hard to scale to tasks that need long-horizon reasoning, e.g. finding the shortest path to a goal across a building. That is where planning comes in."
+  },
+  {
     "objectID": "lecs/w04/lec04.html#planning-as-graph-search",
     "href": "lecs/w04/lec04.html#planning-as-graph-search",
     "title": "CSC477 Introduction to Mobile Robotics",
@@ -6863,21 +6870,21 @@
     "href": "lecs/w04/lec04.html#dynamic-programming",
     "title": "CSC477 Introduction to Mobile Robotics",
     "section": "Dynamic Programming",
-    "text": "Dynamic Programming\n\\[\nD(v) = \\min_{u \\in N(v)} [d(v, u) + D(u)]\n\\]\n\\[\nD(v_{\\text{dest}}) = 0\n\\]"
+    "text": "Dynamic Programming\n\\[\nD(v, v_{dest}) = \\min_{u \\in N(v)} [d(v, u) + D(u, v_{dest})]\n\\]\n\\[\nD(v_{dest}, v_{dest}) = 0\n\\]\n\nCost-to-go from \\(v\\) to \\(v_{dest}\\)\n\n\nInstantaneous transition\ncost (non-negative)"
   },
   {
     "objectID": "lecs/w04/lec04.html#dynamic-programming-1",
     "href": "lecs/w04/lec04.html#dynamic-programming-1",
     "title": "CSC477 Introduction to Mobile Robotics",
     "section": "Dynamic Programming",
-    "text": "Dynamic Programming\n\\[\nD(v) = \\min_{u \\in N(v)} [d(v, u) + D(u)]\n\\]\n\\[\nD(v_{\\text{dest}}) = 0\n\\]\n\n\n\n\n\n\n\n\n\nNote: this should remind you\nof the LQR cost-to-go update\n\n\n\\[\n\\begin{align}\nJ_{t+1}(\\mathbf{x}) &= \\min_{\\mathbf{u}} [g(\\mathbf{x}_t, \\mathbf{u}_t) + J_t(A\\mathbf{x} + B\\mathbf{u})] \\\\\nJ_0(\\mathbf{x}) &= \\mathbf{x}^T Q\\mathbf{x}\n\\end{align}\n\\]"
+    "text": "Dynamic Programming\n\\[\nD(v, v_{dest}) = \\min_{u \\in N(v)} [d(v, u) + D(u, v_{dest})]\n\\]\n\\[\nD(v_{dest}, v_{dest}) = 0\n\\]\n\nCost-to-go from \\(v\\) to \\(v_{dest}\\)\n\n\nNeighbors of \\(v\\),\ni.e. available actions\n\n\nInstantaneous transition\ncost (non-negative)\n\n\nBase case\n\n\n    \n\n\n\n\n\n\n\n\n\nNote: this should remind you\nof the LQR cost-to-go update\n\n\n\\[\n\\begin{align}\nJ_{t+1}(\\mathbf{x}) &= \\min_{\\mathbf{u}} [g(\\mathbf{x}_t, \\mathbf{u}_t) + J_t(A\\mathbf{x} + B\\mathbf{u})] \\\\\nJ_0(\\mathbf{x}) &= \\mathbf{x}^T Q\\mathbf{x}\n\\end{align}\n\\]"
   },
   {
     "objectID": "lecs/w04/lec04.html#dynamic-programming-2",
     "href": "lecs/w04/lec04.html#dynamic-programming-2",
     "title": "CSC477 Introduction to Mobile Robotics",
     "section": "Dynamic Programming",
-    "text": "Dynamic Programming\n\\[\nD(v) = \\min_{u \\in N(v)} [d(v, u) + D(u)]\n\\]\n\\[\nD(v_{\\text{dest}}) = 0\n\\]\n\nWorst-Case\nComplexity:\n\\(O(|V|^2)\\)\nIn 2D grid world\n\\(O(|V|)\\)"
+    "text": "Dynamic Programming\n\\[\nD(v, v_{dest}) = \\min_{u \\in N(v)} [d(v, u) + D(u, v_{dest})]\n\\]\n\\[\nD(v_{dest}, v_{dest}) = 0\n\\]\n\nWorst-Case\nComplexity:\n\\(O(|V|^2)\\)\nIn 2D grid world\n\\(O(|V|)\\)\n\n\nCost-to-go from \\(v\\) to \\(v_{dest}\\)\n\n\nInstantaneous transition\ncost (non-negative)\n\n\nBase case"
   },
   {
     "objectID": "lecs/w04/lec04.html#dijkstras-algorithm-example-runs",
@@ -6891,7 +6898,7 @@
     "href": "lecs/w04/lec04.html#dijkstras-algorithm",
     "title": "CSC477 Introduction to Mobile Robotics",
     "section": "Dijkstra’s algorithm",
-    "text": "Dijkstra’s algorithm\n\n\n\n\n\n\nLet \\(D(v)\\) denote the length of the optimal path from the source node to node \\(v\\) (i.e. cost-to-come, not cost-to-go like before)\nSet \\(D(v) = \\infty\\) for all nodes except the source: \\(D(v_{\\text{src}}) = 0\\)\nAdd all nodes to priority queue Q with cost-to-come as priority\nWhile Q is not empty:\n\n\nExtract the node with minimum cost-to-come from the queue Q\nIf found goal then done\nRemove from the queue\nThe cost-to-come of \\(v\\) is final at this point. Need to check if we can reduce the cost-to-come of its neighbors.\n\n\n\n\nFor \\(u\\) in neighborhood of \\(v\\):\n\nIf \\(d(u, v) + D(v) &lt; D(u)\\) then\n\nUpdate priority \\(u\\) of in Q to be \\(d(u,v) + D(v)\\)\n\n\n\n\n\n\n\n\n\nFor Fibonacci heaps\n\\(O(|E|T_{\\text{update priority}} + |V|T_{\\text{remove min}}) = O(|E| + |V|\\log|V|)\\)"
+    "text": "Dijkstra’s algorithm\n\n\n\n\n\n\nLet \\(D(v_{src}, v)\\) denote the length of the optimal path from the source node to node \\(v\\) (i.e. cost-to-come, not cost-to-go like before)\nSet \\(D(v_{src}, v) = \\infty\\) for all nodes except the source: \\(D(v_{src}, v_{src}) = 0\\)\nAdd all nodes to priority queue Q with cost-to-come as priority\nWhile Q is not empty:\n\n\nExtract the node with minimum cost-to-come from the queue Q (time complexity \\(O(1)\\))\nIf found goal then done\nRemove from the queue (time complexity \\(O(\\text{log}|V|)\\))\nThe cost-to-come of \\(v\\) is final at this point. Need to check if we can reduce the cost-to-come of its neighbors.\n\n\n\n\nFor \\(u\\) in neighborhood of \\(v\\):\n\nIf \\(D(v_{src}, v) + d(v, u) &lt; D(v_{src}, u)\\) then\n\nUpdate priority \\(u\\) of in Q to be \\(D(v_{src}, v) + d(v, u)\\) (time complexity \\(O(1)\\))\n\n\n\n\n\n\n\n\nFor Fibonacci heaps\n\\(O(|E|T_{\\text{update priority}} + |V|T_{\\text{remove min}}) = O(|E| + |V|\\log|V|)\\)"
   },
   {
     "objectID": "lecs/w04/lec04.html#dijkstras-algorithm-example-runs-1",
@@ -6901,18 +6908,18 @@
     "text": "Dijkstra’s algorithm: example runs\n\n\n\n\n\n\nMany nodes are explored\nunnecessarily. We are sure that\nthey are not going to be part of\nthe solution."
   },
   {
-    "objectID": "lecs/w04/lec04.html#a-search-main-idea",
-    "href": "lecs/w04/lec04.html#a-search-main-idea",
+    "objectID": "lecs/w04/lec04.html#a-search-main-ideas",
+    "href": "lecs/w04/lec04.html#a-search-main-ideas",
     "title": "CSC477 Introduction to Mobile Robotics",
-    "section": "A* Search: Main Idea",
-    "text": "A* Search: Main Idea\n\nModifies Dijkstra’s algorithm to be more efficient\nExpands fewer nodes than Dijkstra’s by using a heuristic\nWhile Dijkstra prioritizes nodes based on cost-to-come\nA* prioritizes them based on:\ncost-to-come to \\(v\\) + lower bound on cost-to-go from \\(v\\) to \\(v_{\\text{dest}}\\)\n\n\n\n\n\nOptimistic search: explore node with smallest f(v) next\n\n\nLower bound on\ncost of path from\nsource to destination\nthat passes through \\(v\\)"
+    "section": "A* Search: Main Ideas",
+    "text": "A* Search: Main Ideas\n\nModifies Dijkstra’s algorithm to be more efficient\nExpands fewer nodes than Dijkstra’s by using a heuristic\nWhile Dijkstra prioritizes nodes based on cost-to-come \\(D(v_{src}, v)\\)\nA* prioritizes them based on: \\(D(v_{src}, v)\\) + lower bound on \\(D(v, v_{dest})\\)\n\n\n\n\n\\[f(v) = g(v) + h(v)\\]\n\nOptimistic search: explore node with smallest f(v) next\n\n\n    \n\n\nLower bound on\ncost of path from\n\\(v_{src}\\) to \\(v_{dest}\\)\nthat passes through \\(v\\)"
   },
   {
-    "objectID": "lecs/w04/lec04.html#a-search-main-idea-1",
-    "href": "lecs/w04/lec04.html#a-search-main-idea-1",
+    "objectID": "lecs/w04/lec04.html#a-search-main-ideas-1",
+    "href": "lecs/w04/lec04.html#a-search-main-ideas-1",
     "title": "CSC477 Introduction to Mobile Robotics",
-    "section": "A* Search: Main Idea",
-    "text": "A* Search: Main Idea\n\nModifies Dijkstra’s algorithm to be more efficient\nExpands fewer nodes than Dijkstra’s by using a heuristic\nWhile Dijkstra prioritizes nodes based on cost-to-come\nA* prioritizes them based on:\ncost-to-come to \\(v\\) + lower bound on cost-to-go from \\(v\\) to \\(v_{\\text{dest}}\\)\n\n\n\n\n\nh() is called a heuristic. h() must be admissible, i.e. underestimate the cost-to-go from v to destination. h() must also be monotonic, i.e. satisfy the triangle inequality.\n\n\nLower bound on\ncost of path from\nsource to destination\nthat passes through \\(v\\)"
+    "section": "A* Search: Main Ideas",
+    "text": "A* Search: Main Ideas\n\nModifies Dijkstra’s algorithm to be more efficient\nExpands fewer nodes than Dijkstra’s by using a heuristic\nWhile Dijkstra prioritizes nodes based on cost-to-come \\(D(v_{src}, v)\\)\nA* prioritizes them based on: \\(D(v_{src}, v)\\) + lower bound on \\(D(v, v_{dest})\\)\n\n\n\n\n\\[f(v) = g(v) + h(v)\\]\n\nh() is called a heuristic. h() must be admissible, i.e. underestimate the cost-to-go from v to destination. h() must also be monotonic, i.e. satisfy the triangle inequality.\n\n\n     \n\n\nLower bound on\ncost of path from\n\\(v_{src}\\) to \\(v_{dest}\\)\nthat passes through \\(v\\)"
   },
   {
     "objectID": "lecs/w04/lec04.html#a-search",
