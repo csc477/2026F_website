@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 7 Optional Exercises: Least Squares, MLE, MAP, and GraphSLAM – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Week 7 Optional Exercises: Least Squares, MLE, MAP, and GraphSLAM – CSC477 - Fall 2026">
+<meta property="og:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="Week 7 Optional Exercises: Least Squares, MLE, MAP, and GraphSLAM – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Exercises</h2>
+   
+  <ul class="collapse">
+  <li><a href="#exercise-1---linear-least-squares" id="toc-exercise-1---linear-least-squares" class="nav-link active" data-scroll-target="#exercise-1---linear-least-squares">Exercise 1 - Linear Least Squares</a></li>
+  <li><a href="#exercise-2---maximum-likelihood-estimation" id="toc-exercise-2---maximum-likelihood-estimation" class="nav-link" data-scroll-target="#exercise-2---maximum-likelihood-estimation">Exercise 2 - Maximum Likelihood Estimation</a></li>
+  <li><a href="#exercise-3---maximum-a-posteriori-estimation" id="toc-exercise-3---maximum-a-posteriori-estimation" class="nav-link" data-scroll-target="#exercise-3---maximum-a-posteriori-estimation">Exercise 3 - Maximum A Posteriori Estimation</a></li>
+  <li><a href="#exercise-4---multivariate-gaussians-and-covariance" id="toc-exercise-4---multivariate-gaussians-and-covariance" class="nav-link" data-scroll-target="#exercise-4---multivariate-gaussians-and-covariance">Exercise 4 - Multivariate Gaussians and Covariance</a></li>
+  <li><a href="#exercise-5---a-1d-graphslam-problem" id="toc-exercise-5---a-1d-graphslam-problem" class="nav-link" data-scroll-target="#exercise-5---a-1d-graphslam-problem">Exercise 5 - A 1D GraphSLAM Problem</a></li>
+  <li><a href="#exercise-6---from-map-to-least-squares-in-graphslam" id="toc-exercise-6---from-map-to-least-squares-in-graphslam" class="nav-link" data-scroll-target="#exercise-6---from-map-to-least-squares-in-graphslam">Exercise 6 - From MAP to Least Squares in GraphSLAM</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 7 Optional Exercises: Least Squares, MLE, MAP, and GraphSLAM</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\T}{\top}
+\]</span></p>
+</div>
+<p>These exercises are optional and are not graded. They are based on the material from <a href="../../lecs/w07/lec07.html">Lecture 7</a>. Try each exercise on your own first, then click on <strong>Solution</strong> to reveal a worked answer.</p>
+<section id="exercise-1---linear-least-squares" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---linear-least-squares">Exercise 1 - Linear Least Squares</h2>
+<p>You are given four data points <span class="math inline">\((x_i, z_i)\)</span>: <span class="math inline">\((0, 1)\)</span>, <span class="math inline">\((1, 3)\)</span>, <span class="math inline">\((2, 4)\)</span>, <span class="math inline">\((3, 4)\)</span>. You believe they were generated by a line <span class="math inline">\(z = \theta_0 + \theta_1 x\)</span> plus noise.</p>
+<p><strong>(a)</strong> Write down the normal equations <span class="math inline">\(\left[\sum_i \mathbf{H}_{x_i}^\T\mathbf{H}_{x_i}\right]\boldsymbol\theta = \sum_i \mathbf{H}_{x_i}^\T z_i\)</span> with <span class="math inline">\(\mathbf{H}_{x_i} = \begin{bmatrix} 1 &amp; x_i \end{bmatrix}\)</span>, and solve them for <span class="math inline">\(\boldsymbol\theta_{LS}\)</span>.</p>
+<p><strong>(b)</strong> Compute the residuals and the fitting error <span class="math inline">\(e(\boldsymbol\theta_{LS})\)</span>.</p>
+<p><strong>(c)</strong> Stack the rows <span class="math inline">\(\mathbf{H}_{x_i}\)</span> into a matrix <span class="math inline">\(\mathbf{H} \in \R^{N \times 2}\)</span> and the measurements into <span class="math inline">\(\mathbf{z} \in \R^N\)</span>. Write <span class="math inline">\(e(\boldsymbol\theta)\)</span> and the least squares solution in matrix form. When is <span class="math inline">\(\mathbf{H}^\T\mathbf{H}\)</span> not invertible? Give an example with two data points.</p>
+<p><strong>(d)</strong> How would you change <span class="math inline">\(\mathbf{H}_{x_i}\)</span> to fit a quadratic <span class="math inline">\(z = \theta_0 + \theta_1 x + \theta_2 x^2\)</span>? Why is this still called <em>linear</em> least squares?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math display">\[
+\sum_i \begin{bmatrix} 1 &amp; x_i \\ x_i &amp; x_i^2 \end{bmatrix} = \begin{bmatrix} 4 &amp; 6 \\ 6 &amp; 14 \end{bmatrix}, \qquad
+\sum_i \begin{bmatrix} z_i \\ x_iz_i \end{bmatrix} = \begin{bmatrix} 12 \\ 23 \end{bmatrix}.
+\]</span> The determinant is <span class="math inline">\(4 \cdot 14 - 6 \cdot 6 = 20\)</span>, so <span class="math display">\[
+\theta_0 = \frac{14 \cdot 12 - 6 \cdot 23}{20} = 1.5, \qquad \theta_1 = \frac{4 \cdot 23 - 6 \cdot 12}{20} = 1.
+\]</span> The fitted line is <span class="math inline">\(z = 1.5 + x\)</span>.</p>
+<p><strong>(b)</strong> The predictions are <span class="math inline">\(1.5, 2.5, 3.5, 4.5\)</span>, so the residuals are <span class="math inline">\(-0.5, 0.5, 0.5, -0.5\)</span> and <span class="math inline">\(e = 4 \times 0.25 = 1\)</span>.</p>
+<p><strong>(c)</strong> <span class="math inline">\(e(\boldsymbol\theta) = \|\mathbf{z} - \mathbf{H}\boldsymbol\theta\|^2\)</span>, and setting the gradient <span class="math inline">\(-2\mathbf{H}^\T(\mathbf{z} - \mathbf{H}\boldsymbol\theta)\)</span> to zero gives <span class="math inline">\(\boldsymbol\theta_{LS} = (\mathbf{H}^\T\mathbf{H})^{-1}\mathbf{H}^\T\mathbf{z}\)</span>. <span class="math inline">\(\mathbf{H}^\T\mathbf{H}\)</span> is invertible if and only if the columns of <span class="math inline">\(\mathbf{H}\)</span> are linearly independent. For a line, this fails if all <span class="math inline">\(x_i\)</span> are equal, e.g.&nbsp;the two points <span class="math inline">\((1, 2)\)</span> and <span class="math inline">\((1, 5)\)</span>: infinitely many lines pass through <span class="math inline">\(x = 1\)</span> and fit the average equally well, so the parameters are not determined by the data.</p>
+<p><strong>(d)</strong> Use <span class="math inline">\(\mathbf{H}_{x_i} = \begin{bmatrix} 1 &amp; x_i &amp; x_i^2 \end{bmatrix}\)</span>. The model is nonlinear in <span class="math inline">\(x\)</span>, but it is linear in the parameters <span class="math inline">\(\boldsymbol\theta\)</span>, which is what matters: the error is still a quadratic function of <span class="math inline">\(\boldsymbol\theta\)</span>, and its minimizer is the solution of a linear system.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2---maximum-likelihood-estimation" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2---maximum-likelihood-estimation">Exercise 2 - Maximum Likelihood Estimation</h2>
+<p><strong>(a)</strong> Starting from the log-likelihood in lecture, derive the maximum likelihood estimates <span class="math inline">\(\mu_{MLE}\)</span> and <span class="math inline">\(\sigma^2_{MLE}\)</span> for i.i.d. 1D Gaussian data.</p>
+<p><strong>(b)</strong> Evaluate them for the data <span class="math inline">\(\{2, 4, 4, 6\}\)</span>.</p>
+<p><strong>(c)</strong> Suppose <span class="math inline">\(z_i = \mathbf{H}_{x_i}\boldsymbol\theta + v_i\)</span> with independent noise <span class="math inline">\(v_i \sim \mathcal{N}(0, \sigma^2)\)</span>. Show that the maximum likelihood estimate of <span class="math inline">\(\boldsymbol\theta\)</span> is the least squares estimate.</p>
+<p><strong>(d)</strong> Now suppose the noise variance differs between measurements: <span class="math inline">\(v_i \sim \mathcal{N}(0, \sigma_i^2)\)</span>. What does the maximum likelihood estimate minimize? Apply it to two sensors that measure the same scalar <span class="math inline">\(\theta\)</span> directly: sensor 1 reports <span class="math inline">\(z_1 = 10\)</span> with <span class="math inline">\(\sigma_1 = 1\)</span>, and sensor 2 reports <span class="math inline">\(z_2 = 12\)</span> with <span class="math inline">\(\sigma_2 = 2\)</span>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> The log-likelihood is <span class="math inline">\(\ell(\mu, \sigma) = -N\log(\sqrt{2\pi}\sigma) - \frac{1}{2\sigma^2}\sum_i(d_i - \mu)^2\)</span>.</p>
+<ul>
+<li><span class="math inline">\(\frac{\partial\ell}{\partial\mu} = \frac{1}{\sigma^2}\sum_i(d_i - \mu) = 0 \Rightarrow \mu_{MLE} = \frac{1}{N}\sum_i d_i\)</span>.</li>
+<li><span class="math inline">\(\frac{\partial\ell}{\partial\sigma} = -\frac{N}{\sigma} + \frac{1}{\sigma^3}\sum_i(d_i - \mu)^2 = 0 \Rightarrow \sigma^2_{MLE} = \frac{1}{N}\sum_i(d_i - \mu_{MLE})^2\)</span>.</li>
+</ul>
+<p><strong>(b)</strong> <span class="math inline">\(\mu_{MLE} = 16/4 = 4\)</span> and <span class="math inline">\(\sigma^2_{MLE} = (4 + 0 + 0 + 4)/4 = 2\)</span>. (The MLE of the variance is biased; the unbiased estimate divides by <span class="math inline">\(N - 1\)</span> and gives <span class="math inline">\(8/3\)</span>.)</p>
+<p><strong>(c)</strong> Each <span class="math inline">\(z_i \sim \mathcal{N}(\mathbf{H}_{x_i}\boldsymbol\theta, \sigma^2)\)</span> independently, so <span class="math display">\[
+\log p(z_{1:N} \mid \boldsymbol\theta) = -N\log(\sqrt{2\pi}\sigma) - \frac{1}{2\sigma^2}\sum_i(z_i - \mathbf{H}_{x_i}\boldsymbol\theta)^2.
+\]</span> The first term does not depend on <span class="math inline">\(\boldsymbol\theta\)</span>, so maximizing the log-likelihood is equivalent to minimizing <span class="math inline">\(\sum_i(z_i - \mathbf{H}_{x_i}\boldsymbol\theta)^2 = e(\boldsymbol\theta)\)</span>.</p>
+<p><strong>(d)</strong> It minimizes the weighted least squares error <span class="math inline">\(\sum_i \frac{(z_i - \mathbf{H}_{x_i}\boldsymbol\theta)^2}{\sigma_i^2}\)</span>, so precise measurements count more. For the two sensors, setting the derivative of <span class="math inline">\(\frac{(10 - \theta)^2}{1} + \frac{(12 - \theta)^2}{4}\)</span> to zero gives <span class="math display">\[
+\theta_{MLE} = \frac{z_1/\sigma_1^2 + z_2/\sigma_2^2}{1/\sigma_1^2 + 1/\sigma_2^2} = \frac{10 + 3}{1.25} = 10.4.
+\]</span> The estimate is closer to the more precise sensor. Its variance is <span class="math inline">\(\frac{1}{1/\sigma_1^2 + 1/\sigma_2^2} = 0.8\)</span>, smaller than either sensor’s variance. This kind of fusion is exactly what the Kalman filter does recursively (Lecture 9).</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3---maximum-a-posteriori-estimation" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3---maximum-a-posteriori-estimation">Exercise 3 - Maximum A Posteriori Estimation</h2>
+<p>A robot measures the position <span class="math inline">\(\theta\)</span> of a landmark directly, <span class="math inline">\(N\)</span> times: <span class="math inline">\(z_i = \theta + v_i\)</span> with <span class="math inline">\(v_i \sim \mathcal{N}(0, \sigma^2)\)</span>. A map gives a prior <span class="math inline">\(\theta \sim \mathcal{N}(\theta_0, \sigma_0^2)\)</span>.</p>
+<p><strong>(a)</strong> Write down the negative log-posterior (up to constants) and derive <span class="math inline">\(\theta_{MAP}\)</span>.</p>
+<p><strong>(b)</strong> Evaluate <span class="math inline">\(\theta_{MLE}\)</span> and <span class="math inline">\(\theta_{MAP}\)</span> for <span class="math inline">\(\theta_0 = 0\)</span>, <span class="math inline">\(\sigma_0^2 = 1\)</span>, <span class="math inline">\(\sigma^2 = 1\)</span>, and four measurements all equal to <span class="math inline">\(2\)</span>.</p>
+<p><strong>(c)</strong> What happens to <span class="math inline">\(\theta_{MAP}\)</span> as <span class="math inline">\(N \to \infty\)</span>? As <span class="math inline">\(\sigma_0^2 \to \infty\)</span>? Interpret.</p>
+<p><strong>(d)</strong> For a general linear model <span class="math inline">\(\mathbf{z} = \mathbf{H}\boldsymbol\theta + \mathbf{v}\)</span> with <span class="math inline">\(\mathbf{v} \sim \mathcal{N}(\mathbf{0}, \sigma^2 I)\)</span> and prior <span class="math inline">\(\boldsymbol\theta \sim \mathcal{N}(\mathbf{0}, \sigma_0^2 I)\)</span>, show that <span class="math inline">\(\boldsymbol\theta_{MAP} = (\mathbf{H}^\T\mathbf{H} + \lambda I)^{-1}\mathbf{H}^\T\mathbf{z}\)</span> and find <span class="math inline">\(\lambda\)</span>. Why does this also fix the non-invertible case from Exercise 1(c)?</p>
+<p><strong>(e)</strong> In the setting of (b), the full Bayesian posterior is Gaussian. What are its mean and variance? What extra information does it give compared to <span class="math inline">\(\theta_{MAP}\)</span>?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Since <span class="math inline">\(p(\theta \mid z_{1:N}) \propto p(z_{1:N} \mid \theta)\,p(\theta)\)</span>, <span class="math display">\[
+-\log p(\theta \mid z_{1:N}) = \frac{1}{2\sigma^2}\sum_i(z_i - \theta)^2 + \frac{1}{2\sigma_0^2}(\theta - \theta_0)^2 + \text{const}.
+\]</span> Setting the derivative to zero gives <span class="math display">\[
+\theta_{MAP} = \frac{\frac{1}{\sigma^2}\sum_i z_i + \frac{1}{\sigma_0^2}\theta_0}{\frac{N}{\sigma^2} + \frac{1}{\sigma_0^2}}.
+\]</span></p>
+<p><strong>(b)</strong> <span class="math inline">\(\theta_{MLE} = 2\)</span> and <span class="math inline">\(\theta_{MAP} = \frac{8 + 0}{4 + 1} = 1.6\)</span>. The prior pulls the estimate toward <span class="math inline">\(\theta_0 = 0\)</span>.</p>
+<p><strong>(c)</strong> As <span class="math inline">\(N \to \infty\)</span>, the data terms dominate and <span class="math inline">\(\theta_{MAP} \to \theta_{MLE}\)</span>: with enough data, the prior no longer matters. As <span class="math inline">\(\sigma_0^2 \to \infty\)</span>, the prior becomes uninformative and again <span class="math inline">\(\theta_{MAP} \to \theta_{MLE}\)</span>.</p>
+<p><strong>(d)</strong> The negative log-posterior is <span class="math inline">\(\frac{1}{2\sigma^2}\|\mathbf{z} - \mathbf{H}\boldsymbol\theta\|^2 + \frac{1}{2\sigma_0^2}\|\boldsymbol\theta\|^2\)</span>. Multiplying by <span class="math inline">\(2\sigma^2\)</span> and setting the gradient to zero gives <span class="math inline">\(\mathbf{H}^\T(\mathbf{H}\boldsymbol\theta - \mathbf{z}) + \lambda\boldsymbol\theta = 0\)</span> with <span class="math inline">\(\lambda = \sigma^2/\sigma_0^2\)</span>, hence <span class="math inline">\(\boldsymbol\theta_{MAP} = (\mathbf{H}^\T\mathbf{H} + \lambda I)^{-1}\mathbf{H}^\T\mathbf{z}\)</span> (this is known as ridge regression). Since <span class="math inline">\(\mathbf{H}^\T\mathbf{H}\)</span> is positive semi-definite and <span class="math inline">\(\lambda &gt; 0\)</span>, the sum is positive definite and always invertible: the prior determines the directions that the data cannot.</p>
+<p><strong>(e)</strong> The posterior is <span class="math inline">\(\mathcal{N}(1.6, \frac{1}{N/\sigma^2 + 1/\sigma_0^2}) = \mathcal{N}(1.6, 0.2)\)</span>. Besides the most likely value, it quantifies the uncertainty of the estimate, e.g.&nbsp;a 95% confidence interval of roughly <span class="math inline">\(1.6 \pm 2\sqrt{0.2} \approx [0.71, 2.49]\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4---multivariate-gaussians-and-covariance" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4---multivariate-gaussians-and-covariance">Exercise 4 - Multivariate Gaussians and Covariance</h2>
+<p>Let <span class="math inline">\(\mathbf{x} = (x_1, x_2) \sim \mathcal{N}(\boldsymbol\mu, \Sigma)\)</span> with <span class="math inline">\(\boldsymbol\mu = (1, 2)\)</span> and <span class="math inline">\(\Sigma = \begin{bmatrix} 4 &amp; 2 \\ 2 &amp; 3 \end{bmatrix}\)</span>.</p>
+<p><strong>(a)</strong> What are <span class="math inline">\(\text{Var}[x_1]\)</span>, <span class="math inline">\(\text{Var}[x_2]\)</span>, and <span class="math inline">\(\text{Cov}[x_1, x_2]\)</span>? Compute the correlation coefficient <span class="math inline">\(\rho = \frac{\text{Cov}[x_1, x_2]}{\sqrt{\text{Var}[x_1]\text{Var}[x_2]}}\)</span>.</p>
+<p><strong>(b)</strong> Use <span class="math inline">\(\text{Cov}[A\mathbf{x} + \mathbf{b}] = A\,\text{Cov}[\mathbf{x}]A^\T\)</span> to compute the mean and variance of <span class="math inline">\(y = x_1 + x_2\)</span>, and of <span class="math inline">\(w = x_1 - x_2\)</span>. Express your answers in terms of <span class="math inline">\(\text{Var}[x_1]\)</span>, <span class="math inline">\(\text{Var}[x_2]\)</span>, <span class="math inline">\(\text{Cov}[x_1, x_2]\)</span>.</p>
+<p><strong>(c)</strong> Describe the shape of the equal-probability contours (ellipses) of this Gaussian. Along which directions do the principal axes point, and how do their lengths compare?</p>
+<p><strong>(d)</strong> Give an example of two random variables that are uncorrelated but not independent. Why does this not happen when <span class="math inline">\((X, Y)\)</span> is jointly Gaussian?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math inline">\(\text{Var}[x_1] = 4\)</span>, <span class="math inline">\(\text{Var}[x_2] = 3\)</span>, <span class="math inline">\(\text{Cov}[x_1, x_2] = 2\)</span>, so <span class="math inline">\(\rho = 2/\sqrt{12} \approx 0.577\)</span>: the two variables are positively correlated.</p>
+<p><strong>(b)</strong> For <span class="math inline">\(y\)</span>, <span class="math inline">\(A = \begin{bmatrix} 1 &amp; 1 \end{bmatrix}\)</span>: <span class="math inline">\(\E[y] = 3\)</span> and <span class="math inline">\(\text{Var}[y] = A\Sigma A^\T = 4 + 2 + 2 + 3 = 11\)</span>. In general, <span class="math inline">\(\text{Var}[x_1 + x_2] = \text{Var}[x_1] + \text{Var}[x_2] + 2\,\text{Cov}[x_1, x_2]\)</span>.</p>
+<p>For <span class="math inline">\(w\)</span>, <span class="math inline">\(A = \begin{bmatrix} 1 &amp; -1 \end{bmatrix}\)</span>: <span class="math inline">\(\E[w] = -1\)</span> and <span class="math inline">\(\text{Var}[w] = 4 - 2 - 2 + 3 = 3\)</span>. In general, <span class="math inline">\(\text{Var}[x_1 - x_2] = \text{Var}[x_1] + \text{Var}[x_2] - 2\,\text{Cov}[x_1, x_2]\)</span>. Positive correlation increases the variance of the sum and decreases the variance of the difference.</p>
+<p><strong>(c)</strong> The contours are ellipses centered at <span class="math inline">\((1, 2)\)</span> whose axes point along the eigenvectors of <span class="math inline">\(\Sigma\)</span>, with semi-axis lengths proportional to the square roots of the eigenvalues. The characteristic polynomial <span class="math inline">\(\lambda^2 - 7\lambda + 8 = 0\)</span> gives <span class="math inline">\(\lambda = (7 \pm \sqrt{17})/2 \approx 5.56\)</span> and <span class="math inline">\(1.44\)</span>. Because of the positive off-diagonal entry, the ellipse is tilted, with its long axis pointing up and to the right (roughly along <span class="math inline">\((0.79, 0.61)\)</span>), and it is about <span class="math inline">\(\sqrt{5.56/1.44} \approx 2\)</span> times longer than it is wide.</p>
+<p><strong>(d)</strong> Let <span class="math inline">\(X \sim \mathcal{N}(0, 1)\)</span> and <span class="math inline">\(Y = X^2\)</span>. Then <span class="math inline">\(\text{Cov}[X, Y] = \E[X^3] - \E[X]\E[X^2] = 0\)</span>, but <span class="math inline">\(Y\)</span> is completely determined by <span class="math inline">\(X\)</span>. Covariance only measures linear dependence. For a jointly Gaussian vector, the density factorizes into the product of the marginals exactly when the covariance matrix is diagonal, so uncorrelated implies independent.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5---a-1d-graphslam-problem" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5---a-1d-graphslam-problem">Exercise 5 - A 1D GraphSLAM Problem</h2>
+<p>A robot moves along a line. Its initial position <span class="math inline">\(x_0 = 0\)</span> is known. It executes two odometry commands <span class="math inline">\(u_0 = u_1 = 1\)</span>, with dynamics <span class="math inline">\(x_t = x_{t-1} + u_{t-1} + w_t\)</span>, and it observes a single landmark at unknown position <span class="math inline">\(m\)</span> through the measurement model <span class="math inline">\(z = m - x + v\)</span> (the relative position of the landmark). It measures <span class="math inline">\(z_0 = 3\)</span> from <span class="math inline">\(x_0\)</span> and <span class="math inline">\(z_2 = 0.8\)</span> from <span class="math inline">\(x_2\)</span>. All noise terms have variance <span class="math inline">\(1\)</span>.</p>
+<p><strong>(a)</strong> Draw the graph of this problem (nodes for <span class="math inline">\(x_0, x_1, x_2, m\)</span>, and an edge for every factor).</p>
+<p><strong>(b)</strong> Write down the GraphSLAM least squares cost as a function of <span class="math inline">\(x_1, x_2, m\)</span>.</p>
+<p><strong>(c)</strong> Write the cost as <span class="math inline">\(\|A\boldsymbol\theta - \mathbf{b}\|^2\)</span> with <span class="math inline">\(\boldsymbol\theta = (x_1, x_2, m)\)</span>, form the normal equations <span class="math inline">\(A^\T A\boldsymbol\theta = A^\T\mathbf{b}\)</span>, and solve them.</p>
+<p><strong>(d)</strong> Compare your answer to what odometry alone and the first measurement alone would suggest. How is the inconsistency distributed among the terms?</p>
+<p><strong>(e)</strong> What would go wrong if <span class="math inline">\(x_0\)</span> were not given (i.e., if it were also an unknown)?</p>
+<p><strong>(f)</strong> Look at the sparsity pattern of <span class="math inline">\(A^\T A\)</span>. How does it relate to the graph from (a)? Why does this matter for large SLAM problems?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> The graph is a chain <span class="math inline">\(x_0 - x_1 - x_2\)</span> of odometry edges, plus measurement edges <span class="math inline">\(x_0 - m\)</span> and <span class="math inline">\(x_2 - m\)</span>. Together they form a single loop.</p>
+<p><strong>(b)</strong> <span class="math display">\[
+e(x_1, x_2, m) = (x_1 - 0 - 1)^2 + (x_2 - x_1 - 1)^2 + (3 - (m - 0))^2 + (0.8 - (m - x_2))^2.
+\]</span></p>
+<p><strong>(c)</strong> <span class="math display">\[
+A = \begin{bmatrix} 1 &amp; 0 &amp; 0 \\ -1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \\ 0 &amp; -1 &amp; 1 \end{bmatrix}, \quad
+\mathbf{b} = \begin{bmatrix} 1 \\ 1 \\ 3 \\ 0.8 \end{bmatrix}, \quad
+A^\T A = \begin{bmatrix} 2 &amp; -1 &amp; 0 \\ -1 &amp; 2 &amp; -1 \\ 0 &amp; -1 &amp; 2 \end{bmatrix}, \quad
+A^\T\mathbf{b} = \begin{bmatrix} 0 \\ 0.2 \\ 3.8 \end{bmatrix}.
+\]</span> The first equation gives <span class="math inline">\(x_2 = 2x_1\)</span>, the third gives <span class="math inline">\(m = 1.9 + x_1\)</span>, and substituting both into the second gives <span class="math inline">\(2x_1 = 2.1\)</span>. So <span class="math inline">\(x_1 = 1.05\)</span>, <span class="math inline">\(x_2 = 2.1\)</span>, and <span class="math inline">\(m = 2.95\)</span>.</p>
+<p><strong>(d)</strong> Odometry alone gives <span class="math inline">\(x_2 = 2\)</span>, and <span class="math inline">\(z_0\)</span> alone gives <span class="math inline">\(m = 3\)</span>, which predicts <span class="math inline">\(z_2 = m - x_2 = 1\)</span>. But the robot measured <span class="math inline">\(0.8\)</span>, an inconsistency of <span class="math inline">\(0.2\)</span> around the loop. Because all four terms have the same variance, the least squares solution spreads the inconsistency equally: every residual has magnitude <span class="math inline">\(0.05\)</span> (<span class="math inline">\(x_1 - 1 = 0.05\)</span>, <span class="math inline">\(x_2 - x_1 - 1 = 0.05\)</span>, <span class="math inline">\(3 - m = 0.05\)</span>, <span class="math inline">\(0.8 - (m - x_2) = -0.05\)</span>), for a total cost of <span class="math inline">\(0.01\)</span>. With different variances, the less certain terms would absorb more of the error.</p>
+<p><strong>(e)</strong> All factors depend only on differences between variables, so adding the same constant to <span class="math inline">\(x_0, x_1, x_2, m\)</span> leaves the cost unchanged. The minimum would not be unique and <span class="math inline">\(A^\T A\)</span> would be singular. Fixing <span class="math inline">\(x_0\)</span> (or adding a prior on it) anchors the solution; this is called fixing the gauge.</p>
+<p><strong>(f)</strong> Entry <span class="math inline">\((i, j)\)</span> of <span class="math inline">\(A^\T A\)</span> is nonzero only if variables <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> appear together in some factor, i.e.&nbsp;if they are connected by an edge in the graph. Here <span class="math inline">\(x_1\)</span> and <span class="math inline">\(m\)</span> never appear together, so the corresponding entries are zero. In large SLAM problems, each pose is connected to only a few other poses and landmarks, so <span class="math inline">\(A^\T A\)</span> is very sparse, and sparse linear solvers can solve problems with many thousands of variables efficiently.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-6---from-map-to-least-squares-in-graphslam" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6---from-map-to-least-squares-in-graphslam">Exercise 6 - From MAP to Least Squares in GraphSLAM</h2>
+<p><strong>(a)</strong> Lecture factorized the joint distribution as <span class="math inline">\(p(\mathbf{x}_0)\prod_t p(\mathbf{x}_t \mid \mathbf{x}_{t-1}, \mathbf{u}_{t-1})\prod_t\prod_k p(\mathbf{z}_t^{(k)} \mid \mathbf{x}_t, \mathbf{m}_k)\)</span>. Which conditional independence assumptions does this factorization rely on?</p>
+<p><strong>(b)</strong> Show that with Gaussian dynamics noise <span class="math inline">\(\mathcal{N}(\mathbf{0}, \mathbf{R}_t)\)</span> and Gaussian measurement noise <span class="math inline">\(\mathcal{N}(\mathbf{0}, \mathbf{Q}_t)\)</span>, maximizing the posterior is equivalent to minimizing <span class="math inline">\(\sum_t\|\mathbf{x}_t - \mathbf{f}(\mathbf{x}_{t-1}, \mathbf{u}_{t-1})\|^2_{\mathbf{R}_t} + \sum_{t,k}\|\mathbf{z}_t^{(k)} - \mathbf{h}(\mathbf{x}_t, \mathbf{m}_k)\|^2_{\mathbf{Q}_t}\)</span>.</p>
+<p><strong>(c)</strong> When <span class="math inline">\(\mathbf{f}\)</span> or <span class="math inline">\(\mathbf{h}\)</span> are nonlinear (e.g., a unicycle model and range-bearing measurements), the problem is no longer linear least squares. How can it still be solved?</p>
+<p><strong>(d)</strong> What is the difference between the full SLAM posterior <span class="math inline">\(p(\mathbf{x}_{1:T}, \mathbf{m} \mid \mathbf{z}_{0:T}, \mathbf{u}_{0:T-1}, \mathbf{x}_0)\)</span> and the filtering SLAM posterior <span class="math inline">\(p(\mathbf{x}_t, \mathbf{m} \mid \mathbf{z}_{0:t}, \mathbf{u}_{0:t-1}, \mathbf{x}_0)\)</span>? When would you use each?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> (1) Markov dynamics: given <span class="math inline">\(\mathbf{x}_{t-1}\)</span> and <span class="math inline">\(\mathbf{u}_{t-1}\)</span>, the state <span class="math inline">\(\mathbf{x}_t\)</span> is independent of all earlier states, controls, and measurements, and of the map. (2) Each measurement depends only on the current state and the observed landmark: given <span class="math inline">\(\mathbf{x}_t\)</span> and <span class="math inline">\(\mathbf{m}_k\)</span>, <span class="math inline">\(\mathbf{z}_t^{(k)}\)</span> is independent of everything else. (3) Known data association, so we know which landmark produced each measurement.</p>
+<p><strong>(b)</strong> Taking the logarithm turns the products into sums. For a Gaussian, <span class="math inline">\(\log\mathcal{N}(\mathbf{x}; \boldsymbol\mu, \Sigma) = -\frac{1}{2}\|\mathbf{x} - \boldsymbol\mu\|^2_\Sigma + \text{const}\)</span>, where the constant does not depend on the optimization variables (the covariances are fixed). So the log-posterior is <span class="math inline">\(-\frac{1}{2}\)</span> times the given sum plus a constant, and maximizing it is the same as minimizing the sum. The Mahalanobis norms <span class="math inline">\(\|\cdot\|_\Sigma\)</span> weight each term by its inverse covariance, so precise sensors count more.</p>
+<p><strong>(c)</strong> With an iterative method such as Gauss-Newton or Levenberg-Marquardt: linearize <span class="math inline">\(\mathbf{f}\)</span> and <span class="math inline">\(\mathbf{h}\)</span> around the current estimate, solve the resulting linear least squares problem (a sparse linear system) for an update, apply it, and repeat until convergence. A good initial guess (e.g., from odometry) is needed, since the problem is non-convex.</p>
+<p><strong>(d)</strong> Full SLAM estimates the entire trajectory and the map, using all measurements, including those that arrive after each pose (smoothing). Filtering SLAM only estimates the current pose and map, summarizing the past in the current belief. Full SLAM (e.g., GraphSLAM) gives more accurate trajectories and handles loop closures well, and is used offline or in sliding windows. Filtering (e.g., EKF-SLAM, Lecture 10) is cheaper per step and naturally online, but past errors can no longer be corrected once they are absorbed into the belief.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

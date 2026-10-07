@@ -242,11 +242,11 @@ Today’s slides have been influenced by: Pieter Abbeel (ECE287), Sergey Levine 
 </div></aside></section>
 <section id="what-you-can-do-with-lqr-control" class="slide level2">
 <h2>What you can do with LQR control</h2>
-<iframe data-external="1" src="https://www.youtube.com/embed/DhpYfjwm0Zs" width="600" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe data-external="1" src="https://www.youtube.com/embed/DhpYfjwm0Zs" width="80%" height="80%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </section>
 <section id="what-you-can-do-with-variants-of-lqr-control" class="slide level2">
 <h2>What you can do with (variants of) LQR control</h2>
-<iframe data-external="1" src="https://www.youtube.com/embed/VCdxqn0fcnE" width="600" height="400" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe data-external="1" src="https://www.youtube.com/embed/VCdxqn0fcnE" width="80%" height="80%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 <p><span class="small-font">Pieter Abbeel, Helicopter Aerobatics</span></p>
 </section>
 <section id="lqr-assumptions" class="slide level2">
@@ -292,7 +292,7 @@ A \in \mathbb{R}^{d \times d} \qquad\qquad\qquad\qquad B \in \mathbb{R}^{d \time
 <h2>Which systems are linear?</h2>
 <div class="columns">
 <div class="column" style="width:70%;">
-<p><img data-src="img/Lecture4_30.png" class="absolute" style="top: 90px; left: 0px; width: 30px; height: 30px; "></p>
+<p><img data-src="img/Lecture4_30.png" class="absolute" style="top: 102px; left: -32px; width: 30px; height: 30px; "></p>
 <ul>
 <li>Omnidirectional robot</li>
 </ul>
@@ -337,7 +337,7 @@ y_{t+1} &amp;= y_t + v_x(t)\sin(\theta_t)\delta t \qquad \Rightarrow \\
 <h2>Which systems are linear?</h2>
 <div class="columns">
 <div class="column medium-font" style="width:70%;">
-<p><img data-src="img/Lecture4_30.png" class="absolute" style="top: 90px; left: 0px; width: 30px; height: 30px; "></p>
+<p><img data-src="img/Lecture4_30.png" class="absolute" style="top: 97px; left: -32px; width: 30px; height: 30px; "></p>
 <ul>
 <li>Omnidirectional robot</li>
 </ul>
@@ -362,11 +362,11 @@ y_{t+1} &amp;= y_t + v_x(t)\sin(\theta_t)\delta t  \qquad \Rightarrow &amp; A &a
 </div>
 </div><div class="column medium-font" style="width:30%;">
 <p><img data-src="img/Lecture4_31.jpg"></p>
-<iframe data-external="1" src="https://www.youtube.com/embed/fEImNJQ3hUM" width="400" height="250" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe data-external="1" src="https://www.youtube.com/embed/fEImNJQ3hUM" width="100%" height="80%" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </div></div>
 <div class="fragment">
-<p><img data-src="img/x.png" class="absolute" style="left: 0px; bottom: 49.5%; width: 35px; height: 35px; "></p>
-<p><img data-src="img/o.png" class="absolute" style="left: 40%; bottom: 185px; width: 30px; height: 30px; "></p>
+<p><img data-src="img/x.png" class="absolute" style="top: 283px; left: -35px; width: 35px; height: 35px; "></p>
+<p><img data-src="img/o.png" class="absolute" style="top: 452px; left: 40%; width: 30px; height: 30px; "></p>
 </div>
 </section>
 <section id="the-goal-of-lqr" class="slide level2">
@@ -706,8 +706,8 @@ J_1(\mathbf{x}) = \mathbf{x}^T Q\mathbf{x} + \mathbf{x}^T A^T P_0 A\mathbf{x} + 
 <p><span class="math inline">\((R + B^T P_0 B)\mathbf{u} = -B^T P_0 A\mathbf{x}\)</span></p>
 <p><br></p>
 <p>So, the optimal control for the last time step is:</p>
-<p><span class="math inline">\(\mathbf{u} = -(R + B^TP_0B)^{-1} B^TP_0A_x\)</span></p>
-<p><span class="math inline">\(\mathbf{u} = K_1x\)</span></p>
+<p><span class="math inline">\(\mathbf{u} = -(R + B^TP_0B)^{-1} B^TP_0A\textbf{x}\)</span></p>
+<p><span class="math inline">\(\mathbf{u} = K_1\textbf{x}\)</span></p>
 <p><span class="red">Linear controller in terms of the state</span></p>
 </div><div class="column" style="width:34%;">
 
@@ -762,40 +762,29 @@ the recursion</span></p>
 </section>
 <section id="finite-horizon-lqr-algorithm-summary" class="slide level2">
 <h2>Finite-Horizon LQR: algorithm summary</h2>
-<div class="medium-font">
-<p><span class="math inline">\(P_0 = Q\)</span></p>
-<p>// n is the # of steps left</p>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><span class="math inline">\(P_0 = Q\)</span><br>
+// n is the number of steps left</p>
+</div><div class="column red-annotation fragment" data-fragment-index="3" style="width:60%;">
+<p>Potential problem for controls <span class="math inline">\(\mathbf{u}\)</span> of dimension <span class="math inline">\(k\)</span> &gt;&gt; 100:<br>
+Matrix inversion is expensive: <span class="math inline">\(O(k^{2.3})\)</span> for the best known algorithm and <span class="math inline">\(O(k^3)\)</span> for Gaussian Elimination. <span class="math inline">\(\swarrow\)</span></p>
+</div></div>
+<div class="columns">
+<div class="column" style="width:80%;">
 <p>for n = 1…N</p>
-<p><span class="math inline">\(K_n = -(R + B^T P_{n-1} B)^{-1} B^T P_{n-1} A\)</span></p>
-<p><span class="math inline">\(P_n = Q + K_n^T R K_n + (A + B K_n)^T P_{n-1} (A + B K_n)\)</span></p>
-<p>Optimal control for time t = N – n is <span class="math inline">\(u_t = K_t x_t\)</span> with cost-to-go <span class="math inline">\(J_t(x) = x^T P_tx\)</span></p>
-<p>where the states are predicted forward in time according to linear dynamics</p>
-</div>
-<div class="fragment">
-<p><img data-src="img/lqr-algosum1.png" class="absolute" style="top: 28%; left: 50%; width: 40%; height: 23%; "></p>
-</div>
-<div class="fragment">
-<p><img data-src="img/algo-sum2.png" class="absolute" style="bottom: 31%; right: 10px; width: 25%; height: 15%; "></p>
-</div>
-</section>
-<section id="finite-horizon-lqr-algorithm-summary-1" class="slide level2">
-<h2>Finite-Horizon LQR: algorithm summary</h2>
-<div class="medium-font">
-<p><br></p>
-<p><span class="math inline">\(P_0 = Q\)</span></p>
-<p>// n is the # of steps left</p>
-<p>for n = 1…N</p>
-<p><span class="math inline">\(K_n = -(R + B^T P_{n-1} B)^{-1} B^T P_{n-1} A\)</span></p>
-<p><span class="math inline">\(P_n = Q + K_n^T R K_n + (A + B K_n)^T P_{n-1} (A + B K_n)\)</span></p>
-<p>Optimal control for time t = N – n is <span class="math inline">\(u_t = K_t x_t\)</span> with cost-to-go <span class="math inline">\(J_t(x) = x^T P_tx\)</span></p>
-<p>where the states are predicted forward in time according to linear dynamics</p>
-</div>
-<div class="red-annotation absolute" style="top: 150px; left: 255px; ">
-<p>Potential problem for states of dimension &gt;&gt; 100:<br>
-Matrix inversion is expensive: O(k^2.3) for the best<br>
-known algorithm and O(k^3) for Gaussian Elimination</p>
-<p><img data-src="img/downarrow2.png" width="70" height="70"></p>
-</div>
+<div class="line-block">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="math inline">\(K_n = -(R + B^T P_{n-1} B)^{-1} B^T P_{n-1} A\)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="math inline">\(P_n = Q + K_n^T R K_n + (A + B K_n)^T P_{n-1} (A + B K_n)\)</span></div>
+</div><div class="column red-annotation fragment" data-fragment-index="1" style="width:70%;">
+<p>One pass <strong>backward</strong> in time:<br>
+Matrix gains are precomputed based on the dynamics and the instantaneous cost</p>
+</div></div>
+<div class="columns">
+<div class="column" style="width:80%;">
+<p>Optimal control parameters for time t = N – n are computed backwards in time: <span class="math inline">\(\mathbf{u}_t = K_t \mathbf{x}_t\)</span> with cost-to-go <span class="math inline">\(J_t(\mathbf{x}) = \mathbf{x}^T P_t \mathbf{x}\)</span>, whereas the states are predicted forward in time according to linear dynamics</p>
+</div><div class="column red-annotation fragment" data-fragment-index="2" style="width:70%;">
+<p>One pass <strong>forward</strong> in time: predict states, compute controls and cost-to-go</p>
+</div></div>
 </section>
 <section id="lqr-summary" class="slide level2">
 <h2>LQR summary</h2>
@@ -836,12 +825,6 @@ u_0^*, \ldots, u_{N-1}^* &amp;= \operatorname*{argmin}_{u_0, \ldots, u_N} \sum_{
 <li><p>What can we do when <span class="math inline">\(x_{t+1} = A_t x_t + B_t \mathbf{u}_t\)</span> and <span class="math inline">\(c(x_t, \mathbf{u}_t) = x_t^T Q x_t + \mathbf{u}_t^T R\mathbf{u}_t\)</span>?</p></li>
 <li><p>Turns out, the proof and the algorithm are almost the same</p></li>
 </ul>
-<p><span class="math inline">\(P_0 = Q_N\)</span></p>
-<p>// n is the # of steps left</p>
-<p>for n = 1…N</p>
-<p><span class="math inline">\(K_n = -\big( R_{N-n} + B_{N-n}^T P_{n-1} B_{N-n} \big)^{-1} B_{N-n}^T P_{n-1} A_{N-n}\)</span></p>
-<p><span class="math inline">\(P_n = Q_{N-n} + K_n^T R_{N-n} K_n + (A_{N-n} + B_{N-n} K_n)^T P_{n-1} (A_{N-n} + B_{N-n} K_n)\)</span></p>
-<p>Optimal controller for n-step horizon is <span class="math inline">\(u_n = K_n x_n\)</span> with cost-to-go <span class="math inline">\(J_n(x) = x^T P_n x\)</span></p>
 </section>
 <section id="examples-of-models-and-solutions-with-lqr" class="slide level2 center">
 <h2>Examples of models and solutions with LQR</h2>
@@ -1081,7 +1064,7 @@ norm for controls.</span></p>
 \begin{align}
 \bar{\mathbf{x}}_{t+1} &amp;= \mathbf{x}_{t+1} - \mathbf{x}^{*}_{t+1} \\
 &amp;= A \mathbf{x}_t + B \mathbf{u}_t - \mathbf{x}^{*}_{t+1} \\
-&amp;= A \bar{\mathbf{x}}_t + B \mathbf{u}_t - \mathbf{x}^{*}_{t+1} - A \mathbf{x}^{*}_t
+&amp;= A \bar{\mathbf{x}}_t + B \mathbf{u}_t - \mathbf{x}^{*}_{t+1} + A \mathbf{x}^{*}_t
 \end{align}
 \]</span></p>
 </div><div class="column" style="width:40%;">
@@ -1242,13 +1225,6 @@ B \\
 \end{align}
 \]</span></p>
 <p><span class="red-annotation"><span class="math inline">\(\qquad\qquad\qquad\)</span> Solve this via LQR</span></p>
-</section>
-<section id="lqr-examples-code-to-replicate-these-results" class="slide level2">
-<h2>LQR examples: code to replicate these results</h2>
-<ul>
-<li><p><a href="https://github.com/florianshkurti/comp417.git">https://github.com/florianshkurti/csc477_fall19.git</a></p></li>
-<li><p>Look under csc477_fall19/lqr_examples/python</p></li>
-</ul>
 
 
 </section>

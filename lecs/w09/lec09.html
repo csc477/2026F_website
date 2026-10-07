@@ -838,7 +838,7 @@ Cov(X+b) = Cov(X)</p>
 \sigma^2 &amp;= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
+&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
 \end{align}\]</span></p>
 </div><div class="column" style="width:35%;">
 
@@ -869,7 +869,7 @@ Cov(X+b) = Cov(X)</p>
 \sigma^2 &amp;= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
+&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
 \end{align}\]</span></p>
 </div><div class="column" style="width:35%;">
 
@@ -900,7 +900,7 @@ Cov(X+b) = Cov(X)</p>
 \sigma^2 &amp;= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
+&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-1}] + \text{Cov}[w_{t-1}]
 \end{align}\]</span></p>
 </div><div class="column" style="width:35%;">
@@ -931,7 +931,7 @@ Cov(X+b) = Cov(X)</p>
 \sigma^2 &amp;= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
+&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-1}] + \text{Cov}[w_{t-1}] \\
 &amp;= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-2}] + \text{Cov}[w_{t-1}]
 \end{align}\]</span></p>
@@ -963,7 +963,7 @@ Cov(X+b) = Cov(X)</p>
 \sigma^2 &amp;= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
+&amp;= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &amp;= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-1}] + \text{Cov}[w_{t-1}] \\
 &amp;= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-2}] + \text{Cov}[w_{t-1}] \\
 &amp;= \sigma_{C}^{2} + q^{2}
@@ -1052,7 +1052,7 @@ w_t &amp;= \begin{bmatrix} w_p(t) \\ w_v(t) \end{bmatrix} \sim \mathcal{N}(0_{2 
 <p><span class="math display">\[\begin{align*}
 \Sigma_{t+1|t} &amp;= \text{Cov}[x_{t+1}|z_{0:t}] \\
 &amp;= \text{Cov}[Ax_t + w_t|z_{0:t}] \\
-&amp;= \text{Cov}[Ax_t|z_{0:t}] + \text{Cov}[w_t|z_{0:t}] - 2\text{Cov}[Ax_t, w_t|z_{0:t}] \\
+&amp;= \text{Cov}[Ax_t|z_{0:t}] + \text{Cov}[w_t|z_{0:t}] + \text{Cov}[Ax_t, w_t|z_{0:t}] + \text{Cov}[w_t, Ax_t|z_{0:t}] \\
 &amp;= A\text{Cov}[x_t|z_{0:t}]A^T + \text{Cov}[w_t] \\
 &amp;= A\Sigma_{t|t}A^T + Q \\
 &amp;= \begin{bmatrix} 1 &amp; 1 \\ 0 &amp; 1 \end{bmatrix} \begin{bmatrix} 1^2 &amp; 0 \\ 0 &amp; 10^2 \end{bmatrix} \begin{bmatrix} 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix} + \begin{bmatrix} 1^2 &amp; 0 \\ 0 &amp; 1^2 \end{bmatrix} = \begin{bmatrix} 102 &amp; 100 \\ 100 &amp; 101 \end{bmatrix}

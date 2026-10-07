@@ -460,7 +460,7 @@ x_{t+1} &amp;= f(x_t, u_t) + w_t \\
 <div class="column" style="width:55%;">
 <p><span class="math display">\[\begin{align*}
 z_{t+1} &amp;= h(x_{t+1}) + n_{t+1} \\
-&amp;\approx h(\mu_{t+1|t}) + \frac{\partial h}{\partial x}(\mu_{t+1|t})(x_t - \mu_{t+1|t}) + n_{t+1} \\
+&amp;\approx h(\mu_{t+1|t}) + \frac{\partial h}{\partial x}(\mu_{t+1|t})(x_{t+1} - \mu_{t+1|t}) + n_{t+1} \\
 &amp;= h(\mu_{t+1|t}) + H_{t+1}(x_{t+1} - \mu_{t+1|t}) + n_{t+1} \\
 &amp;= H_{t+1}x_{t+1} + \color{red}\boxed{\color{black}h(\mu_{t+1|t}) - H_{t+1}\mu_{t+1|t}} \color{black} + n_{t+1} \\
 &amp;= H_{t+1}x_{t+1} + \bar{c}_{t+1} + n_{t+1}
@@ -529,7 +529,7 @@ z_t = &amp; H x_t + \bar{c}_t + n_t \\
 </div>
 <div class="center-align medium-font">
 <p><strong>Init</strong> <span class="math display">\[bel(x_0) \sim \mathcal{N}(\mu_{0|0}, \Sigma_{0|0})\]</span></p>
-<p><strong>Prediction Step</strong> <span class="math display">\[\mu_{t+1|t} = f(\mu_{t |t}, \mu_t)\]</span> <span class="math display">\[\Sigma_{t+1|t} = F_t\Sigma_{t|t}F^T_t + GQG^T\]</span></p>
+<p><strong>Prediction Step</strong> <span class="math display">\[\mu_{t+1|t} = f(\mu_{t |t}, u_t)\]</span> <span class="math display">\[\Sigma_{t+1|t} = F_t\Sigma_{t|t}F^T_t + GQG^T\]</span></p>
 <p><strong>Update Step</strong></p>
 <p>Received measurement <span class="math inline">\(\bar{z}_{t+1}\)</span> but expected to receive <span class="math inline">\(\mu_{z_{t+1}} = h(\mu_{t+1|t})\)</span></p>
 <p>Prediction residual is a Gaussian random variable <span class="math inline">\(\delta z \sim \mathcal{N}(\bar{z}_{t+1} - \mu_{z_{t+1}}, S_{t+1})\)</span><br>
@@ -622,7 +622,7 @@ range and bearing from<br>
 the robot to a landmark.</p>
 </div>
 <div class="absolute small-font" style="bottom: 50px; right: 150px; ">
-<p><span class="math display">\[z_t^{(i)} = h_i(x_t) = \left[ \begin{pmatrix} \sqrt{(p_x(t)-l_x^{(i)})^2 + (p_y(t)-l_y^{(i)})^2} \\ \text{atan2}(p_y(t)-l_y^{(i)}, p_x(t)-l_x^{(i)})-\theta(t) \end{pmatrix} \right] + n_t\]</span></p>
+<p><span class="math display">\[z_t^{(i)} = h_i(x_t) = \left[ \begin{pmatrix} \sqrt{(p_x(t)-l_x^{(i)})^2 + (p_y(t)-l_y^{(i)})^2} \\ \text{atan2}(l_y^{(i)}-p_y(t), l_x^{(i)}-p_x(t))-\theta(t) \end{pmatrix} \right] + n_t\]</span></p>
 </div>
 </section>
 <section id="estimation-sequence-1" class="slide level2">

@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 12 Optional Exercises: Cameras, Features, and Stereo – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Week 12 Optional Exercises: Cameras, Features, and Stereo – CSC477 - Fall 2026">
+<meta property="og:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="Week 12 Optional Exercises: Cameras, Features, and Stereo – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Exercises</h2>
+   
+  <ul class="collapse">
+  <li><a href="#exercise-1---camera-parameters" id="toc-exercise-1---camera-parameters" class="nav-link active" data-scroll-target="#exercise-1---camera-parameters">Exercise 1 - Camera Parameters</a></li>
+  <li><a href="#exercise-2---the-pinhole-camera-model" id="toc-exercise-2---the-pinhole-camera-model" class="nav-link" data-scroll-target="#exercise-2---the-pinhole-camera-model">Exercise 2 - The Pinhole Camera Model</a></li>
+  <li><a href="#exercise-3---lens-distortion" id="toc-exercise-3---lens-distortion" class="nav-link" data-scroll-target="#exercise-3---lens-distortion">Exercise 3 - Lens Distortion</a></li>
+  <li><a href="#exercise-4---detecting-and-describing-features" id="toc-exercise-4---detecting-and-describing-features" class="nav-link" data-scroll-target="#exercise-4---detecting-and-describing-features">Exercise 4 - Detecting and Describing Features</a></li>
+  <li><a href="#exercise-5---stereo-with-parallel-cameras" id="toc-exercise-5---stereo-with-parallel-cameras" class="nav-link" data-scroll-target="#exercise-5---stereo-with-parallel-cameras">Exercise 5 - Stereo with Parallel Cameras</a></li>
+  <li><a href="#exercise-6---triangulation-as-least-squares" id="toc-exercise-6---triangulation-as-least-squares" class="nav-link" data-scroll-target="#exercise-6---triangulation-as-least-squares">Exercise 6 - Triangulation as Least Squares</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 12 Optional Exercises: Cameras, Features, and Stereo</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\T}{\top}
+\]</span></p>
+</div>
+<p>These exercises are optional and are not graded. They are based on the first part of <a href="../../lecs/w12/lec12.html">Lecture 12</a>: optics, the pinhole camera model, lens distortion, local features, stereo, and triangulation. The second part of the lecture (epipolar geometry, visual odometry, visual SLAM, and optical flow) is covered in the <a href="../../optional_exercises/w13/exercises_w13.html">Week 13 exercises</a>. Try each exercise on your own first, then click on <strong>Solution</strong> to reveal a worked answer.</p>
+<section id="exercise-1---camera-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---camera-parameters">Exercise 1 - Camera Parameters</h2>
+<p><strong>(a)</strong> For each of the following, say which camera parameter you would change (focus, focal length, aperture, exposure time, or ISO), and what the side effect would be:</p>
+<ol type="1">
+<li>The image of a fast-moving robot arm is blurry.</li>
+<li>The image is too dark, and you cannot change the exposure time.</li>
+<li>You want both a nearby object and the background to be sharp.</li>
+<li>You want to see a wider part of the scene.</li>
+</ol>
+<p><strong>(b)</strong> Why not make the aperture as small as possible?</p>
+<p><strong>(c)</strong> A camera has a sensor of width <span class="math inline">\(W = 36\)</span> mm. Show that its horizontal field of view is <span class="math inline">\(2\arctan\left(\frac{W}{2f}\right)\)</span>, and compute it for <span class="math inline">\(f = 18\)</span> mm and <span class="math inline">\(f = 50\)</span> mm.</p>
+<p><strong>(d)</strong> Which properties are preserved by perspective projection: lengths, angles, straight lines, parallelism?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong></p>
+<ol type="1">
+<li>Decrease the exposure time. The image becomes darker, which you can compensate for with a larger aperture (narrower depth of field) or a higher ISO (more noise).</li>
+<li>Open the aperture (narrower depth of field) or increase the ISO (more noise).</li>
+<li>Close the aperture (smaller diameter) to increase the depth of field. Less light gets in, so you need a longer exposure (more motion blur) or a higher ISO.</li>
+<li>Decrease the focal length (wide-angle). Each pixel then covers a larger angle, so distant objects appear smaller and with less detail, and wide-angle lenses usually have stronger distortion.</li>
+</ol>
+<p><strong>(b)</strong> Less light reaches the sensor, which requires longer exposures or higher gain. Below a certain size, diffraction also blurs the image.</p>
+<p><strong>(c)</strong> The ray through the edge of the sensor makes an angle <span class="math inline">\(\alpha\)</span> with the optical axis, with <span class="math inline">\(\tan\alpha = \frac{W/2}{f}\)</span> by similar triangles. The field of view is <span class="math inline">\(2\alpha\)</span>. For <span class="math inline">\(f = 18\)</span> mm: <span class="math inline">\(2\arctan(1) = 90°\)</span>. For <span class="math inline">\(f = 50\)</span> mm: <span class="math inline">\(2\arctan(0.36) \approx 39.6°\)</span>.</p>
+<p><strong>(d)</strong> Straight lines remain straight. Lengths, areas, and angles are not preserved, and neither is parallelism: parallel lines in 3D (such as railway tracks) generally meet at a vanishing point in the image.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2---the-pinhole-camera-model" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2---the-pinhole-camera-model">Exercise 2 - The Pinhole Camera Model</h2>
+<p>A camera has focal length <span class="math inline">\(f = 4\)</span> mm, square pixels of size <span class="math inline">\(8\)</span> µm, and a <span class="math inline">\(640 \times 480\)</span> image with the principal point at the center.</p>
+<p><strong>(a)</strong> Compute <span class="math inline">\(m_x = m_y\)</span> (pixels per mm), <span class="math inline">\(fm_x\)</span>, and the calibration matrix <span class="math inline">\(K\)</span>.</p>
+<p><strong>(b)</strong> Project the point <span class="math inline">\((X, Y, Z) = (0.2, -0.1, 2)\)</span> m, expressed in the camera frame, to pixel coordinates.</p>
+<p><strong>(c)</strong> Show that <span class="math inline">\((0.4, -0.2, 4)\)</span> projects to the same pixel. What does this say about recovering depth from a single image?</p>
+<p><strong>(d)</strong> A pixel <span class="math inline">\((420, 290)\)</span> is known to correspond to a point at depth <span class="math inline">\(Z = 3\)</span> m. Recover its 3D coordinates.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math inline">\(m_x = 1 / 0.008 = 125\)</span> pixels per mm, so <span class="math inline">\(fm_x = 4 \times 125 = 500\)</span> pixels. With <span class="math inline">\((c_x, c_y) = (320, 240)\)</span>: <span class="math display">\[
+K = \begin{bmatrix} 500 &amp; 0 &amp; 320 \\ 0 &amp; 500 &amp; 240 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}.
+\]</span></p>
+<p><strong>(b)</strong> <span class="math inline">\(u = 500 \cdot \frac{0.2}{2} + 320 = 370\)</span> and <span class="math inline">\(v = 500 \cdot \frac{-0.1}{2} + 240 = 215\)</span>.</p>
+<p><strong>(c)</strong> <span class="math inline">\(\frac{0.4}{4} = \frac{0.2}{2}\)</span> and <span class="math inline">\(\frac{-0.2}{4} = \frac{-0.1}{2}\)</span>, so it projects to the same pixel. Every point on the ray through the camera center and the pixel projects to that pixel: <span class="math inline">\(s[u, v, 1]^\T = K[X, Y, Z]^\T\)</span> only determines <span class="math inline">\((X, Y, Z)\)</span> up to the scale <span class="math inline">\(s = Z\)</span>. Depth cannot be recovered from a single pixel measurement.</p>
+<p><strong>(d)</strong> Invert the projection: <span class="math inline">\(X = \frac{(u - c_x)Z}{fm_x} = \frac{100 \cdot 3}{500} = 0.6\)</span> and <span class="math inline">\(Y = \frac{(v - c_y)Z}{fm_y} = \frac{50 \cdot 3}{500} = 0.3\)</span>, so the point is <span class="math inline">\((0.6, 0.3, 3)\)</span>. Equivalently, <span class="math inline">\([X, Y, Z]^\T = Z\,K^{-1}[u, v, 1]^\T\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3---lens-distortion" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3---lens-distortion">Exercise 3 - Lens Distortion</h2>
+<p>Consider the radial distortion model with a single coefficient, <span class="math inline">\(x^* = x(1 + k_1 r^2)\)</span> and <span class="math inline">\(y^* = y(1 + k_1 r^2)\)</span>, where <span class="math inline">\(r^2 = x^2 + y^2\)</span> and <span class="math inline">\((x, y)\)</span> are normalized (metric, divided by <span class="math inline">\(f\)</span>) image coordinates.</p>
+<p><strong>(a)</strong> For <span class="math inline">\(k_1 = -0.2\)</span>, compute the distorted coordinates of <span class="math inline">\((0.5, 0)\)</span> and <span class="math inline">\((0.1, 0)\)</span>. Which point moves more, and in which direction?</p>
+<p><strong>(b)</strong> Is <span class="math inline">\(k_1 &lt; 0\)</span> barrel or pincushion distortion? How does a straight line that does not pass through the image center look in the image?</p>
+<p><strong>(c)</strong> To undistort an image, we need to compute <span class="math inline">\((x, y)\)</span> from <span class="math inline">\((x^*, y^*)\)</span>. Propose a simple iterative method.</p>
+<p><strong>(d)</strong> Lecture said that after undistortion, we can treat the camera as a pinhole camera. Why is this convenient for the rest of the lecture?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> For <span class="math inline">\((0.5, 0)\)</span>: <span class="math inline">\(r^2 = 0.25\)</span>, so <span class="math inline">\(x^* = 0.5(1 - 0.05) = 0.475\)</span>. For <span class="math inline">\((0.1, 0)\)</span>: <span class="math inline">\(r^2 = 0.01\)</span>, so <span class="math inline">\(x^* = 0.1(1 - 0.002) = 0.0998\)</span>. Both points move toward the center, and the point farther from the center moves much more (<span class="math inline">\(0.025\)</span> vs.&nbsp;<span class="math inline">\(0.0002\)</span>), since the displacement grows as <span class="math inline">\(r^3\)</span>.</p>
+<p><strong>(b)</strong> Barrel distortion: points are pulled toward the center more the farther they are from it, so straight lines that do not pass through the center bow outward (toward the image border), like the outline of a barrel. With <span class="math inline">\(k_1 &gt; 0\)</span> (pincushion), they bow inward.</p>
+<p><strong>(c)</strong> Fixed-point iteration: start with <span class="math inline">\((x, y) = (x^*, y^*)\)</span>, and repeat <span class="math inline">\((x, y) \leftarrow \frac{(x^*, y^*)}{1 + k_1(x^2 + y^2)}\)</span> a few times. This converges quickly when the distortion is moderate. In practice, the undistortion is computed once for every pixel and stored as a lookup table.</p>
+<p><strong>(d)</strong> The pinhole model <span class="math inline">\(h_{\text{pinhole}}\)</span> is simple and, in homogeneous coordinates, linear up to scale. Straight lines map to straight lines, which underlies epipolar geometry, and the triangulation and bundle adjustment cost functions only involve <span class="math inline">\(K\)</span> and the camera poses.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4---detecting-and-describing-features" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4---detecting-and-describing-features">Exercise 4 - Detecting and Describing Features</h2>
+<p><strong>(a)</strong> Consider a small window shifted by <span class="math inline">\((\Delta x, \Delta y)\)</span>. Lecture classified windows as “flat”, “edge”, or “corner” depending on how the window’s content changes. Using the approximation <span class="math inline">\(I(x + \Delta x, y + \Delta y) \approx I(x, y) + I_x\Delta x + I_y\Delta y\)</span>, show that the sum of squared differences over the window is approximately <span class="math display">\[
+E(\Delta x, \Delta y) = \begin{bmatrix} \Delta x &amp; \Delta y \end{bmatrix} M \begin{bmatrix} \Delta x \\ \Delta y \end{bmatrix}, \quad M = \sum_{\text{window}} \begin{bmatrix} I_x^2 &amp; I_xI_y \\ I_xI_y &amp; I_y^2 \end{bmatrix}.
+\]</span></p>
+<p><strong>(b)</strong> How do the eigenvalues of <span class="math inline">\(M\)</span> distinguish flat regions, edges, and corners? Compute <span class="math inline">\(M\)</span> for a <span class="math inline">\(5 \times 5\)</span> window on a vertical edge where <span class="math inline">\(I_x = 1\)</span> and <span class="math inline">\(I_y = 0\)</span> at every pixel.</p>
+<p><strong>(c)</strong> How many dimensions does a SIFT descriptor have, and where does this number come from?</p>
+<p><strong>(d)</strong> Suppose the image intensity changes as <span class="math inline">\(I' = aI + b\)</span> (contrast and brightness changes). Show that the normalized SIFT descriptor does not change.</p>
+<p><strong>(e)</strong> List the four characteristics of good features from lecture, and explain why each one matters for visual odometry.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math inline">\(E(\Delta x, \Delta y) = \sum (I(x + \Delta x, y + \Delta y) - I(x, y))^2 \approx \sum (I_x\Delta x + I_y\Delta y)^2\)</span>, and <span class="math inline">\((I_x\Delta x + I_y\Delta y)^2 = [\Delta x, \Delta y]\begin{bmatrix} I_x^2 &amp; I_xI_y \\ I_xI_y &amp; I_y^2 \end{bmatrix}[\Delta x, \Delta y]^\T\)</span>. Summing over the window gives <span class="math inline">\(M\)</span>.</p>
+<p><strong>(b)</strong></p>
+<ul>
+<li>Flat: both eigenvalues are small, so no shift changes the window.</li>
+<li>Edge: one eigenvalue is large and the other small, so shifting along the edge (the small eigenvalue’s eigenvector) does not change the window.</li>
+<li>Corner: both eigenvalues are large, so every shift changes the window.</li>
+</ul>
+<p>For the vertical edge, <span class="math inline">\(M = \begin{bmatrix} 25 &amp; 0 \\ 0 &amp; 0 \end{bmatrix}\)</span>. Its eigenvalues are <span class="math inline">\(25\)</span> and <span class="math inline">\(0\)</span>, and shifting in <span class="math inline">\(y\)</span> (along the edge) costs nothing. The Harris detector scores corners using <span class="math inline">\(\det M - \kappa(\operatorname{tr}M)^2\)</span>, which is large only when both eigenvalues are large.</p>
+<p><strong>(c)</strong> <span class="math inline">\(128 = 4 \times 4 \times 8\)</span>: the <span class="math inline">\(16 \times 16\)</span> window is split into a <span class="math inline">\(4 \times 4\)</span> grid of cells, and each cell stores an <span class="math inline">\(8\)</span>-bin histogram of gradient orientations, weighted by gradient magnitude.</p>
+<p><strong>(d)</strong> The gradients of <span class="math inline">\(I'\)</span> are <span class="math inline">\(a\)</span> times the gradients of <span class="math inline">\(I\)</span>, since the constant <span class="math inline">\(b\)</span> disappears when differentiating. The orientations are unchanged and every magnitude is multiplied by <span class="math inline">\(a\)</span>, so the descriptor vector is multiplied by <span class="math inline">\(a\)</span>, and normalizing it to unit length removes <span class="math inline">\(a\)</span>. (Clamping at <span class="math inline">\(0.2\)</span> and renormalizing further reduces the effect of nonlinear illumination changes, such as saturation.)</p>
+<p><strong>(e)</strong></p>
+<ul>
+<li>Repeatability: the same features must be detected in consecutive frames despite changes in viewpoint and illumination, or there is nothing to match.</li>
+<li>Saliency: each feature must be distinctive, or it will be matched to the wrong feature (an outlier).</li>
+<li>Compactness and efficiency: there must be far fewer features than pixels, so matching and optimization can run in real time.</li>
+<li>Locality: a feature should cover a small area of the image, so it is robust to occlusion and clutter and approximately follows a rigid motion.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5---stereo-with-parallel-cameras" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5---stereo-with-parallel-cameras">Exercise 5 - Stereo with Parallel Cameras</h2>
+<p>A rectified stereo camera has two parallel cameras with focal length <span class="math inline">\(fm_x = 700\)</span> pixels and baseline <span class="math inline">\(b = 0.12\)</span> m. A point appears at <span class="math inline">\(x_l\)</span> in the left image and <span class="math inline">\(x_r\)</span> in the right image, and the disparity is <span class="math inline">\(d = x_l - x_r\)</span> (in pixels, measured relative to each image’s principal point).</p>
+<p><strong>(a)</strong> Using similar triangles, show that the depth is <span class="math inline">\(Z = \frac{fm_x\,b}{d}\)</span>.</p>
+<p><strong>(b)</strong> Compute the depth for disparities of <span class="math inline">\(21\)</span>, <span class="math inline">\(4.2\)</span>, and <span class="math inline">\(0\)</span> pixels.</p>
+<p><strong>(c)</strong> Show that a disparity error <span class="math inline">\(\delta d\)</span> produces a depth error of approximately <span class="math inline">\(\delta Z \approx \frac{Z^2}{fm_x\,b}\delta d\)</span>. Compute the depth error caused by a <span class="math inline">\(1\)</span> pixel disparity error at <span class="math inline">\(Z = 4\)</span> m and at <span class="math inline">\(Z = 20\)</span> m.</p>
+<p><strong>(d)</strong> The robot only cares about obstacles closer than <span class="math inline">\(Z_{\min} = 0.5\)</span> m or farther. What is the maximum disparity the matcher needs to search? Why does the search only need to go in one direction along the row?</p>
+<p><strong>(e)</strong> Lecture showed disparity maps computed with patch sizes <span class="math inline">\(5\)</span>, <span class="math inline">\(35\)</span>, and <span class="math inline">\(85\)</span>. Explain the tradeoff.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> In metric units, the left camera sees the point at <span class="math inline">\(x_l = f\frac{X}{Z}\)</span>, and the right camera, shifted by <span class="math inline">\(b\)</span> along the x-axis, sees it at <span class="math inline">\(x_r = f\frac{X - b}{Z}\)</span>. Subtracting, <span class="math inline">\(x_l - x_r = \frac{fb}{Z}\)</span>, so <span class="math inline">\(Z = \frac{fb}{x_l - x_r}\)</span>. Converting the image coordinates to pixels multiplies <span class="math inline">\(f\)</span> by <span class="math inline">\(m_x\)</span>.</p>
+<p><strong>(b)</strong> <span class="math inline">\(fm_x\,b = 84\)</span> pixel-meters. A disparity of <span class="math inline">\(21\)</span> pixels gives <span class="math inline">\(4\)</span> m, <span class="math inline">\(4.2\)</span> pixels gives <span class="math inline">\(20\)</span> m, and <span class="math inline">\(0\)</span> pixels corresponds to a point at infinity.</p>
+<p><strong>(c)</strong> <span class="math inline">\(\frac{dZ}{dd} = -\frac{fm_x\,b}{d^2} = -\frac{Z^2}{fm_x\,b}\)</span>. At <span class="math inline">\(Z = 4\)</span> m: <span class="math inline">\(\delta Z \approx 16 / 84 \approx 0.19\)</span> m. At <span class="math inline">\(Z = 20\)</span> m: <span class="math inline">\(\delta Z \approx 400 / 84 \approx 4.8\)</span> m. The depth error grows quadratically with depth, which is why stereo is accurate only at short range, and why a larger baseline helps.</p>
+<p><strong>(d)</strong> <span class="math inline">\(d_{\max} = 84 / 0.5 = 168\)</span> pixels. The disparity is always nonnegative (<span class="math inline">\(x_r \le x_l\)</span>), since a point appearing to the right of <span class="math inline">\(x_l\)</span> in the right image would have to be behind the cameras. Combined with the fact that matches lie on the same row (<span class="math inline">\(y_r = y_l\)</span>), the search is a 1D scan over <span class="math inline">\(168\)</span> positions to the left.</p>
+<p><strong>(e)</strong> Small patches preserve detail and object boundaries but contain too little texture to be matched reliably, so the disparity map is noisy. Large patches are more distinctive and produce smooth maps, but they blur depth discontinuities, since a patch that straddles an object boundary contains pixels at two different depths.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-6---triangulation-as-least-squares" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6---triangulation-as-least-squares">Exercise 6 - Triangulation as Least Squares</h2>
+<p>Two cameras with the calibration matrix <span class="math inline">\(K\)</span> from Exercise 2 observe the same 3D point. Camera 1 is at the origin of the world frame, and camera 2 has the same orientation but is shifted <span class="math inline">\(0.5\)</span> m along the world x-axis, so that <span class="math inline">\({}^2\mathbf{p} = {}^w\mathbf{p} + (-0.5, 0, 0)\)</span>.</p>
+<p><strong>(a)</strong> The point is at <span class="math inline">\({}^w\mathbf{p} = (1, 0.5, 5)\)</span>. Compute its pixel coordinates in both cameras, and check that the depth formula from Exercise 5 recovers <span class="math inline">\(Z\)</span>.</p>
+<p><strong>(b)</strong> Write the triangulation cost function from lecture for <span class="math inline">\(K\)</span> cameras. Which variables are optimized and which are known?</p>
+<p><strong>(c)</strong> Implement triangulation in numpy using Gauss-Newton with a numerical Jacobian. Test it on noisy pixel measurements.</p>
+<p><strong>(d)</strong> Lecture’s example had <span class="math inline">\(7\)</span> points observed by <span class="math inline">\(3\)</span> cameras. Count the unknowns and the scalar constraints. In general, how many cameras must observe a point to triangulate it?</p>
+<p><strong>(e)</strong> Give two situations where the triangulation is unreliable even if the optimization converges.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Camera 1: <span class="math inline">\(u = 500 \cdot \frac{1}{5} + 320 = 420\)</span> and <span class="math inline">\(v = 500 \cdot \frac{0.5}{5} + 240 = 290\)</span>. Camera 2 sees <span class="math inline">\((0.5, 0.5, 5)\)</span>: <span class="math inline">\(u = 370\)</span> and <span class="math inline">\(v = 290\)</span>. Both have the same row, as expected for parallel cameras. The disparity is <span class="math inline">\(50\)</span> pixels, so <span class="math inline">\(Z = \frac{500 \cdot 0.5}{50} = 5\)</span> m.</p>
+<p><strong>(b)</strong> <span class="math display">\[
+{}^w\mathbf{p}^* = \argmin_{{}^w\mathbf{p}} \sum_{k=1}^K \left\|\tilde{\mathbf{z}}^{(k)} - h_{\text{pinhole}}\left({}^k_wR\,{}^w\mathbf{p} + {}^k\mathbf{t}_{kw}\right)\right\|^2.
+\]</span> Only the 3D point <span class="math inline">\({}^w\mathbf{p}\)</span> is optimized. The camera poses <span class="math inline">\(({}^k_wR, {}^k\mathbf{t}_{kw})\)</span>, the intrinsics, and the pixel measurements <span class="math inline">\(\tilde{\mathbf{z}}^{(k)}\)</span> are known.</p>
+<p><strong>(c)</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> np.array([[<span class="dv">500</span>, <span class="dv">0</span>, <span class="dv">320</span>], [<span class="dv">0</span>, <span class="dv">500</span>, <span class="dv">240</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">1.0</span>]])</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>cams <span class="op">=</span> [(np.eye(<span class="dv">3</span>), np.zeros(<span class="dv">3</span>)), (np.eye(<span class="dv">3</span>), np.array([<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">0</span>, <span class="dv">0</span>]))]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> project(K, R, t, p):</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> K <span class="op">@</span> (R <span class="op">@</span> p <span class="op">+</span> t)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> q[:<span class="dv">2</span>] <span class="op">/</span> q[<span class="dv">2</span>]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> triangulate(K, cams, zs, p0, iters<span class="op">=</span><span class="dv">10</span>, eps<span class="op">=</span><span class="fl">1e-6</span>):</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> p0.astype(<span class="bu">float</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(iters):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        r <span class="op">=</span> np.concatenate([z <span class="op">-</span> project(K, R, t, p) <span class="cf">for</span> z, (R, t) <span class="kw">in</span> <span class="bu">zip</span>(zs, cams)])</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        J <span class="op">=</span> np.zeros((<span class="bu">len</span>(r), <span class="dv">3</span>))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            dp <span class="op">=</span> np.zeros(<span class="dv">3</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            dp[j] <span class="op">=</span> eps</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            r_j <span class="op">=</span> np.concatenate([z <span class="op">-</span> project(K, R, t, p <span class="op">+</span> dp) <span class="cf">for</span> z, (R, t) <span class="kw">in</span> <span class="bu">zip</span>(zs, cams)])</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            J[:, j] <span class="op">=</span> (r_j <span class="op">-</span> r) <span class="op">/</span> eps</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        p <span class="op">=</span> p <span class="op">-</span> np.linalg.solve(J.T <span class="op">@</span> J, J.T <span class="op">@</span> r)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>p_true <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">5.0</span>])</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>zs <span class="op">=</span> [project(K, R, t, p_true) <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span><span class="dv">2</span>) <span class="cf">for</span> R, t <span class="kw">in</span> cams]</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(triangulate(K, cams, zs, p0<span class="op">=</span>np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">1.0</span>])))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>With <span class="math inline">\(1\)</span> pixel of noise, this returns approximately <span class="math inline">\((1.01, 0.51, 5.05)\)</span>. Gauss-Newton is the method from the least squares lecture: it linearizes the residual around the current estimate and solves the normal equations.</p>
+<p><strong>(d)</strong> There are <span class="math inline">\(7 \times 3 = 21\)</span> unknowns (the 3D coordinates of the points) and <span class="math inline">\(7 \times 3 \times 2 = 42\)</span> scalar measurements (two pixel coordinates per point per camera). Each camera gives <span class="math inline">\(2\)</span> equations per point, so at least <span class="math inline">\(2\)</span> cameras are needed for the <span class="math inline">\(3\)</span> unknowns of a point. More cameras overdetermine the problem and reduce the effect of noise.</p>
+<p><strong>(e)</strong></p>
+<ul>
+<li>The rays are nearly parallel (the point is far away compared to the baseline, or the camera moved very little). The intersection is then dominated by pixel noise, and the depth is essentially unconstrained (a “point at infinity”).</li>
+<li>The optimization is unconstrained, so it can return a solution with <span class="math inline">\({}^kZ &lt; 0\)</span>, behind a camera, especially when initialized poorly. It can also converge to a wrong solution if a measurement is an outlier (a wrong match).</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

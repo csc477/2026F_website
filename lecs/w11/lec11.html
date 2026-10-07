@@ -389,7 +389,7 @@ w_{t-1}\sim\mathcal{N}(0,Q)
 </div>
 <div class="semi-tiny-font absolute" style="left: 200px; bottom: 30px; ">
 <p>Q: What is the probability of the actual measurement given the state hypothesized by the particle?</p>
-<p>A: <span class="math inline">\(p(\bar{z}_t | x_t^{[m]}) = \mathcal{N}(\bar{z}_t; d_{1:4}, \sigma^2 \mathbb{I}_4) = \eta \exp(-\|\bar{z}_t - d_{1:4}\|^2 / \sigma^2)\)</span></p>
+<p>A: <span class="math inline">\(p(\bar{z}_t | x_t^{[m]}) = \mathcal{N}(\bar{z}_t; d_{1:4}, \sigma^2 \mathbb{I}_4) = \eta \exp(-\|\bar{z}_t - d_{1:4}\|^2 / (2\sigma^2))\)</span></p>
 </div>
 </section>
 <section id="how-to-update-particle-weights-after-an-observation-4" class="slide level2">
@@ -401,7 +401,7 @@ w_{t-1}\sim\mathcal{N}(0,Q)
 </div>
 <div class="semi-tiny-font absolute" style="left: 200px; bottom: 30px; ">
 <p>Q: What is the probability of the actual measurement given the state hypothesized by the particle?</p>
-<p>A: <span class="math inline">\(p(\bar{z}_{t}|x_{t}^{[m]}) = \prod_{i=1}^{4} p(\bar{r}_{i}|x_{t}^{[m]}) = \prod_{i=1}^{4} \mathcal{N}(\bar{r}_{i}; d_{i}, \sigma^{2}) = \prod_{i=1}^{4} \eta \exp(-(\bar{r}_{i}-d_{i})/\sigma^{2})\)</span></p>
+<p>A: <span class="math inline">\(p(\bar{z}_{t}|x_{t}^{[m]}) = \prod_{i=1}^{4} p(\bar{r}_{i}|x_{t}^{[m]}) = \prod_{i=1}^{4} \mathcal{N}(\bar{r}_{i}; d_{i}, \sigma^{2}) = \prod_{i=1}^{4} \eta \exp(-(\bar{r}_{i}-d_{i})^{2}/(2\sigma^{2}))\)</span></p>
 </div>
 <div class="semi-tiny-font red absolute" style="left: -50px; bottom: 30px; ">
 <p>Assuming range measurements<br>
@@ -620,7 +620,7 @@ idx = 0</p>
 <section id="how-to-address-particle-deprivation" class="slide level2">
 <h2>How to address particle deprivation</h2>
 <ul>
-<li><p>Idea #1: don’t resample when only a few particles contribute</p></li>
+<li><p>Idea #1: don’t resample at every step, only when a few particles carry most of the weight</p></li>
 <li><p>Idea #2: inject random particles during resampling</p></li>
 <li><p>Idea #3: increase the number of particles (may be impractical depending on the computational complexity of the system)</p></li>
 </ul>
@@ -628,13 +628,13 @@ idx = 0</p>
 <section id="how-to-address-particle-deprivation-1" class="slide level2">
 <h2>How to address particle deprivation</h2>
 <ul>
-<li>Idea #1: don’t resample when only a few particles contribute
+<li>Idea #1: don’t resample at every step, only when a few particles carry most of the weight
 <ul>
 <li>Effective sample size: <span class="math inline">\(N_{\text{eff}} = \frac{1}{\sum_{i=1}^{N}w_{i}^{2}}\)</span></li>
 <li>When all particles have equal, normalized weights (1/N) then <span class="math inline">\(N_{\text{eff}} = N\)</span></li>
-<li>When a single particle carries the entire weight then <span class="math inline">\(N_{\text{eff}} = 1/N\)</span></li>
+<li>When a single particle carries the entire weight then <span class="math inline">\(N_{\text{eff}} = 1\)</span></li>
 <li>and we have loss of particle diversity.</li>
-<li>Resample only when <span class="math inline">\(N_{\text{eff}} &gt; N_{\text{thresh}}\)</span></li>
+<li>Resample only when <span class="math inline">\(N_{\text{eff}} &lt; N_{\text{thresh}}\)</span></li>
 </ul></li>
 <li>Idea #2: inject random particles during resampling</li>
 <li>Idea #3: increase the number of particles (may be impractical depending on the computational complexity of the system)</li>
@@ -643,7 +643,7 @@ idx = 0</p>
 <section id="how-to-address-particle-deprivation-2" class="slide level2">
 <h2>How to address particle deprivation</h2>
 <ul>
-<li>Idea #1: don’t resample when only a few particles contribute</li>
+<li>Idea #1: don’t resample at every step, only when a few particles carry most of the weight</li>
 <li>Idea #2: inject random particles during resampling
 <ul>
 <li>A small percentage of the particles’ states should be set randomly

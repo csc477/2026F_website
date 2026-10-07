@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 2 Optional Exercises: Kinematics and Dynamics – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Week 2 Optional Exercises: Kinematics and Dynamics – CSC477 - Fall 2026">
+<meta property="og:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="Week 2 Optional Exercises: Kinematics and Dynamics – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Exercises</h2>
+   
+  <ul class="collapse">
+  <li><a href="#exercise-1---rotation-matrices" id="toc-exercise-1---rotation-matrices" class="nav-link active" data-scroll-target="#exercise-1---rotation-matrices">Exercise 1 - Rotation Matrices</a></li>
+  <li><a href="#exercise-2---euler-angles-and-gimbal-lock" id="toc-exercise-2---euler-angles-and-gimbal-lock" class="nav-link" data-scroll-target="#exercise-2---euler-angles-and-gimbal-lock">Exercise 2 - Euler Angles and Gimbal Lock</a></li>
+  <li><a href="#exercise-3---axis-angle-and-the-rodrigues-formula" id="toc-exercise-3---axis-angle-and-the-rodrigues-formula" class="nav-link" data-scroll-target="#exercise-3---axis-angle-and-the-rodrigues-formula">Exercise 3 - Axis-Angle and the Rodrigues Formula</a></li>
+  <li><a href="#exercise-4---quaternions" id="toc-exercise-4---quaternions" class="nav-link" data-scroll-target="#exercise-4---quaternions">Exercise 4 - Quaternions</a></li>
+  <li><a href="#exercise-5---homogeneous-transformations" id="toc-exercise-5---homogeneous-transformations" class="nav-link" data-scroll-target="#exercise-5---homogeneous-transformations">Exercise 5 - Homogeneous Transformations</a></li>
+  <li><a href="#exercise-6---simple-car-and-discretization" id="toc-exercise-6---simple-car-and-discretization" class="nav-link" data-scroll-target="#exercise-6---simple-car-and-discretization">Exercise 6 - Simple Car and Discretization</a></li>
+  <li><a href="#exercise-7---differential-drive-and-the-icr" id="toc-exercise-7---differential-drive-and-the-icr" class="nav-link" data-scroll-target="#exercise-7---differential-drive-and-the-icr">Exercise 7 - Differential Drive and the ICR</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 2 Optional Exercises: Kinematics and Dynamics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\T}{\top}
+\]</span></p>
+</div>
+<p>These exercises are optional and are not graded. They are based on the material from <a href="../../lecs/w02/lec02.html">Lecture 2</a>. Try each exercise on your own first, then click on <strong>Solution</strong> to reveal a worked answer.</p>
+<p>Throughout, we use the conventions from lecture: <span class="math inline">\(\mathbf{R}_x(\alpha), \mathbf{R}_y(\alpha), \mathbf{R}_z(\alpha)\)</span> are counter-clockwise rotations about the corresponding axis, <span class="math inline">\({}^W_B\mathbf{R}\)</span> rotates coordinates from the Body frame to the World frame, and quaternions are written as <span class="math inline">\(\mathbf{q} = [x, y, z, w]\)</span> with <span class="math inline">\(w\)</span> the scalar part.</p>
+<section id="exercise-1---rotation-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---rotation-matrices">Exercise 1 - Rotation Matrices</h2>
+<p><strong>(a)</strong> Write down <span class="math inline">\(\mathbf{R}_z(90°)\)</span> and <span class="math inline">\(\mathbf{R}_x(90°)\)</span>. Apply each to the vector <span class="math inline">\((1, 0, 0)^\T\)</span>.</p>
+<p><strong>(b)</strong> Compute <span class="math inline">\(\mathbf{R}_z(90°)\mathbf{R}_x(90°)\)</span> and <span class="math inline">\(\mathbf{R}_x(90°)\mathbf{R}_z(90°)\)</span>. Are they equal? What does this tell you about composing 3D rotations, compared to 2D rotations?</p>
+<p><strong>(c)</strong> Verify that <span class="math inline">\(\mathbf{M} = \mathbf{R}_z(90°)\mathbf{R}_x(90°)\)</span> satisfies <span class="math inline">\(\mathbf{M}^\T\mathbf{M} = \mathbf{I}\)</span> and <span class="math inline">\(\det \mathbf{M} = 1\)</span>.</p>
+<p><strong>(d)</strong> Show that <span class="math inline">\(\mathbf{R}_z(90°) + \mathbf{R}_z(90°)\)</span> is not a rotation matrix. Why is this relevant when, for example, averaging several orientation estimates?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math display">\[
+\mathbf{R}_z(90°) = \begin{bmatrix} 0 &amp; -1 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}, \qquad
+\mathbf{R}_x(90°) = \begin{bmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; -1 \\ 0 &amp; 1 &amp; 0 \end{bmatrix}.
+\]</span> <span class="math inline">\(\mathbf{R}_z(90°)(1,0,0)^\T = (0,1,0)^\T\)</span>, and <span class="math inline">\(\mathbf{R}_x(90°)(1,0,0)^\T = (1,0,0)^\T\)</span> (the x-axis is unchanged by a rotation about itself).</p>
+<p><strong>(b)</strong> <span class="math display">\[
+\mathbf{R}_z(90°)\mathbf{R}_x(90°) = \begin{bmatrix} 0 &amp; 0 &amp; 1 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \end{bmatrix}, \qquad
+\mathbf{R}_x(90°)\mathbf{R}_z(90°) = \begin{bmatrix} 0 &amp; -1 &amp; 0 \\ 0 &amp; 0 &amp; -1 \\ 1 &amp; 0 &amp; 0 \end{bmatrix}.
+\]</span> They are different: 3D rotations do not commute, so the order matters. In 2D, all rotations are about the same axis and can be composed by adding angles in any order. This is also why Euler angle conventions must specify the order of the rotations.</p>
+<p><strong>(c)</strong> The columns of <span class="math inline">\(\mathbf{M}\)</span> are <span class="math inline">\((0,1,0)^\T\)</span>, <span class="math inline">\((0,0,1)^\T\)</span>, <span class="math inline">\((1,0,0)^\T\)</span>. They are unit length and mutually orthogonal, so <span class="math inline">\(\mathbf{M}^\T\mathbf{M} = \mathbf{I}\)</span>. Expanding the determinant along the first row gives <span class="math inline">\(\det\mathbf{M} = 1 \cdot \det\begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix} = 1\)</span>.</p>
+<p><strong>(d)</strong> <span class="math inline">\(2\mathbf{R}_z(90°)\)</span> has columns of length <span class="math inline">\(2\)</span>, so <span class="math inline">\((2\mathbf{R})^\T(2\mathbf{R}) = 4\mathbf{I} \neq \mathbf{I}\)</span>. Rotations are closed under multiplication but not under addition. Naively averaging rotation matrices (or Euler angles) generally does not give a valid rotation; the result needs to be projected back onto the set of rotations, or the averaging must be done with a different representation.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2---euler-angles-and-gimbal-lock" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2---euler-angles-and-gimbal-lock">Exercise 2 - Euler Angles and Gimbal Lock</h2>
+<p>Consider z-y-x Euler angles (yaw <span class="math inline">\(\psi\)</span>, pitch <span class="math inline">\(\theta\)</span>, roll <span class="math inline">\(\phi\)</span>), so that <span class="math inline">\(\mathbf{R} = \mathbf{R}_z(\psi)\mathbf{R}_y(\theta)\mathbf{R}_x(\phi)\)</span>.</p>
+<p><strong>(a)</strong> Compute <span class="math inline">\(\mathbf{R}\)</span> when the pitch is <span class="math inline">\(\theta = 90°\)</span>. Express the result in terms of <span class="math inline">\(\psi\)</span> and <span class="math inline">\(\phi\)</span>.</p>
+<p><strong>(b)</strong> Use your result to explain gimbal lock: what degree of freedom is lost?</p>
+<p><strong>(c)</strong> Lecture listed several ways in which an Euler angle specification can be ambiguous. Name four pieces of information that someone must give you before you can turn three numbers <span class="math inline">\((\psi, \theta, \phi)\)</span> into a rotation matrix.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> With <span class="math inline">\(\mathbf{R}_y(90°) = \begin{bmatrix} 0 &amp; 0 &amp; 1 \\ 0 &amp; 1 &amp; 0 \\ -1 &amp; 0 &amp; 0 \end{bmatrix}\)</span>, multiplying out and using the angle-difference identities gives <span class="math display">\[
+\mathbf{R} = \begin{bmatrix}
+0 &amp; \sin(\phi - \psi) &amp; \cos(\phi - \psi) \\
+0 &amp; \cos(\phi - \psi) &amp; -\sin(\phi - \psi) \\
+-1 &amp; 0 &amp; 0
+\end{bmatrix}.
+\]</span></p>
+<p><strong>(b)</strong> At <span class="math inline">\(\theta = 90°\)</span> the matrix depends only on the difference <span class="math inline">\(\phi - \psi\)</span>. Changing yaw and roll by the same amount gives exactly the same rotation, so the two angles describe the same motion and only two independent degrees of freedom remain. Near this configuration, small changes in orientation can require very large changes in the Euler angles, which is problematic for estimation and control.</p>
+<p><strong>(c)</strong> Any four of the following: the axis sequence (e.g., z-y-x vs.&nbsp;z-x-z), the order in which the three numbers are listed, whether each rotation is counter-clockwise or clockwise (<span class="math inline">\(\mathbf{R}\)</span> vs.&nbsp;<span class="math inline">\(\mathbf{C}\)</span> in lecture), whether the rotation maps World to Body or Body to World, and whether the angles are in degrees or radians.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3---axis-angle-and-the-rodrigues-formula" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3---axis-angle-and-the-rodrigues-formula">Exercise 3 - Axis-Angle and the Rodrigues Formula</h2>
+<p>Recall the Rodrigues formula <span class="math inline">\(\mathbf{R} = \mathbf{I}\cos\theta + (1 - \cos\theta)\mathbf{v}\mathbf{v}^\T + [\mathbf{v}]_\times \sin\theta\)</span> for a rotation by angle <span class="math inline">\(\theta\)</span> about the unit axis <span class="math inline">\(\mathbf{v}\)</span>.</p>
+<p><strong>(a)</strong> Verify that the formula gives <span class="math inline">\(\mathbf{R}_z(90°)\)</span> for <span class="math inline">\(\mathbf{v} = (0, 0, 1)^\T\)</span> and <span class="math inline">\(\theta = 90°\)</span>.</p>
+<p><strong>(b)</strong> Compute <span class="math inline">\(\mathbf{R}\)</span> for <span class="math inline">\(\mathbf{v} = \frac{1}{\sqrt{3}}(1, 1, 1)^\T\)</span> and <span class="math inline">\(\theta = 120°\)</span>. Compare with your answer to Exercise 1(b).</p>
+<p><strong>(c)</strong> In lecture we saw the matrix <span class="math inline">\({}^D_C\mathbf{R} = \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \\ 1 &amp; 0 &amp; 0 \end{bmatrix}\)</span>. What is its axis-angle representation?</p>
+<p><strong>(d)</strong> Why do <span class="math inline">\((\theta, \mathbf{v})\)</span> and <span class="math inline">\((-\theta, -\mathbf{v})\)</span> represent the same rotation? Check it with the Rodrigues formula.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> With <span class="math inline">\(\cos 90° = 0\)</span> and <span class="math inline">\(\sin 90° = 1\)</span>, the formula reduces to <span class="math inline">\(\mathbf{R} = \mathbf{v}\mathbf{v}^\T + [\mathbf{v}]_\times\)</span>: <span class="math display">\[
+\begin{bmatrix} 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} +
+\begin{bmatrix} 0 &amp; -1 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{bmatrix} =
+\begin{bmatrix} 0 &amp; -1 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} = \mathbf{R}_z(90°).
+\]</span></p>
+<p><strong>(b)</strong> Here <span class="math inline">\(\cos 120° = -\frac{1}{2}\)</span>, <span class="math inline">\(\sin 120° = \frac{\sqrt{3}}{2}\)</span>, <span class="math inline">\(\mathbf{v}\mathbf{v}^\T = \frac{1}{3}\mathbf{1}\mathbf{1}^\T\)</span> (a matrix of all <span class="math inline">\(\frac{1}{3}\)</span>), and <span class="math inline">\([\mathbf{v}]_\times = \frac{1}{\sqrt{3}}\begin{bmatrix} 0 &amp; -1 &amp; 1 \\ 1 &amp; 0 &amp; -1 \\ -1 &amp; 1 &amp; 0 \end{bmatrix}\)</span>. So <span class="math display">\[
+\mathbf{R} = -\tfrac{1}{2}\mathbf{I} + \tfrac{1}{2}\mathbf{1}\mathbf{1}^\T + \tfrac{1}{2}\begin{bmatrix} 0 &amp; -1 &amp; 1 \\ 1 &amp; 0 &amp; -1 \\ -1 &amp; 1 &amp; 0 \end{bmatrix}
+= \begin{bmatrix} 0 &amp; 0 &amp; 1 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \end{bmatrix}.
+\]</span> This is exactly <span class="math inline">\(\mathbf{R}_z(90°)\mathbf{R}_x(90°)\)</span> from Exercise 1(b). It cyclically maps <span class="math inline">\(x \to y \to z \to x\)</span>.</p>
+<p><strong>(c)</strong> <span class="math inline">\({}^D_C\mathbf{R}\)</span> is the transpose (inverse) of the matrix in (b). So it is a rotation by <span class="math inline">\(-120°\)</span> about <span class="math inline">\(\frac{1}{\sqrt{3}}(1,1,1)^\T\)</span>, or equivalently by <span class="math inline">\(120°\)</span> about <span class="math inline">\(-\frac{1}{\sqrt{3}}(1,1,1)^\T\)</span>.</p>
+<p><strong>(d)</strong> Rotating clockwise about <span class="math inline">\(\mathbf{v}\)</span> is the same as rotating counter-clockwise about <span class="math inline">\(-\mathbf{v}\)</span>. In the formula, <span class="math inline">\(\cos\)</span> is even, <span class="math inline">\(\mathbf{v}\mathbf{v}^\T = (-\mathbf{v})(-\mathbf{v})^\T\)</span>, and <span class="math inline">\([-\mathbf{v}]_\times \sin(-\theta) = [\mathbf{v}]_\times\sin\theta\)</span>, so all three terms are unchanged.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4---quaternions" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4---quaternions">Exercise 4 - Quaternions</h2>
+<p><strong>(a)</strong> Write down the unit quaternions <span class="math inline">\(\mathbf{q}_z\)</span> and <span class="math inline">\(\mathbf{q}_x\)</span> for <span class="math inline">\(90°\)</span> rotations about the z-axis and the x-axis.</p>
+<p><strong>(b)</strong> Compute <span class="math inline">\(\mathbf{q}_z \otimes \mathbf{q}_x\)</span>. <em>Hint:</em> writing a quaternion as a scalar <span class="math inline">\(w\)</span> and a vector <span class="math inline">\(\mathbf{u}\)</span>, the product is <span class="math inline">\((w_1, \mathbf{u}_1) \otimes (w_2, \mathbf{u}_2) = (w_1 w_2 - \mathbf{u}_1 \cdot \mathbf{u}_2,\; w_1\mathbf{u}_2 + w_2\mathbf{u}_1 + \mathbf{u}_1 \times \mathbf{u}_2)\)</span>. Convert the result to axis-angle form and compare with Exercise 3(b).</p>
+<p><strong>(c)</strong> What is the inverse of the quaternion from (b)? Verify that <span class="math inline">\(\mathbf{q}^{-1}\otimes\mathbf{q} = [0, 0, 0, 1]\)</span>.</p>
+<p><strong>(d)</strong> Show that <span class="math inline">\(\mathbf{q}\)</span> and <span class="math inline">\(-\mathbf{q}\)</span> represent the same rotation. Why can this cause problems when comparing two quaternions in code?</p>
+<p><strong>(e)</strong> A robot’s body-to-world orientation is <span class="math inline">\({}^W_{B(t)}\mathbf{q}\)</span>, and its gyroscope measures the body-frame angular velocity <span class="math inline">\({}^B\boldsymbol{\omega} = (0, 0, 0.5)\)</span> rad/s. Write down the quaternion update for a time step of <span class="math inline">\(dt = 0.1\)</span> s. Should the incremental rotation be multiplied on the left or on the right, and why?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Using <span class="math inline">\(\mathbf{q} = [\sin(\theta/2)\mathbf{v}, \cos(\theta/2)]\)</span> with <span class="math inline">\(\sin 45° = \cos 45° = \frac{\sqrt{2}}{2}\)</span>: <span class="math display">\[
+\mathbf{q}_z = \left[0, 0, \tfrac{\sqrt{2}}{2}, \tfrac{\sqrt{2}}{2}\right], \qquad
+\mathbf{q}_x = \left[\tfrac{\sqrt{2}}{2}, 0, 0, \tfrac{\sqrt{2}}{2}\right].
+\]</span></p>
+<p><strong>(b)</strong> Let <span class="math inline">\(a = \frac{\sqrt{2}}{2}\)</span>. Then <span class="math inline">\(w_1 = w_2 = a\)</span>, <span class="math inline">\(\mathbf{u}_1 = (0,0,a)\)</span>, <span class="math inline">\(\mathbf{u}_2 = (a,0,0)\)</span>, <span class="math inline">\(\mathbf{u}_1\cdot\mathbf{u}_2 = 0\)</span>, and <span class="math inline">\(\mathbf{u}_1 \times \mathbf{u}_2 = (0, a^2, 0)\)</span>. So <span class="math display">\[
+w = a^2 = \tfrac{1}{2}, \qquad \mathbf{u} = a(a,0,0) + a(0,0,a) + (0,a^2,0) = \left(\tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}\right),
+\]</span> i.e.&nbsp;<span class="math inline">\(\mathbf{q}_z\otimes\mathbf{q}_x = \left[\tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}\right]\)</span>. From <span class="math inline">\(\cos(\theta/2) = \frac{1}{2}\)</span> we get <span class="math inline">\(\theta = 120°\)</span>, and the axis is <span class="math inline">\(\mathbf{u}/\sin 60° = \frac{1}{\sqrt{3}}(1,1,1)\)</span>. This matches Exercises 1(b) and 3(b), as expected from the correspondence between quaternion multiplication and matrix multiplication.</p>
+<p><strong>(c)</strong> <span class="math inline">\(\mathbf{q}^{-1} = \left[-\tfrac{1}{2}, -\tfrac{1}{2}, -\tfrac{1}{2}, \tfrac{1}{2}\right]\)</span>. Using the product formula with <span class="math inline">\(w_1 = w_2 = \frac{1}{2}\)</span>, <span class="math inline">\(\mathbf{u}_1 = -\mathbf{u}_2\)</span>: the scalar part is <span class="math inline">\(\frac{1}{4} + \frac{3}{4} = 1\)</span>, and the vector part is <span class="math inline">\(\frac{1}{2}\mathbf{u}_2 - \frac{1}{2}\mathbf{u}_2 + (-\mathbf{u}_2)\times\mathbf{u}_2 = \mathbf{0}\)</span>. So the product is <span class="math inline">\([0,0,0,1]\)</span>.</p>
+<p><strong>(d)</strong> <span class="math inline">\(-\mathbf{q} = [-\sin(\theta/2)\mathbf{v}, -\cos(\theta/2)] = [\sin(\theta'/2)\mathbf{v}, \cos(\theta'/2)]\)</span> with <span class="math inline">\(\theta' = \theta + 360°\)</span>, which is the same rotation. Equivalently, the rotation formula <span class="math inline">\(\mathbf{q}\otimes[\mathbf{v},0]\otimes\mathbf{q}^{-1}\)</span> is unchanged when <span class="math inline">\(\mathbf{q}\)</span> is negated. In code, checking <code>q1 == q2</code> or computing <code>norm(q1 - q2)</code> can wrongly report two identical rotations as very different. A robust comparison uses <span class="math inline">\(|\mathbf{q}_1 \cdot \mathbf{q}_2| \approx 1\)</span>.</p>
+<p><strong>(e)</strong> The incremental rotation has axis <span class="math inline">\({}^B\boldsymbol{\omega}/\|{}^B\boldsymbol{\omega}\| = (0,0,1)\)</span> and angle <span class="math inline">\(\|{}^B\boldsymbol{\omega}\|\,dt = 0.05\)</span> rad, so <span class="math inline">\({}^{B(t)}_{B(t+dt)}\mathbf{q} = [0, 0, \sin(0.025), \cos(0.025)]\)</span>. The update is <span class="math display">\[
+{}^W_{B(t+dt)}\mathbf{q} = {}^W_{B(t)}\mathbf{q} \otimes {}^{B(t)}_{B(t+dt)}\mathbf{q}.
+\]</span> The increment goes on the right because the angular velocity is expressed in the body frame: the frame decorations must chain as <span class="math inline">\(W \leftarrow B(t) \leftarrow B(t+dt)\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5---homogeneous-transformations" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5---homogeneous-transformations">Exercise 5 - Homogeneous Transformations</h2>
+<p>A planar robot (frame <span class="math inline">\(B\)</span>) is at position <span class="math inline">\((2, 1)\)</span> in the world frame <span class="math inline">\(W\)</span>, with heading <span class="math inline">\(90°\)</span> (its x-axis points along the world y-axis). A 2D LIDAR (frame <span class="math inline">\(L\)</span>) is mounted on the robot at <span class="math inline">\((0.5, 0)\)</span> in the body frame, with the same orientation as the body. Use <span class="math inline">\(3\times 3\)</span> homogeneous transformations for 2D.</p>
+<p><strong>(a)</strong> Write down <span class="math inline">\({}^W_B\mathbf{T}\)</span> and <span class="math inline">\({}^B_L\mathbf{T}\)</span>.</p>
+<p><strong>(b)</strong> The LIDAR detects an obstacle at <span class="math inline">\({}^L\mathbf{p} = (1, 0)\)</span>. Where is the obstacle in the world frame?</p>
+<p><strong>(c)</strong> Compute <span class="math inline">\({}^B_W\mathbf{T} = {}^W_B\mathbf{T}^{-1}\)</span> using the formula from lecture (not a general matrix inverse). Verify that it maps your answer from (b) back to the body frame.</p>
+<p><strong>(d)</strong> The LIDAR also estimates that the obstacle moves with velocity <span class="math inline">\({}^L\mathbf{v} = (0, 1)\)</span> m/s. What is its velocity expressed in the world frame? Why is it different from how you transformed the point?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math display">\[
+{}^W_B\mathbf{T} = \begin{bmatrix} 0 &amp; -1 &amp; 2 \\ 1 &amp; 0 &amp; 1 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}, \qquad
+{}^B_L\mathbf{T} = \begin{bmatrix} 1 &amp; 0 &amp; 0.5 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}.
+\]</span></p>
+<p><strong>(b)</strong> <span class="math inline">\({}^W\mathbf{p} = {}^W_B\mathbf{T}\,{}^B_L\mathbf{T}\,(1, 0, 1)^\T\)</span>. First, <span class="math inline">\({}^B\mathbf{p} = (1.5, 0)\)</span>. Then <span class="math inline">\({}^W\mathbf{p} = {}^W_B\mathbf{R}\,(1.5, 0)^\T + (2, 1)^\T = (0, 1.5)^\T + (2, 1)^\T = (2, 2.5)\)</span>.</p>
+<p><strong>(c)</strong> <span class="math inline">\({}^W_B\mathbf{R}^\T = \begin{bmatrix} 0 &amp; 1 \\ -1 &amp; 0 \end{bmatrix}\)</span> and <span class="math inline">\(-{}^W_B\mathbf{R}^\T\,{}^W\mathbf{t}_{WB} = -(1, -2)^\T = (-1, 2)^\T\)</span>, so <span class="math display">\[
+{}^B_W\mathbf{T} = \begin{bmatrix} 0 &amp; 1 &amp; -1 \\ -1 &amp; 0 &amp; 2 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}.
+\]</span> Check: <span class="math inline">\({}^B_W\mathbf{T}(2, 2.5, 1)^\T = (2.5 - 1,\, -2 + 2,\, 1)^\T = (1.5, 0, 1)^\T\)</span>.</p>
+<p><strong>(d)</strong> Velocities are vectors (differences of points), so only the rotation applies: <span class="math inline">\({}^W\mathbf{v} = {}^W_B\mathbf{R}\,{}^B_L\mathbf{R}\,{}^L\mathbf{v} = {}^W_B\mathbf{R}(0,1)^\T = (-1, 0)\)</span> m/s. With homogeneous coordinates, this corresponds to appending a <span class="math inline">\(0\)</span> instead of a <span class="math inline">\(1\)</span>, so the translation column has no effect.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-6---simple-car-and-discretization" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6---simple-car-and-discretization">Exercise 6 - Simple Car and Discretization</h2>
+<p>Consider the simple car model from lecture: <span class="math inline">\(\dot{p}_x = v\cos\theta\)</span>, <span class="math inline">\(\dot{p}_y = v\sin\theta\)</span>, <span class="math inline">\(\dot{\theta} = \omega\)</span>, starting at <span class="math inline">\((p_x, p_y, \theta) = (0, 0, 0)\)</span> with constant <span class="math inline">\(v = 1\)</span> m/s and <span class="math inline">\(\omega = 0.5\)</span> rad/s.</p>
+<p><strong>(a)</strong> What path does the car follow? Compute its exact state at <span class="math inline">\(t = \pi\)</span> s.</p>
+<p><strong>(b)</strong> Simulate the same motion using forward Euler integration, <span class="math inline">\(\mathbf{x}_{k+1} = \mathbf{x}_k + f(\mathbf{x}_k, \mathbf{u})\,\Delta t\)</span>, with <span class="math inline">\(\Delta t = \pi/2\)</span> (two steps). Compare to (a).</p>
+<p><strong>(c)</strong> Write a short Python function that performs this simulation for an arbitrary <span class="math inline">\(\Delta t\)</span>. How does the final position error change as <span class="math inline">\(\Delta t\)</span> decreases?</p>
+<p><strong>(d)</strong> A unicycle has wheel radius <span class="math inline">\(r = 0.3\)</span> m and pedaling rate <span class="math inline">\(w_y = 2\)</span> rad/s. What is its forward velocity? Lecture asked whether the wheel radius should be part of the state. When would it make sense to include it?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> With constant speed and turn rate, the car drives on a circle of radius <span class="math inline">\(v/\omega = 2\)</span> m centered at <span class="math inline">\((0, 2)\)</span>. The exact solution is <span class="math inline">\(\theta(t) = \omega t\)</span>, <span class="math inline">\(p_x(t) = 2\sin\theta(t)\)</span>, and <span class="math inline">\(p_y(t) = 2(1 - \cos\theta(t))\)</span>. At <span class="math inline">\(t = \pi\)</span>, <span class="math inline">\(\theta = \pi/2\)</span> and the car is at <span class="math inline">\((2, 2)\)</span>.</p>
+<p><strong>(b)</strong> Step 1 (from <span class="math inline">\(\theta = 0\)</span>): <span class="math inline">\(p = (0,0) + \frac{\pi}{2}(1, 0) \approx (1.571, 0)\)</span> and <span class="math inline">\(\theta = \pi/4\)</span>. Step 2 (from <span class="math inline">\(\theta = \pi/4\)</span>): <span class="math inline">\(p \approx (1.571, 0) + \frac{\pi}{2}(0.707, 0.707) \approx (2.682, 1.111)\)</span> and <span class="math inline">\(\theta = \pi/2\)</span>. The heading is exact (it is linear in time), but the position is off by about <span class="math inline">\(1.1\)</span> m, because Euler integration assumes the heading is constant during each step.</p>
+<p><strong>(c)</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate(dt, T<span class="op">=</span>np.pi, v<span class="op">=</span><span class="fl">1.0</span>, w<span class="op">=</span><span class="fl">0.5</span>):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    x, y, th <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">int</span>(<span class="bu">round</span>(T <span class="op">/</span> dt))):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        x <span class="op">+=</span> v <span class="op">*</span> np.cos(th) <span class="op">*</span> dt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        y <span class="op">+=</span> v <span class="op">*</span> np.sin(th) <span class="op">*</span> dt</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        th <span class="op">+=</span> w <span class="op">*</span> dt</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([x, y, th])</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> dt <span class="kw">in</span> [np.pi <span class="op">/</span> <span class="dv">2</span>, np.pi <span class="op">/</span> <span class="dv">20</span>, np.pi <span class="op">/</span> <span class="dv">200</span>]:</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    err <span class="op">=</span> np.linalg.norm(simulate(dt)[:<span class="dv">2</span>] <span class="op">-</span> np.array([<span class="fl">2.0</span>, <span class="fl">2.0</span>]))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(dt, err)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The error decreases roughly in proportion to <span class="math inline">\(\Delta t\)</span>, since forward Euler is a first-order method. Halving the step size roughly halves the error.</p>
+<p><strong>(d)</strong> The forward velocity is <span class="math inline">\(r w_y = 0.6\)</span> m/s. The radius is normally a constant that we measure once, so it is not part of the state. If it could not be measured, or if it changes over time (e.g., a deflating tire), it should be added to the state so that it can be estimated together with the pose.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-7---differential-drive-and-the-icr" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-7---differential-drive-and-the-icr">Exercise 7 - Differential Drive and the ICR</h2>
+<p>A differential drive robot has wheel radius <span class="math inline">\(R = 0.05\)</span> m and distance between the wheels <span class="math inline">\(H = 0.4\)</span> m. Following lecture, <span class="math inline">\(v_l = (W - H/2)\omega\)</span> and <span class="math inline">\(v_r = (W + H/2)\omega\)</span>, where <span class="math inline">\(W\)</span> is the distance from the robot’s center to the instantaneous center of rotation (ICR).</p>
+<p><strong>(a)</strong> The wheels turn at <span class="math inline">\(u_l = 10\)</span> rad/s and <span class="math inline">\(u_r = 12\)</span> rad/s. Compute <span class="math inline">\(v_l\)</span>, <span class="math inline">\(v_r\)</span>, the forward velocity <span class="math inline">\(v_x\)</span>, the angular velocity <span class="math inline">\(\omega\)</span>, and <span class="math inline">\(W\)</span>.</p>
+<p><strong>(b)</strong> The robot starts at <span class="math inline">\((p_x, p_y, \theta) = (0, 0, 0)\)</span>. Where is the ICR? Use the update equation from lecture to compute the pose after <span class="math inline">\(\delta t = 2\)</span> s.</p>
+<p><strong>(c)</strong> For each of the special cases <span class="math inline">\(v_l = v_r\)</span>, <span class="math inline">\(v_l = -v_r\)</span>, and <span class="math inline">\(v_l = 0\)</span>, what are <span class="math inline">\(\omega\)</span> and <span class="math inline">\(W\)</span>?</p>
+<p><strong>(d)</strong> A differential drive robot cannot move sideways directly. Is it controllable in the sense defined in lecture? Explain.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math inline">\(v_l = R u_l = 0.5\)</span> m/s and <span class="math inline">\(v_r = R u_r = 0.6\)</span> m/s. Then <span class="math inline">\(v_x = (v_l + v_r)/2 = 0.55\)</span> m/s. Subtracting the two wheel equations gives <span class="math inline">\(v_r - v_l = H\omega\)</span>, so <span class="math inline">\(\omega = 0.1/0.4 = 0.25\)</span> rad/s. Finally, <span class="math inline">\(W = v_x/\omega = 2.2\)</span> m. Check: <span class="math inline">\(v_l = (2.2 - 0.2)(0.25) = 0.5\)</span>.</p>
+<p><strong>(b)</strong> <span class="math inline">\(\text{ICR} = (p_x - W\sin\theta,\; p_y + W\cos\theta) = (0, 2.2)\)</span>. With <span class="math inline">\(\omega\,\delta t = 0.5\)</span> rad: <span class="math display">\[
+\begin{bmatrix} p_x \\ p_y \end{bmatrix} =
+\begin{bmatrix} \cos 0.5 &amp; -\sin 0.5 \\ \sin 0.5 &amp; \cos 0.5 \end{bmatrix}
+\begin{bmatrix} 0 \\ -2.2 \end{bmatrix} + \begin{bmatrix} 0 \\ 2.2 \end{bmatrix}
+= \begin{bmatrix} 2.2\sin 0.5 \\ 2.2(1 - \cos 0.5) \end{bmatrix}
+\approx \begin{bmatrix} 1.055 \\ 0.269 \end{bmatrix},
+\]</span> and <span class="math inline">\(\theta = 0.5\)</span> rad. Unlike Euler integration, this update is exact for constant wheel speeds.</p>
+<p><strong>(c)</strong></p>
+<ul>
+<li><span class="math inline">\(v_l = v_r\)</span>: <span class="math inline">\(\omega = 0\)</span> and <span class="math inline">\(W \to \infty\)</span>. The robot drives straight and the ICR is undefined (at infinity).</li>
+<li><span class="math inline">\(v_l = -v_r\)</span>: <span class="math inline">\(v_x = 0\)</span>, so <span class="math inline">\(W = 0\)</span>. The robot rotates in place about its center.</li>
+<li><span class="math inline">\(v_l = 0\)</span>: <span class="math inline">\(W - H/2 = 0\)</span>, so <span class="math inline">\(W = H/2\)</span>. The robot rotates about its left wheel, with <span class="math inline">\(\omega = v_r / H\)</span>.</li>
+</ul>
+<p><strong>(d)</strong> Yes. Controllability only requires that some control sequence reaches any state in finite time, not that every direction of motion is available instantaneously. The robot can reach a pose shifted sideways by combining rotations and forward motions, just like a car parallel parking.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

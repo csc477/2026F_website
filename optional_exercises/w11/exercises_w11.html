@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 11 Optional Exercises: Particle Filter – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Week 11 Optional Exercises: Particle Filter – CSC477 - Fall 2026">
+<meta property="og:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="Week 11 Optional Exercises: Particle Filter – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Exercises</h2>
+   
+  <ul class="collapse">
+  <li><a href="#exercise-1---representing-beliefs" id="toc-exercise-1---representing-beliefs" class="nav-link active" data-scroll-target="#exercise-1---representing-beliefs">Exercise 1 - Representing Beliefs</a></li>
+  <li><a href="#exercise-2---particle-weights" id="toc-exercise-2---particle-weights" class="nav-link" data-scroll-target="#exercise-2---particle-weights">Exercise 2 - Particle Weights</a></li>
+  <li><a href="#exercise-3---resampling" id="toc-exercise-3---resampling" class="nav-link" data-scroll-target="#exercise-3---resampling">Exercise 3 - Resampling</a></li>
+  <li><a href="#exercise-4---particle-deprivation-and-effective-sample-size" id="toc-exercise-4---particle-deprivation-and-effective-sample-size" class="nav-link" data-scroll-target="#exercise-4---particle-deprivation-and-effective-sample-size">Exercise 4 - Particle Deprivation and Effective Sample Size</a></li>
+  <li><a href="#exercise-5---why-the-weights-are-the-likelihood" id="toc-exercise-5---why-the-weights-are-the-likelihood" class="nav-link" data-scroll-target="#exercise-5---why-the-weights-are-the-likelihood">Exercise 5 - Why the Weights Are the Likelihood</a></li>
+  <li><a href="#exercise-6---a-complete-1d-particle-filter" id="toc-exercise-6---a-complete-1d-particle-filter" class="nav-link" data-scroll-target="#exercise-6---a-complete-1d-particle-filter">Exercise 6 - A Complete 1D Particle Filter</a></li>
+  <li><a href="#exercise-7---monte-carlo-localization-with-a-ceiling-map" id="toc-exercise-7---monte-carlo-localization-with-a-ceiling-map" class="nav-link" data-scroll-target="#exercise-7---monte-carlo-localization-with-a-ceiling-map">Exercise 7 - Monte Carlo Localization with a Ceiling Map</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 11 Optional Exercises: Particle Filter</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\T}{\top}
+\]</span></p>
+</div>
+<p>These exercises are optional and are not graded. They are based on the material from <a href="../../lecs/w11/lec11.html">Lecture 11</a>. Try each exercise on your own first, then click on <strong>Solution</strong> to reveal a worked answer.</p>
+<section id="exercise-1---representing-beliefs" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---representing-beliefs">Exercise 1 - Representing Beliefs</h2>
+<p><strong>(a)</strong> Fill in the table from lecture: for each of the Kalman filter, the EKF, and the particle filter, state whether the dynamics and sensor models may be nonlinear, and whether the belief may be multimodal.</p>
+<p><strong>(b)</strong> A histogram filter represents the belief over a robot pose <span class="math inline">\((p_x, p_y, \theta)\)</span> with <span class="math inline">\(100\)</span> bins per dimension. How many bins does it need? How many would it need for a drone pose <span class="math inline">\((p_x, p_y, p_z, \phi, \theta, \psi)\)</span> with the same resolution?</p>
+<p><strong>(c)</strong> A robot in a symmetric corridor sees a door, and there are two identical doors. Sketch the posterior. Which of the three filters from (a) can represent it?</p>
+<p><strong>(d)</strong> With <span class="math inline">\(M\)</span> weighted particles <span class="math inline">\(\{(\mathbf{x}^{[m]}, w^{[m]})\}\)</span> and <span class="math inline">\(W = \sum_m w^{[m]}\)</span>, how would you estimate the mean of the belief? Why can this estimate be misleading in (c)?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">Kalman Filter</th>
+<th style="text-align: center;">EKF</th>
+<th style="text-align: center;">Particle Filter</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Dynamics model</td>
+<td style="text-align: center;">Linear</td>
+<td style="text-align: center;">Nonlinear</td>
+<td style="text-align: center;">Nonlinear</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Sensor model</td>
+<td style="text-align: center;">Linear</td>
+<td style="text-align: center;">Nonlinear</td>
+<td style="text-align: center;">Nonlinear</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Belief</td>
+<td style="text-align: center;">Gaussian</td>
+<td style="text-align: center;">Gaussian</td>
+<td style="text-align: center;">Multimodal</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(b)</strong> <span class="math inline">\(100^3 = 10^6\)</span> bins for a planar robot, and <span class="math inline">\(100^6 = 10^{12}\)</span> bins for a drone. This is the exponential dependence on the dimension mentioned in lecture, which is why histogram filters are only practical in low dimensions.</p>
+<p><strong>(c)</strong> The posterior has two peaks, one in front of each door. Only the particle filter (or a histogram filter) can represent it; the KF and EKF must squeeze it into a single Gaussian.</p>
+<p><strong>(d)</strong> <span class="math inline">\(\hat{\mathbf{x}} = \frac{1}{W}\sum_m w^{[m]}\mathbf{x}^{[m]}\)</span>. With two well-separated modes, the mean lies between the two doors, where the robot almost certainly is not. In multimodal cases, it is more useful to report the most likely mode (e.g., by clustering the particles) or to keep the full particle set.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2---particle-weights" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2---particle-weights">Exercise 2 - Particle Weights</h2>
+<p>A robot moves on a line and measures its distance to two landmarks at <span class="math inline">\(l_1 = 0\)</span> and <span class="math inline">\(l_2 = 10\)</span>. The measurement model is <span class="math inline">\(\mathbf{z} = (|x - l_1|, |x - l_2|) + \mathbf{n}\)</span>, with <span class="math inline">\(\mathbf{n} \sim \mathcal{N}(\mathbf{0}, \sigma^2 I)\)</span>, <span class="math inline">\(\sigma = 1\)</span>, and the two ranges are conditionally independent given <span class="math inline">\(x\)</span>. After propagation, the filter has four particles at <span class="math inline">\(x = 2, 3, 4, 7\)</span>. It receives <span class="math inline">\(\tilde{\mathbf{z}} = (3.2, 6.9)\)</span>.</p>
+<p><strong>(a)</strong> Write <span class="math inline">\(p(\tilde{\mathbf{z}} \mid x)\)</span> as a product of two 1D Gaussians.</p>
+<p><strong>(b)</strong> Compute the unnormalized weight <span class="math inline">\(w^{[m]} \propto \exp\left(-\frac{\|\tilde{\mathbf{z}} - h(x^{[m]})\|^2}{2\sigma^2}\right)\)</span> for each particle, and normalize the weights.</p>
+<p><strong>(c)</strong> Why can we drop the normalization constant of the Gaussian?</p>
+<p><strong>(d)</strong> Suppose only the landmark at <span class="math inline">\(l_1 = 0\)</span> is used, and there is a fifth particle at <span class="math inline">\(x = -3\)</span>. Which particles now have equal weight? What does this mean for the posterior?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math display">\[
+p(\tilde{\mathbf{z}} \mid x) = \mathcal{N}(\tilde{z}_1;\, |x - l_1|, \sigma^2)\;\mathcal{N}(\tilde{z}_2;\, |x - l_2|, \sigma^2) \propto \exp\left(-\frac{(\tilde{z}_1 - |x - l_1|)^2 + (\tilde{z}_2 - |x - l_2|)^2}{2\sigma^2}\right).
+\]</span></p>
+<p><strong>(b)</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Particle <span class="math inline">\(x\)</span></th>
+<th style="text-align: center;">Predicted <span class="math inline">\(h(x)\)</span></th>
+<th style="text-align: center;">Squared error</th>
+<th style="text-align: center;">Unnormalized <span class="math inline">\(w\)</span></th>
+<th style="text-align: center;">Normalized <span class="math inline">\(w\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">(2, 8)</td>
+<td style="text-align: center;">2.65</td>
+<td style="text-align: center;">0.266</td>
+<td style="text-align: center;">0.154</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">(3, 7)</td>
+<td style="text-align: center;">0.05</td>
+<td style="text-align: center;">0.975</td>
+<td style="text-align: center;">0.565</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">(4, 6)</td>
+<td style="text-align: center;">1.45</td>
+<td style="text-align: center;">0.484</td>
+<td style="text-align: center;">0.281</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">(7, 3)</td>
+<td style="text-align: center;">29.65</td>
+<td style="text-align: center;"><span class="math inline">\(3.6 \times 10^{-7}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\approx 0\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The particle at <span class="math inline">\(x = 3\)</span> explains the measurement best, and the one at <span class="math inline">\(x = 7\)</span> is essentially eliminated.</p>
+<p><strong>(c)</strong> The constant <span class="math inline">\(\frac{1}{(2\pi\sigma^2)^{k/2}}\)</span> is the same for every particle, so it cancels when the weights are normalized. Only relative weights matter for resampling.</p>
+<p><strong>(d)</strong> The range to <span class="math inline">\(l_1\)</span> is <span class="math inline">\(|x|\)</span>, so the particles at <span class="math inline">\(x = 3\)</span> and <span class="math inline">\(x = -3\)</span> predict the same measurement and get the same weight. The measurement cannot tell the two positions apart, so the posterior is bimodal. A particle filter keeps both hypotheses until a later measurement (e.g., to <span class="math inline">\(l_2\)</span>) or motion disambiguates them.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3---resampling" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3---resampling">Exercise 3 - Resampling</h2>
+<p>A filter has five particles with normalized weights <span class="math inline">\((0.1, 0.2, 0.4, 0.1, 0.2)\)</span>, and draws <span class="math inline">\(5\)</span> new particles.</p>
+<p><strong>(a)</strong> With independent sampling with replacement (multinomial resampling), what is the expected number of copies of particle 3? What is the probability that particle 3 is not sampled at all? That particle 1 is not sampled?</p>
+<p><strong>(b)</strong> Run lecture’s Algorithm #2 (systematic resampling) by hand with <span class="math inline">\(r = 0.05\)</span>. Which particles are selected?</p>
+<p><strong>(c)</strong> Show that with Algorithm #2, particle 3 gets exactly two copies for <em>any</em> <span class="math inline">\(r \in [0, 1/N)\)</span>. Why is this an advantage over (a)?</p>
+<p><strong>(d)</strong> Implement systematic resampling in numpy in a vectorized way. <em>Hint:</em> <code>np.searchsorted</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Each draw selects particle 3 with probability <span class="math inline">\(0.4\)</span>, so the expected number of copies is <span class="math inline">\(5 \times 0.4 = 2\)</span>. The probability that it is never selected is <span class="math inline">\(0.6^5 \approx 0.078\)</span>, and for particle 1 it is <span class="math inline">\(0.9^5 \approx 0.59\)</span>. So even the best particle is lost about <span class="math inline">\(8\%\)</span> of the time.</p>
+<p><strong>(b)</strong> The pointers are <span class="math inline">\(u_n = r + (n-1)/N = 0.05, 0.25, 0.45, 0.65, 0.85\)</span>. The cumulative weights are <span class="math inline">\(0.1, 0.3, 0.7, 0.8, 1.0\)</span>. Each pointer selects the first particle whose cumulative weight is at least <span class="math inline">\(u_n\)</span>: particles <span class="math inline">\(1, 2, 3, 3, 5\)</span>.</p>
+<p><strong>(c)</strong> Particle 3 owns the interval <span class="math inline">\((0.3, 0.7]\)</span> of the cumulative weights, which has length <span class="math inline">\(0.4 = 2/N\)</span>. The pointers are spaced exactly <span class="math inline">\(1/N = 0.2\)</span> apart, so exactly two of them land in any interval of length <span class="math inline">\(0.4\)</span> (up to boundary cases of probability zero). In general, systematic resampling gives each particle either <span class="math inline">\(\lfloor Nw_i \rfloor\)</span> or <span class="math inline">\(\lceil Nw_i \rceil\)</span> copies, so it has much lower variance than multinomial resampling, which reduces the loss of particle diversity. It also runs in linear time.</p>
+<p><strong>(d)</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> systematic_resample(weights, rng):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="bu">len</span>(weights)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> rng.uniform(<span class="dv">0</span>, <span class="dv">1</span> <span class="op">/</span> N) <span class="op">+</span> np.arange(N) <span class="op">/</span> N</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> np.searchsorted(np.cumsum(weights), u)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.minimum(idx, N <span class="op">-</span> <span class="dv">1</span>)  <span class="co"># guard against round-off in cumsum</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(systematic_resample(np.array([<span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>]), rng))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The returned indices are used as <code>particles = particles[idx]</code>, and the weights are reset to <span class="math inline">\(1/N\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4---particle-deprivation-and-effective-sample-size" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4---particle-deprivation-and-effective-sample-size">Exercise 4 - Particle Deprivation and Effective Sample Size</h2>
+<p>The effective sample size of normalized weights <span class="math inline">\(w_1, \dots, w_N\)</span> is <span class="math inline">\(N_{\text{eff}} = 1 / \sum_i w_i^2\)</span>.</p>
+<p><strong>(a)</strong> Compute <span class="math inline">\(N_{\text{eff}}\)</span> when all weights equal <span class="math inline">\(1/N\)</span>, when a single particle has all the weight, and for the weights from Exercise 3.</p>
+<p><strong>(b)</strong> Should the filter resample when <span class="math inline">\(N_{\text{eff}}\)</span> is above or below a threshold? Explain.</p>
+<p><strong>(c)</strong> What is particle deprivation? Why does it happen even if the filter is implemented correctly?</p>
+<p><strong>(d)</strong> Lecture suggested injecting a small percentage of random particles at each resampling step. What problem does this solve? What does it cost?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Uniform weights: <span class="math inline">\(N_{\text{eff}} = 1 / (N \cdot 1/N^2) = N\)</span>. One particle with all the weight: <span class="math inline">\(N_{\text{eff}} = 1/1 = 1\)</span>. Exercise 3: <span class="math inline">\(\sum_i w_i^2 = 0.01 + 0.04 + 0.16 + 0.01 + 0.04 = 0.26\)</span>, so <span class="math inline">\(N_{\text{eff}} \approx 3.85\)</span> out of <span class="math inline">\(5\)</span>.</p>
+<p><strong>(b)</strong> Resample when <span class="math inline">\(N_{\text{eff}}\)</span> falls <em>below</em> a threshold (e.g., <span class="math inline">\(N/2\)</span>). A low <span class="math inline">\(N_{\text{eff}}\)</span> means only a few particles carry most of the weight, and the others are wasted computation, so resampling focuses them on the likely states. When the weights are nearly uniform, resampling only discards diversity at random without any benefit, so it is better to skip it (e.g., when the robot is not moving and keeps receiving the same measurement).</p>
+<p><strong>(c)</strong> Particle deprivation occurs when no particle is near the true state. Each resampling step randomly discards particles (Exercise 3 (a)), so with a finite number of particles, diversity is gradually lost, and after enough steps the particles can all end up in a wrong region. This is especially likely with few particles, in large state spaces, or with very accurate sensors that make the weights very peaked.</p>
+<p><strong>(d)</strong> Random particles allow the filter to recover when it has converged to the wrong state, such as after the robot is kidnapped or after particle deprivation. The cost is that the posterior is no longer correct, even with infinitely many particles, since a fraction of the particles is always spread over the whole state space regardless of the evidence.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5---why-the-weights-are-the-likelihood" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5---why-the-weights-are-the-likelihood">Exercise 5 - Why the Weights Are the Likelihood</h2>
+<p><strong>(a)</strong> Using importance sampling, show that <span class="math inline">\(\E_{x \sim f}[x] = \E_{x \sim g}\left[x\frac{f(x)}{g(x)}\right]\)</span> whenever <span class="math inline">\(g(x) &gt; 0\)</span> wherever <span class="math inline">\(f(x) &gt; 0\)</span>.</p>
+<p><strong>(b)</strong> Estimate the mean of <span class="math inline">\(f = \mathcal{N}(1, 1)\)</span> using only samples from <span class="math inline">\(g = \mathcal{N}(0, 4)\)</span> in numpy.</p>
+<p><strong>(c)</strong> In the particle filter, the particles are sampled from the predicted belief <span class="math inline">\(g = \overline{bel}(\mathbf{x}_t)\)</span>, and we want to represent the posterior <span class="math inline">\(f = bel(\mathbf{x}_t) = \eta\, p(\mathbf{z}_t \mid \mathbf{x}_t)\overline{bel}(\mathbf{x}_t)\)</span>. Show that the importance weight is proportional to <span class="math inline">\(p(\mathbf{z}_t \mid \mathbf{x}_t)\)</span>.</p>
+<p><strong>(d)</strong> Why must the propagation step add noise? What happens after a few resampling steps if the dynamics are simulated deterministically?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math inline">\(\E_{x \sim f}[x] = \int x f(x)\,dx = \int x\frac{f(x)}{g(x)}g(x)\,dx = \E_{x \sim g}\left[x\frac{f(x)}{g(x)}\right]\)</span>. The condition on the supports ensures we never divide by zero where <span class="math inline">\(f\)</span> has mass.</p>
+<p><strong>(b)</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="dv">2</span>, size<span class="op">=</span><span class="dv">10</span><span class="op">**</span><span class="dv">6</span>)                 <span class="co"># samples from g = N(0, 4)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> np.exp(<span class="op">-</span>(x <span class="op">-</span> <span class="dv">1</span>)<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>) <span class="op">/</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> np.pi)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> np.exp(<span class="op">-</span>x<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> <span class="dv">8</span>) <span class="op">/</span> np.sqrt(<span class="dv">8</span> <span class="op">*</span> np.pi)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.mean(x <span class="op">*</span> f <span class="op">/</span> g))                         <span class="co"># approximately 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>(c)</strong> <span class="math inline">\(w(\mathbf{x}_t) = \frac{f(\mathbf{x}_t)}{g(\mathbf{x}_t)} = \frac{\eta\, p(\mathbf{z}_t \mid \mathbf{x}_t)\overline{bel}(\mathbf{x}_t)}{\overline{bel}(\mathbf{x}_t)} = \eta\, p(\mathbf{z}_t \mid \mathbf{x}_t)\)</span>. The constant <span class="math inline">\(\eta\)</span> is the same for every particle, so it disappears when the weights are normalized.</p>
+<p><strong>(d)</strong> The noise in propagation represents the uncertainty in the motion, and it is what makes the copies of a resampled particle spread apart again. With deterministic propagation, copies of the same particle remain identical forever. Since each resampling step reduces the number of distinct particles, after a few steps all particles collapse to a single state, and the filter can no longer represent uncertainty.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-6---a-complete-1d-particle-filter" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6---a-complete-1d-particle-filter">Exercise 6 - A Complete 1D Particle Filter</h2>
+<p>Implement a particle filter for the robot in Exercise 2. The robot starts at an unknown position in <span class="math inline">\([0, 10]\)</span>, and at each step it moves by <span class="math inline">\(u = 0.5\)</span> with motion noise <span class="math inline">\(\mathcal{N}(0, 0.1^2)\)</span>, then measures its ranges to the two landmarks with <span class="math inline">\(\sigma = 1\)</span>.</p>
+<p><strong>(a)</strong> Write a function <code>pf_step(particles, u, z, rng)</code> that propagates, weights, and resamples the particles (use <code>systematic_resample</code> from Exercise 3).</p>
+<p><strong>(b)</strong> Simulate <span class="math inline">\(10\)</span> steps with <span class="math inline">\(M = 500\)</span> particles, starting with particles drawn uniformly from <span class="math inline">\([0, 10]\)</span>, and print the mean and standard deviation of the particles at each step.</p>
+<p><strong>(c)</strong> Is this a global localization or a position tracking problem? Would an EKF work as well here?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> and <strong>(b)</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> np.array([<span class="fl">0.0</span>, <span class="fl">10.0</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>sigma_z, sigma_u <span class="op">=</span> <span class="fl">1.0</span>, <span class="fl">0.1</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> h(x):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.<span class="bu">abs</span>(x[:, <span class="va">None</span>] <span class="op">-</span> L[<span class="va">None</span>, :])</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pf_step(particles, u, z, rng):</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    particles <span class="op">=</span> particles <span class="op">+</span> u <span class="op">+</span> rng.normal(<span class="dv">0</span>, sigma_u, size<span class="op">=</span>particles.shape)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    log_w <span class="op">=</span> <span class="op">-</span>np.<span class="bu">sum</span>((z <span class="op">-</span> h(particles))<span class="op">**</span><span class="dv">2</span>, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> sigma_z<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> np.exp(log_w <span class="op">-</span> log_w.<span class="bu">max</span>())</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    w <span class="op">/=</span> w.<span class="bu">sum</span>()</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> particles[systematic_resample(w, rng)]</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>x_true <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>particles <span class="op">=</span> rng.uniform(<span class="dv">0</span>, <span class="dv">10</span>, size<span class="op">=</span><span class="dv">500</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>):</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    x_true <span class="op">+=</span> <span class="fl">0.5</span> <span class="op">+</span> rng.normal(<span class="dv">0</span>, sigma_u)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> h(np.array([x_true]))[<span class="dv">0</span>] <span class="op">+</span> rng.normal(<span class="dv">0</span>, sigma_z, size<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    particles <span class="op">=</span> pf_step(particles, <span class="fl">0.5</span>, z, rng)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"t=</span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">  true=</span><span class="sc">{</span>x_true<span class="sc">:.2f}</span><span class="ss">  mean=</span><span class="sc">{</span>particles<span class="sc">.</span>mean()<span class="sc">:.2f}</span><span class="ss">  std=</span><span class="sc">{</span>particles<span class="sc">.</span>std()<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Subtracting <code>log_w.max()</code> before exponentiating avoids underflow when all weights are tiny. The standard deviation starts near <span class="math inline">\(2.9\)</span> (uniform on <span class="math inline">\([0, 10]\)</span>), drops to about <span class="math inline">\(0.5\)</span> after the first measurement, and to about <span class="math inline">\(0.3\)</span> after ten steps, with the mean tracking the true position to within a few tenths.</p>
+<p><strong>(c)</strong> It is global localization, since the initial position is unknown. Here, the two ranges together determine the position uniquely, so an EKF initialized with a wide Gaussian would probably converge too, but it relies on the linearization of <span class="math inline">\(|x - l|\)</span> being accurate, and it would fail if only one landmark were visible, since the posterior would then be bimodal (Exercise 2 (d)).</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-7---monte-carlo-localization-with-a-ceiling-map" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-7---monte-carlo-localization-with-a-ceiling-map">Exercise 7 - Monte Carlo Localization with a Ceiling Map</h2>
+<p>In lecture, a robot localized itself in a museum using a camera that looked up at the ceiling and measured its brightness.</p>
+<p><strong>(a)</strong> The robot is under a light. Sketch <span class="math inline">\(p(z \mid \mathbf{x})\)</span> over the map. Why is the resulting belief multimodal?</p>
+<p><strong>(b)</strong> The robot is in a dark area of the ceiling. Is this measurement informative?</p>
+<p><strong>(c)</strong> Explain how the particle cloud evolves as the robot drives around, starting from particles spread uniformly across the museum.</p>
+<p><strong>(d)</strong> Why would this problem be very hard for an EKF?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math inline">\(p(z \mid \mathbf{x})\)</span> is high at every position under any light in the map and low elsewhere. The building has many lights, so many positions explain the measurement equally well, and the particles concentrate in many small clusters, one under each light.</p>
+<p><strong>(b)</strong> It is only weakly informative. It rules out the positions under lights, but almost every other position is consistent with it. The measurement still matters, since the absence of a light eliminates hypotheses.</p>
+<p><strong>(c)</strong> At first, the particles are everywhere. Each measurement increases the weights of particles at positions whose ceiling brightness matches what the camera sees, and resampling concentrates the particles there. As the robot moves, each hypothesis predicts a different sequence of bright and dark patches, and the hypotheses that do not match the observed sequence are eliminated. Eventually, a single cluster remains around the true pose, and the problem becomes position tracking.</p>
+<p><strong>(d)</strong> The belief is highly multimodal for most of the process, and the measurement model (brightness as a function of position) is extremely nonlinear and has no useful derivative in dark areas. An EKF would commit to a single, possibly wrong hypothesis right away and could not recover.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

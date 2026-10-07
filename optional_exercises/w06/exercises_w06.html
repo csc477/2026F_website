@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 6 Optional Exercises: Maps, Map Alignment, and Occupancy Grid Mapping – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Week 6 Optional Exercises: Maps, Map Alignment, and Occupancy Grid Mapping – CSC477 - Fall 2026">
+<meta property="og:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="Week 6 Optional Exercises: Maps, Map Alignment, and Occupancy Grid Mapping – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Exercises</h2>
+   
+  <ul class="collapse">
+  <li><a href="#exercise-1---occupancy-grids-quadtrees-and-octrees" id="toc-exercise-1---occupancy-grids-quadtrees-and-octrees" class="nav-link active" data-scroll-target="#exercise-1---occupancy-grids-quadtrees-and-octrees">Exercise 1 - Occupancy Grids, Quadtrees, and Octrees</a></li>
+  <li><a href="#exercise-2---signed-distance-functions" id="toc-exercise-2---signed-distance-functions" class="nav-link" data-scroll-target="#exercise-2---signed-distance-functions">Exercise 2 - Signed Distance Functions</a></li>
+  <li><a href="#exercise-3---topological-maps-and-homotopy" id="toc-exercise-3---topological-maps-and-homotopy" class="nav-link" data-scroll-target="#exercise-3---topological-maps-and-homotopy">Exercise 3 - Topological Maps and Homotopy</a></li>
+  <li><a href="#exercise-4---scan-alignment-with-known-correspondences" id="toc-exercise-4---scan-alignment-with-known-correspondences" class="nav-link" data-scroll-target="#exercise-4---scan-alignment-with-known-correspondences">Exercise 4 - Scan Alignment with Known Correspondences</a></li>
+  <li><a href="#exercise-5---iterative-closest-point" id="toc-exercise-5---iterative-closest-point" class="nav-link" data-scroll-target="#exercise-5---iterative-closest-point">Exercise 5 - Iterative Closest Point</a></li>
+  <li><a href="#exercise-6---occupancy-grid-mapping-with-log-odds" id="toc-exercise-6---occupancy-grid-mapping-with-log-odds" class="nav-link" data-scroll-target="#exercise-6---occupancy-grid-mapping-with-log-odds">Exercise 6 - Occupancy Grid Mapping with Log-Odds</a></li>
+  <li><a href="#exercise-7---the-inverse-sensor-model" id="toc-exercise-7---the-inverse-sensor-model" class="nav-link" data-scroll-target="#exercise-7---the-inverse-sensor-model">Exercise 7 - The Inverse Sensor Model</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 6 Optional Exercises: Maps, Map Alignment, and Occupancy Grid Mapping</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\T}{\top}
+\]</span></p>
+</div>
+<p>These exercises are optional and are not graded. They are based on the material from <a href="../../lecs/w06/lec06.html">Lecture 6</a>. Try each exercise on your own first, then click on <strong>Solution</strong> to reveal a worked answer.</p>
+<section id="exercise-1---occupancy-grids-quadtrees-and-octrees" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---occupancy-grids-quadtrees-and-octrees">Exercise 1 - Occupancy Grids, Quadtrees, and Octrees</h2>
+<p><strong>(a)</strong> A robot maps a <span class="math inline">\(100 \times 100\)</span> m building with a 2D occupancy grid at <span class="math inline">\(5\)</span> cm resolution, storing one byte per cell. How much memory does the map need? How much would a 3D grid of the same area, <span class="math inline">\(10\)</span> m tall, at the same resolution need?</p>
+<p><strong>(b)</strong> Consider an <span class="math inline">\(8 \times 8\)</span> binary grid (rows and columns indexed <span class="math inline">\(0\)</span> to <span class="math inline">\(7\)</span>) that is empty except for a <span class="math inline">\(2 \times 2\)</span> occupied block in the corner, at rows <span class="math inline">\(0\)</span>-<span class="math inline">\(1\)</span> and columns <span class="math inline">\(0\)</span>-<span class="math inline">\(1\)</span>. Build the quadtree (subdividing down to single cells if needed). How many nodes does it have?</p>
+<p><strong>(c)</strong> Now move the same <span class="math inline">\(2 \times 2\)</span> block to rows <span class="math inline">\(3\)</span>-<span class="math inline">\(4\)</span> and columns <span class="math inline">\(3\)</span>-<span class="math inline">\(4\)</span>. How many nodes does the quadtree have now? Which of the two problems with quadtrees and octrees mentioned in lecture does this illustrate?</p>
+<p><strong>(d)</strong> Lecture said that occupancy grids support <span class="math inline">\(O(1)\)</span> lookup and update, whereas a quadtree query can be <span class="math inline">\(O(n)\)</span> in the worst case. Why?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> The 2D grid has <span class="math inline">\(2000 \times 2000 = 4 \times 10^6\)</span> cells, i.e.&nbsp;<span class="math inline">\(4\)</span> MB. The 3D grid has <span class="math inline">\(2000 \times 2000 \times 200 = 8 \times 10^8\)</span> cells, i.e.&nbsp;<span class="math inline">\(800\)</span> MB, even though most of the volume is empty space. This is why occupancy grids do not scale well to higher dimensions, and why octrees (e.g., OctoMap) are popular for 3D mapping.</p>
+<p><strong>(b)</strong> The root (<span class="math inline">\(8 \times 8\)</span>) is partially occupied, so it has <span class="math inline">\(4\)</span> children (<span class="math inline">\(4 \times 4\)</span>). The top-left <span class="math inline">\(4 \times 4\)</span> quadrant is partially occupied, so it has <span class="math inline">\(4\)</span> children (<span class="math inline">\(2 \times 2\)</span>). Its top-left <span class="math inline">\(2 \times 2\)</span> child is fully occupied, so it is a leaf. The other quadrants are fully empty leaves. Total: <span class="math inline">\(1 + 4 + 4 = 9\)</span> nodes.</p>
+<p><strong>(c)</strong> The block now straddles the center of the grid, so each <span class="math inline">\(4 \times 4\)</span> quadrant contains exactly one occupied cell. Each quadrant is partial and has <span class="math inline">\(4\)</span> children of size <span class="math inline">\(2 \times 2\)</span>, and in each quadrant the <span class="math inline">\(2 \times 2\)</span> child containing the occupied cell is partial and has <span class="math inline">\(4\)</span> single-cell children. Total: <span class="math inline">\(1 + 4 + 4 \times (4 + 4) = 37\)</span> nodes. Shifting the obstacle by a few cells quadrupled the size of the tree. This is Problem 2 from lecture: quadtrees and octrees are sensitive to small changes in the location of obstacles.</p>
+<p><strong>(d)</strong> In a grid, the cell containing a point is found directly by integer division of its coordinates, so lookup is a single array access. A quadtree must be traversed from the root to a leaf. Because the tree is not balanced, a query in a region with many fine subdivisions may have to traverse a long path (in the worst case proportional to the number of nodes).</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2---signed-distance-functions" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2---signed-distance-functions">Exercise 2 - Signed Distance Functions</h2>
+<p>A 2D world contains a circular obstacle with center <span class="math inline">\(\mathbf{c} = (3, 0.5)\)</span> and radius <span class="math inline">\(1\)</span>, and a wall that occupies the half-plane <span class="math inline">\(y \ge 2\)</span>. Use the convention that the signed distance function (SDF) is positive in free space and negative inside obstacles.</p>
+<p><strong>(a)</strong> Write down the SDF of the circle and the SDF of the wall. How do you combine them into the SDF of the whole world?</p>
+<p><strong>(b)</strong> Evaluate the SDF and its gradient at <span class="math inline">\(\mathbf{x} = (1, 0.5)\)</span>.</p>
+<p><strong>(c)</strong> A disk-shaped robot of radius <span class="math inline">\(0.8\)</span> has its center at <span class="math inline">\(\mathbf{x}\)</span>. Is it in collision? How does the SDF make collision checking easy for disk-shaped robots?</p>
+<p><strong>(d)</strong> What is <span class="math inline">\(\|\nabla \text{SDF}(\mathbf{x})\|\)</span> wherever the gradient exists? How could the SDF be used together with the potential fields from Lecture 3?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math inline">\(\text{SDF}_{\text{circle}}(\mathbf{x}) = \|\mathbf{x} - \mathbf{c}\| - 1\)</span> and <span class="math inline">\(\text{SDF}_{\text{wall}}(\mathbf{x}) = 2 - y\)</span>. The distance to the closest obstacle is the minimum over all obstacles: <span class="math inline">\(\text{SDF}(\mathbf{x}) = \min(\text{SDF}_{\text{circle}}(\mathbf{x}), \text{SDF}_{\text{wall}}(\mathbf{x}))\)</span>.</p>
+<p><strong>(b)</strong> <span class="math inline">\(\text{SDF}_{\text{circle}}(1, 0.5) = 2 - 1 = 1\)</span> and <span class="math inline">\(\text{SDF}_{\text{wall}}(1, 0.5) = 1.5\)</span>, so <span class="math inline">\(\text{SDF} = 1\)</span>, attained by the circle. The gradient is the gradient of the active term: <span class="math inline">\(\frac{\mathbf{x} - \mathbf{c}}{\|\mathbf{x} - \mathbf{c}\|} = (-1, 0)\)</span>, pointing directly away from the circle.</p>
+<p><strong>(c)</strong> The robot is in collision if and only if the SDF at its center is less than its radius. Since <span class="math inline">\(1 &gt; 0.8\)</span>, it is collision-free, with <span class="math inline">\(0.2\)</span> m of clearance. Once the SDF has been computed (e.g., on a grid), each collision check is a single lookup, for any obstacle shape.</p>
+<p><strong>(d)</strong> <span class="math inline">\(\|\nabla\text{SDF}\| = 1\)</span>: moving a small distance directly away from the nearest obstacle increases the distance by the same amount. The SDF directly provides the quantities <span class="math inline">\(d(x, \text{obs})\)</span> and <span class="math inline">\(\nabla_x d(x, \text{obs})\)</span> needed by the repulsive potential and force in Lecture 3, for arbitrary obstacle shapes.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3---topological-maps-and-homotopy" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3---topological-maps-and-homotopy">Exercise 3 - Topological Maps and Homotopy</h2>
+<p><strong>(a)</strong> In a Generalized Voronoi Graph (GVG) in the plane, what is the defining property of the points on an edge? What about the nodes? Why is following GVG edges a “safe” way to navigate?</p>
+<p><strong>(b)</strong> Lecture said that the GVG is sensitive to small changes in the obstacle boundary. Give an example.</p>
+<p><strong>(c)</strong> In a world with no obstacles, show that any two paths <span class="math inline">\(\tau_1, \tau_2 : [0, T] \to \R^2\)</span> with the same endpoints are homotopic, by writing down an explicit homotopy <span class="math inline">\(H(s, t)\)</span>.</p>
+<p><strong>(d)</strong> A single circular obstacle lies between the start and the goal. Describe two paths that are not homotopic. How could the winding angle of a path around the obstacle be used to tell homotopy classes apart?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Points on GVG edges are equidistant from their two closest obstacles. Nodes are points equidistant from three or more obstacles, where edges meet. Following the edges maximizes the clearance from the nearest obstacles, which produces a very safe roadmap that avoids obstacles as much as possible.</p>
+<p><strong>(b)</strong> Adding a small bump to a straight wall creates a new GVG branch that leads toward the bump, because points near the bump are now equidistant from two different parts of the boundary. Small amounts of sensor noise on the boundary can therefore create many spurious branches.</p>
+<p><strong>(c)</strong> <span class="math inline">\(H(s, t) = (1 - s)\,\tau_1(t) + s\,\tau_2(t)\)</span>. It is continuous, <span class="math inline">\(H(0, t) = \tau_1(t)\)</span>, <span class="math inline">\(H(1, t) = \tau_2(t)\)</span>, and the endpoints are fixed for all <span class="math inline">\(s\)</span> because <span class="math inline">\(\tau_1\)</span> and <span class="math inline">\(\tau_2\)</span> share them. With no obstacles, none of the intermediate paths can collide, so the paths are homotopic.</p>
+<p><strong>(d)</strong> A path that passes to the left of the obstacle and a path that passes to the right cannot be continuously deformed into each other without crossing the obstacle, so they are in different homotopy classes. The winding angle (the total signed angle swept by the vector from the obstacle center to a point on the path, as the point moves along the path) differs between them: for the same endpoints, paths passing on opposite sides have winding angles that differ by <span class="math inline">\(2\pi\)</span>, and paths that loop around the obstacle <span class="math inline">\(k\)</span> extra times differ by <span class="math inline">\(2\pi k\)</span>. Paths in the same homotopy class have the same winding angle.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4---scan-alignment-with-known-correspondences" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4---scan-alignment-with-known-correspondences">Exercise 4 - Scan Alignment with Known Correspondences</h2>
+<p>Consider three 2D points <span class="math inline">\(\mathbf{q}_1 = (0, 0)\)</span>, <span class="math inline">\(\mathbf{q}_2 = (1, 0)\)</span>, <span class="math inline">\(\mathbf{q}_3 = (0, 1)\)</span> and their corresponding points <span class="math inline">\(\mathbf{p}_1 = (2, 1)\)</span>, <span class="math inline">\(\mathbf{p}_2 = (2, 2)\)</span>, <span class="math inline">\(\mathbf{p}_3 = (1, 1)\)</span>.</p>
+<p><strong>(a)</strong> Follow the five steps from lecture to compute <span class="math inline">\(R^*\)</span> and <span class="math inline">\(\mathbf{t}^*\)</span> that minimize <span class="math inline">\(\frac{1}{N}\sum_i\|\mathbf{p}_i - (R\mathbf{q}_i + \mathbf{t})\|^2\)</span>. <em>Hint:</em> for the SVD step, it helps to notice that <span class="math inline">\(W = R\,S\)</span> for a rotation <span class="math inline">\(R\)</span> and a symmetric matrix <span class="math inline">\(S\)</span>.</p>
+<p><strong>(b)</strong> Verify your answer by checking that <span class="math inline">\(R^*\mathbf{q}_i + \mathbf{t}^* = \mathbf{p}_i\)</span> for all <span class="math inline">\(i\)</span>.</p>
+<p><strong>(c)</strong> In rare cases (e.g., with very noisy or degenerate data), <span class="math inline">\(UV^\T\)</span> has determinant <span class="math inline">\(-1\)</span>. What does that mean, and how is it usually fixed?</p>
+<p><strong>(d)</strong> Write a numpy function <code>align(P, Q)</code> that implements the closed-form solution for <span class="math inline">\(N \times d\)</span> arrays of corresponding points.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Step 1: <span class="math inline">\(\boldsymbol{\mu}_q = (\frac{1}{3}, \frac{1}{3})\)</span> and <span class="math inline">\(\boldsymbol{\mu}_p = (\frac{5}{3}, \frac{4}{3})\)</span>.</p>
+<p>Step 2: <span class="math inline">\(\bar{\mathbf{q}}_i = (-\frac{1}{3}, -\frac{1}{3}), (\frac{2}{3}, -\frac{1}{3}), (-\frac{1}{3}, \frac{2}{3})\)</span> and <span class="math inline">\(\bar{\mathbf{p}}_i = (\frac{1}{3}, -\frac{1}{3}), (\frac{1}{3}, \frac{2}{3}), (-\frac{2}{3}, -\frac{1}{3})\)</span>.</p>
+<p>Step 3: Summing the outer products, <span class="math display">\[
+W = \sum_i \bar{\mathbf{p}}_i\bar{\mathbf{q}}_i^\T = \begin{bmatrix} \frac{1}{3} &amp; -\frac{2}{3} \\ \frac{2}{3} &amp; -\frac{1}{3} \end{bmatrix}.
+\]</span></p>
+<p>Step 4: Note that <span class="math inline">\(\bar{\mathbf{p}}_i = R_{90}\bar{\mathbf{q}}_i\)</span> with <span class="math inline">\(R_{90} = \begin{bmatrix} 0 &amp; -1 \\ 1 &amp; 0 \end{bmatrix}\)</span>, so <span class="math inline">\(W = R_{90}S\)</span> with <span class="math inline">\(S = \sum_i\bar{\mathbf{q}}_i\bar{\mathbf{q}}_i^\T = \begin{bmatrix} \frac{2}{3} &amp; -\frac{1}{3} \\ -\frac{1}{3} &amp; \frac{2}{3} \end{bmatrix}\)</span>. <span class="math inline">\(S\)</span> has eigenvalues <span class="math inline">\(1\)</span> and <span class="math inline">\(\frac{1}{3}\)</span> with eigenvectors <span class="math inline">\(\frac{1}{\sqrt{2}}(1, -1)\)</span> and <span class="math inline">\(\frac{1}{\sqrt{2}}(1, 1)\)</span>, so <span class="math inline">\(S = V\Sigma V^\T\)</span> with <span class="math display">\[
+V = \frac{1}{\sqrt{2}}\begin{bmatrix} 1 &amp; 1 \\ -1 &amp; 1 \end{bmatrix}, \quad \Sigma = \diag(1, \tfrac{1}{3}), \quad U = R_{90}V = \frac{1}{\sqrt{2}}\begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 1 \end{bmatrix}.
+\]</span></p>
+<p>Step 5: <span class="math inline">\(W\)</span> has full rank, so <span class="math inline">\(R^* = UV^\T = \begin{bmatrix} 0 &amp; -1 \\ 1 &amp; 0 \end{bmatrix}\)</span> (a <span class="math inline">\(90°\)</span> rotation), and <span class="math inline">\(\mathbf{t}^* = \boldsymbol{\mu}_p - R^*\boldsymbol{\mu}_q = (\frac{5}{3}, \frac{4}{3}) - (-\frac{1}{3}, \frac{1}{3}) = (2, 1)\)</span>.</p>
+<p><strong>(b)</strong> <span class="math inline">\(R^*(0,0) + (2,1) = (2,1)\)</span>, <span class="math inline">\(R^*(1,0) + (2,1) = (0,1) + (2,1) = (2,2)\)</span>, and <span class="math inline">\(R^*(0,1) + (2,1) = (-1,0) + (2,1) = (1,1)\)</span>. The alignment is exact, so the error is zero.</p>
+<p><strong>(c)</strong> A determinant of <span class="math inline">\(-1\)</span> means <span class="math inline">\(UV^\T\)</span> is a reflection, not a rotation. The standard fix is <span class="math inline">\(R^* = U\,\diag(1, \ldots, 1, \det(UV^\T))\,V^\T\)</span>, which flips the sign associated with the smallest singular value and gives the best proper rotation.</p>
+<p><strong>(d)</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> align(P, Q):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    mu_p, mu_q <span class="op">=</span> P.mean(axis<span class="op">=</span><span class="dv">0</span>), Q.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> (P <span class="op">-</span> mu_p).T <span class="op">@</span> (Q <span class="op">-</span> mu_q)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    U, _, Vt <span class="op">=</span> np.linalg.svd(W)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    D <span class="op">=</span> np.eye(P.shape[<span class="dv">1</span>])</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    D[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> np.sign(np.linalg.det(U <span class="op">@</span> Vt))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    R <span class="op">=</span> U <span class="op">@</span> D <span class="op">@</span> Vt</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> mu_p <span class="op">-</span> R <span class="op">@</span> mu_q</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> R, t</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5---iterative-closest-point" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5---iterative-closest-point">Exercise 5 - Iterative Closest Point</h2>
+<p><strong>(a)</strong> Write the ICP algorithm as pseudocode, using the closed-form alignment from Exercise 4 as a subroutine.</p>
+<p><strong>(b)</strong> Why is ICP only guaranteed to converge to a local minimum? Describe a situation where it converges to the wrong alignment.</p>
+<p><strong>(c)</strong> A robot drives down a long, featureless corridor and aligns consecutive laser scans with ICP. Which component of the motion is poorly determined, and why?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong></p>
+<pre><code>R, t = initial guess (e.g., from odometry)
+repeat:
+    for each source point q_i:
+        p_i = nearest neighbor of (R q_i + t) in the target scan   # e.g. with a kd-tree
+    R, t = align({p_i}, {q_i})                                     # closed form
+    compute error(R, t)
+until the error no longer decreases significantly</code></pre>
+<p><strong>(b)</strong> Each iteration decreases the error, but the nearest-neighbor correspondences are only correct if the current estimate is already close. With a poor initial guess (e.g., a large rotation, or a symmetric environment such as a square room), points get associated with the wrong neighbors and ICP converges to an incorrect alignment where the error is locally minimal. A good initial guess, for instance from odometry, is important.</p>
+<p><strong>(c)</strong> The motion along the corridor is poorly determined: the walls look the same after any translation along the corridor, so many alignments have nearly the same error. The lateral position and heading are well determined by the walls. This is an example of a degenerate geometry for scan matching.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-6---occupancy-grid-mapping-with-log-odds" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6---occupancy-grid-mapping-with-log-odds">Exercise 6 - Occupancy Grid Mapping with Log-Odds</h2>
+<p><strong>(a)</strong> For a <span class="math inline">\(100 \times 100\)</span> binary grid, how many distinct maps are there? Why does lecture approximate <span class="math inline">\(p(\mathbf{m} \mid \mathbf{z}_{1:t}, \mathbf{x}_{1:t})\)</span> by a product over cells, and what does this approximation ignore?</p>
+<p><strong>(b)</strong> Starting from <span class="math inline">\(\text{belief}_t(m_{ij} = 1) = \eta\, p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 1)\,\text{belief}_{t-1}(m_{ij} = 1)\)</span> and the analogous expression for <span class="math inline">\(m_{ij} = 0\)</span>, derive the log-odds update and show that <span class="math inline">\(\eta\)</span> cancels.</p>
+<p><strong>(c)</strong> Use the prior <span class="math inline">\(p(m_{ij} = 1) = 0.5\)</span> and an inverse sensor model that returns <span class="math inline">\(0.7\)</span> when a cell is observed as occupied and <span class="math inline">\(0.3\)</span> when it is observed as free. A cell is observed as occupied three times and as free once. Compute its log-odds and its occupancy probability.</p>
+<p><strong>(d)</strong> Why is it numerically better to store log-odds than probabilities? Why might an implementation clamp the log-odds to a range such as <span class="math inline">\([-5, 5]\)</span>?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> There are <span class="math inline">\(2^{100 \times 100} = 2^{10000}\)</span> possible maps, far too many to represent a distribution over. Treating cells as independent given the path and measurements reduces the problem to <span class="math inline">\(10^4\)</span> separate binary estimation problems. The approximation ignores correlations between cells. For example, a single range measurement says that some cell near the measured range is occupied, which couples neighboring cells; treating them independently can produce maps that are inconsistent with the measurements, as in the example in lecture.</p>
+<p><strong>(b)</strong> Dividing the two expressions, <span class="math display">\[
+\frac{\text{belief}_t(m_{ij} = 1)}{\text{belief}_t(m_{ij} = 0)} = \frac{\eta\, p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 1)}{\eta\, p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 0)} \cdot \frac{\text{belief}_{t-1}(m_{ij} = 1)}{\text{belief}_{t-1}(m_{ij} = 0)}.
+\]</span> The normalizer <span class="math inline">\(\eta\)</span> is the same for both values of <span class="math inline">\(m_{ij}\)</span>, so it cancels. Taking logarithms gives <span class="math inline">\(l_t^{(ij)} = \log\frac{p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 1)}{p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 0)} + l_{t-1}^{(ij)}\)</span>.</p>
+<p><strong>(c)</strong> The prior log-odds is <span class="math inline">\(l_0 = \log 1 = 0\)</span>, so the update is <span class="math inline">\(l_t = l_{t-1} + \log\frac{p}{1-p}\)</span> with <span class="math inline">\(p\)</span> from the inverse sensor model. Each “occupied” observation adds <span class="math inline">\(\log\frac{0.7}{0.3} = \log\frac{7}{3} \approx 0.847\)</span>, and each “free” observation adds <span class="math inline">\(\log\frac{3}{7} \approx -0.847\)</span>. So <span class="math display">\[
+l = 3\log\tfrac{7}{3} - \log\tfrac{7}{3} = 2\log\tfrac{7}{3} \approx 1.695,
+\qquad
+\text{belief} = 1 - \frac{1}{1 + e^{l}} = \frac{49/9}{1 + 49/9} = \frac{49}{58} \approx 0.845.
+\]</span> The order of the observations does not matter, since the updates simply add up.</p>
+<p><strong>(d)</strong> Updates become additions instead of multiplications followed by normalization, which is cheap and avoids underflow and rounding problems when probabilities get very close to <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span>. Clamping prevents a cell from becoming so certain that it can no longer change. Without it, a cell observed as free thousands of times would take thousands of “occupied” observations to flip, which is a problem if the environment changes (e.g., a door closes or a person stands still).</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-7---the-inverse-sensor-model" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-7---the-inverse-sensor-model">Exercise 7 - The Inverse Sensor Model</h2>
+<p>A robot is at <span class="math inline">\((x, y, \theta) = (0, 0, 0)\)</span> and its laser returns a single beam with angle <span class="math inline">\(\psi = 0\)</span> and range <span class="math inline">\(r_k = 3\)</span> m. Use the inverse sensor model from lecture with obstacle thickness <span class="math inline">\(\alpha = 0.2\)</span> m, beam width <span class="math inline">\(\beta = 2°\)</span>, and maximum range <span class="math inline">\(r_{\max} = 10\)</span> m. For each cell center below, say whether the model returns the prior, “occupied”, or “free”:</p>
+<p><strong>(a)</strong> <span class="math inline">\((1, 0)\)</span></p>
+<p><strong>(b)</strong> <span class="math inline">\((3.05, 0)\)</span></p>
+<p><strong>(c)</strong> <span class="math inline">\((5, 0)\)</span></p>
+<p><strong>(d)</strong> <span class="math inline">\((2, 1)\)</span></p>
+<p><strong>(e)</strong> Suppose instead that the beam returned <span class="math inline">\(r_k = r_{\max} = 10\)</span> m (no obstacle detected). Which cells along the beam are marked free, and which are marked occupied? Why does the model treat this case specially?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>For each cell, compute <span class="math inline">\(r = \|(x_i, y_i)\|\)</span> and <span class="math inline">\(\phi = \operatorname{atan2}(y_i, x_i) - \theta\)</span>, and compare them to the beam.</p>
+<p><strong>(a)</strong> <span class="math inline">\(r = 1\)</span> and <span class="math inline">\(\phi = 0\)</span>, so the cell is within the beam. Since <span class="math inline">\(r \le r_k\)</span> (and not within <span class="math inline">\(\alpha/2\)</span> of <span class="math inline">\(r_k\)</span>), the laser passed through it: <strong>free</strong>.</p>
+<p><strong>(b)</strong> <span class="math inline">\(r = 3.05\)</span> and <span class="math inline">\(\phi = 0\)</span>. Since <span class="math inline">\(|r - r_k| = 0.05 &lt; \alpha/2 = 0.1\)</span> and <span class="math inline">\(r_k &lt; r_{\max}\)</span>: <strong>occupied</strong>.</p>
+<p><strong>(c)</strong> <span class="math inline">\(r = 5 &gt; r_k + \alpha/2 = 3.1\)</span>. The cell is behind the obstacle, so the measurement says nothing about it: <strong>prior</strong>.</p>
+<p><strong>(d)</strong> <span class="math inline">\(\phi = \operatorname{atan2}(1, 2) \approx 26.6° &gt; \beta/2 = 1°\)</span>, so the cell is outside the beam: <strong>prior</strong>.</p>
+<p><strong>(e)</strong> All cells within the beam with <span class="math inline">\(r\)</span> below <span class="math inline">\(10\)</span> m are marked free, and no cell is marked occupied, because the “occupied” case requires <span class="math inline">\(r_k &lt; r_{\max}\)</span>. A max-range reading usually means that nothing reflected the beam (e.g., open space, glass, or a dark surface), not that there is an obstacle exactly at <span class="math inline">\(r_{\max}\)</span>.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -906,7 +906,7 @@ Odometry / Robot Poses</p>
 p(\mathbf{m}|\mathbf{z}_{1:t}, \mathbf{x}_{1:t})
 \]</span></p>
 <ul>
-<li><p>This is intractable. E.g. for a 100 x 100 grid there are <span class="math inline">\(2^{1000}\)</span> possible binary maps.</p></li>
+<li><p>This is intractable. E.g. for a 100 x 100 grid there are <span class="math inline">\(2^{10000}\)</span> possible binary maps.</p></li>
 <li><p>We can approximate <span class="math display">\[p(\mathbf{m}|\mathbf{z}_{1:t}, \mathbf{x}_{1:t}) \simeq \prod_{i,j} p(m_{ij} | \mathbf{z}_{1:t}, \mathbf{x}_{1:t})\]</span></p></li>
 </ul>
 <p><span class="red-annotation absolute" style="bottom: 150px; right: 200px; ">Approximation ignores all dependencies<br>

@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 5 Optional Exercises: Linear Quadratic Regulator (LQR) – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Week 5 Optional Exercises: Linear Quadratic Regulator (LQR) – CSC477 - Fall 2026">
+<meta property="og:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="Week 5 Optional Exercises: Linear Quadratic Regulator (LQR) – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Exercises</h2>
+   
+  <ul class="collapse">
+  <li><a href="#exercise-1---which-systems-are-linear" id="toc-exercise-1---which-systems-are-linear" class="nav-link active" data-scroll-target="#exercise-1---which-systems-are-linear">Exercise 1 - Which Systems Are Linear?</a></li>
+  <li><a href="#exercise-2---scalar-lqr-by-hand" id="toc-exercise-2---scalar-lqr-by-hand" class="nav-link" data-scroll-target="#exercise-2---scalar-lqr-by-hand">Exercise 2 - Scalar LQR by Hand</a></li>
+  <li><a href="#exercise-3---deriving-the-lqr-update" id="toc-exercise-3---deriving-the-lqr-update" class="nav-link" data-scroll-target="#exercise-3---deriving-the-lqr-update">Exercise 3 - Deriving the LQR Update</a></li>
+  <li><a href="#exercise-4---lqr-for-an-omnidirectional-vehicle-with-friction" id="toc-exercise-4---lqr-for-an-omnidirectional-vehicle-with-friction" class="nav-link" data-scroll-target="#exercise-4---lqr-for-an-omnidirectional-vehicle-with-friction">Exercise 4 - LQR for an Omnidirectional Vehicle with Friction</a></li>
+  <li><a href="#exercise-5---trajectory-following" id="toc-exercise-5---trajectory-following" class="nav-link" data-scroll-target="#exercise-5---trajectory-following">Exercise 5 - Trajectory Following</a></li>
+  <li><a href="#exercise-6---nonlinear-dynamics-and-linearization" id="toc-exercise-6---nonlinear-dynamics-and-linearization" class="nav-link" data-scroll-target="#exercise-6---nonlinear-dynamics-and-linearization">Exercise 6 - Nonlinear Dynamics and Linearization</a></li>
+  <li><a href="#exercise-7---lqr-vs.-pid" id="toc-exercise-7---lqr-vs.-pid" class="nav-link" data-scroll-target="#exercise-7---lqr-vs.-pid">Exercise 7 - LQR vs.&nbsp;PID</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 5 Optional Exercises: Linear Quadratic Regulator (LQR)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\T}{\top}
+\]</span></p>
+</div>
+<p>These exercises are optional and are not graded. They are based on the material from <a href="../../lecs/w05/lec05.html">Lecture 5</a>. Try each exercise on your own first, then click on <strong>Solution</strong> to reveal a worked answer.</p>
+<p>Recall the finite-horizon LQR algorithm from lecture, for dynamics <span class="math inline">\(\mathbf{x}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t\)</span> and cost <span class="math inline">\(c(\mathbf{x}, \mathbf{u}) = \mathbf{x}^\T Q\mathbf{x} + \mathbf{u}^\T R\mathbf{u}\)</span>: <span class="math display">\[
+P_0 = Q, \qquad
+K_n = -(R + B^\T P_{n-1}B)^{-1}B^\T P_{n-1}A, \qquad
+P_n = Q + K_n^\T R K_n + (A + BK_n)^\T P_{n-1}(A + BK_n),
+\]</span> where <span class="math inline">\(n\)</span> is the number of steps left, the optimal control with <span class="math inline">\(n\)</span> steps left is <span class="math inline">\(\mathbf{u} = K_n\mathbf{x}\)</span>, and the optimal cost-to-go is <span class="math inline">\(J_n(\mathbf{x}) = \mathbf{x}^\T P_n\mathbf{x}\)</span>.</p>
+<section id="exercise-1---which-systems-are-linear" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---which-systems-are-linear">Exercise 1 - Which Systems Are Linear?</h2>
+<p>For each system, say whether it can be written as <span class="math inline">\(\mathbf{x}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t\)</span> with constant <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>. If so, give <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>.</p>
+<p><strong>(a)</strong> Omnidirectional robot: <span class="math inline">\(x_{t+1} = x_t + v_x\delta t\)</span>, <span class="math inline">\(y_{t+1} = y_t + v_y\delta t\)</span>, <span class="math inline">\(\theta_{t+1} = \theta_t + \omega_z\delta t\)</span>, with <span class="math inline">\(\mathbf{u} = (v_x, v_y, \omega_z)\)</span>.</p>
+<p><strong>(b)</strong> Simple car: <span class="math inline">\(x_{t+1} = x_t + v\cos(\theta_t)\delta t\)</span>, <span class="math inline">\(y_{t+1} = y_t + v\sin(\theta_t)\delta t\)</span>, <span class="math inline">\(\theta_{t+1} = \theta_t + \omega\delta t\)</span>, with <span class="math inline">\(\mathbf{u} = (v, \omega)\)</span>.</p>
+<p><strong>(c)</strong> A 1D double integrator <span class="math inline">\(\ddot{p} = u\)</span>, discretized with time step <span class="math inline">\(\delta t\)</span> (state <span class="math inline">\(\mathbf{x} = (p, v)\)</span>).</p>
+<p><strong>(d)</strong> A system with a constant drift: <span class="math inline">\(x_{t+1} = x_t + u_t + 1\)</span>. Show how to turn it into a linear system by augmenting the state.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Linear, with <span class="math inline">\(A = I_3\)</span> and <span class="math inline">\(B = \delta t\, I_3\)</span>.</p>
+<p><strong>(b)</strong> Not linear. The control <span class="math inline">\(v\)</span> is multiplied by <span class="math inline">\(\cos\theta_t\)</span> and <span class="math inline">\(\sin\theta_t\)</span>, which depend on the state, so the best we can write is <span class="math inline">\(\mathbf{x}_{t+1} = \mathbf{x}_t + B(\mathbf{x}_t)\mathbf{u}_t\)</span> with a state-dependent <span class="math inline">\(B\)</span>.</p>
+<p><strong>(c)</strong> Linear. Using <span class="math inline">\(p_{t+1} = p_t + \delta t\, v_t\)</span> and <span class="math inline">\(v_{t+1} = v_t + \delta t\, u_t\)</span>: <span class="math display">\[
+A = \begin{bmatrix} 1 &amp; \delta t \\ 0 &amp; 1 \end{bmatrix}, \qquad B = \begin{bmatrix} 0 \\ \delta t \end{bmatrix}.
+\]</span></p>
+<p><strong>(d)</strong> The system is affine, not linear. With the augmented state <span class="math inline">\(\mathbf{z} = (x, 1)\)</span>: <span class="math display">\[
+\mathbf{z}_{t+1} = \begin{bmatrix} 1 &amp; 1 \\ 0 &amp; 1 \end{bmatrix}\mathbf{z}_t + \begin{bmatrix} 1 \\ 0 \end{bmatrix} u_t.
+\]</span> This is the same trick that lecture used for trajectory following.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2---scalar-lqr-by-hand" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2---scalar-lqr-by-hand">Exercise 2 - Scalar LQR by Hand</h2>
+<p>Consider the scalar system <span class="math inline">\(x_{t+1} = x_t + u_t\)</span> (so <span class="math inline">\(A = B = 1\)</span>) with <span class="math inline">\(Q = R = 1\)</span>.</p>
+<p><strong>(a)</strong> Compute <span class="math inline">\(K_1, P_1, K_2, P_2\)</span> by hand.</p>
+<p><strong>(b)</strong> With horizon <span class="math inline">\(N = 2\)</span> and initial state <span class="math inline">\(x_0 = 10\)</span>, compute the optimal controls <span class="math inline">\(u_0, u_1\)</span> and states <span class="math inline">\(x_1, x_2\)</span>. Add up the total cost (including the terminal cost <span class="math inline">\(x_2^2\)</span>) and check that it equals <span class="math inline">\(P_2 x_0^2\)</span>.</p>
+<p><strong>(c)</strong> As <span class="math inline">\(n \to \infty\)</span>, <span class="math inline">\(P_n\)</span> converges to a fixed point <span class="math inline">\(P\)</span>. Find it analytically, along with the corresponding steady-state gain <span class="math inline">\(K\)</span>.</p>
+<p><strong>(d)</strong> What happens to <span class="math inline">\(K_1\)</span> as <span class="math inline">\(R \to 0\)</span>? As <span class="math inline">\(R \to \infty\)</span>? Interpret both limits.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> For scalars, <span class="math inline">\(K_n = -\frac{P_{n-1}}{1 + P_{n-1}}\)</span> and <span class="math inline">\(P_n = 1 + K_n^2 + (1 + K_n)^2P_{n-1}\)</span>.</p>
+<ul>
+<li><span class="math inline">\(P_0 = 1\)</span>.</li>
+<li><span class="math inline">\(K_1 = -\frac{1}{2}\)</span> and <span class="math inline">\(P_1 = 1 + \frac{1}{4} + \frac{1}{4} \cdot 1 = 1.5\)</span>.</li>
+<li><span class="math inline">\(K_2 = -\frac{1.5}{2.5} = -0.6\)</span> and <span class="math inline">\(P_2 = 1 + 0.36 + 0.16 \cdot 1.5 = 1.6\)</span>.</li>
+</ul>
+<p><strong>(b)</strong> At <span class="math inline">\(t = 0\)</span> there are <span class="math inline">\(2\)</span> steps left, so <span class="math inline">\(u_0 = K_2x_0 = -6\)</span> and <span class="math inline">\(x_1 = 4\)</span>. At <span class="math inline">\(t = 1\)</span> there is <span class="math inline">\(1\)</span> step left, so <span class="math inline">\(u_1 = K_1x_1 = -2\)</span> and <span class="math inline">\(x_2 = 2\)</span>. The total cost is <span class="math inline">\((100 + 36) + (16 + 4) + 4 = 160 = P_2x_0^2 = 1.6 \cdot 100\)</span>.</p>
+<p>Note that the gains are applied in reverse order of computation: they are computed backward in time and used forward in time.</p>
+<p><strong>(c)</strong> At the fixed point, substituting <span class="math inline">\(K = -P/(1 + P)\)</span> into the update and simplifying gives <span class="math inline">\(P = 1 + \frac{P}{1 + P}\)</span>, i.e.&nbsp;<span class="math inline">\(P^2 - P - 1 = 0\)</span>. The positive root is <span class="math inline">\(P = \frac{1 + \sqrt{5}}{2} \approx 1.618\)</span>, and <span class="math inline">\(K = -\frac{P}{1 + P} \approx -0.618\)</span>. The sequence <span class="math inline">\(P_0, P_1, P_2, \ldots = 1, 1.5, 1.6, 1.615, \ldots\)</span> converges quickly to it.</p>
+<p><strong>(d)</strong> <span class="math inline">\(K_1 = -\frac{P_0}{R + P_0} = -\frac{1}{R + 1}\)</span>. As <span class="math inline">\(R \to 0\)</span>, controls are free and <span class="math inline">\(K_1 \to -1\)</span>, which drives the state to zero in a single step (“deadbeat” control). As <span class="math inline">\(R \to \infty\)</span>, controls are very expensive and <span class="math inline">\(K_1 \to 0\)</span>, so the controller barely acts. The ratio between <span class="math inline">\(Q\)</span> and <span class="math inline">\(R\)</span> trades off how aggressively the state is driven to zero against how much control effort is used.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3---deriving-the-lqr-update" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3---deriving-the-lqr-update">Exercise 3 - Deriving the LQR Update</h2>
+<p><strong>(a)</strong> Starting from <span class="math display">\[
+J_1(\mathbf{x}) = \mathbf{x}^\T Q\mathbf{x} + \min_{\mathbf{u}}\left[\mathbf{u}^\T R\mathbf{u} + (A\mathbf{x} + B\mathbf{u})^\T P_0(A\mathbf{x} + B\mathbf{u})\right],
+\]</span> take the gradient with respect to <span class="math inline">\(\mathbf{u}\)</span>, set it to zero, and derive <span class="math inline">\(K_1\)</span>.</p>
+<p><strong>(b)</strong> Explain why <span class="math inline">\(R + B^\T P_0B\)</span> is invertible, and why the critical point from (a) is a minimum rather than a maximum or saddle point.</p>
+<p><strong>(c)</strong> Substitute <span class="math inline">\(\mathbf{u} = K_1\mathbf{x}\)</span> back into the expression and show that <span class="math inline">\(J_1(\mathbf{x}) = \mathbf{x}^\T P_1\mathbf{x}\)</span> with <span class="math inline">\(P_1\)</span> as in the algorithm. Why is it important that <span class="math inline">\(J_1\)</span> is again quadratic?</p>
+<p><strong>(d)</strong> What is the computational cost of one step of the backward recursion when <span class="math inline">\(\mathbf{x} \in \R^d\)</span> and <span class="math inline">\(\mathbf{u} \in \R^k\)</span>?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Expanding, the terms that depend on <span class="math inline">\(\mathbf{u}\)</span> are <span class="math inline">\(\mathbf{u}^\T R\mathbf{u} + 2\mathbf{u}^\T B^\T P_0A\mathbf{x} + \mathbf{u}^\T B^\T P_0B\mathbf{u}\)</span>. Since <span class="math inline">\(R\)</span> and <span class="math inline">\(P_0\)</span> are symmetric, the gradient is <span class="math display">\[
+2R\mathbf{u} + 2B^\T P_0A\mathbf{x} + 2B^\T P_0B\mathbf{u} = 0
+\;\Rightarrow\;
+\mathbf{u} = -(R + B^\T P_0B)^{-1}B^\T P_0A\,\mathbf{x} = K_1\mathbf{x}.
+\]</span></p>
+<p><strong>(b)</strong> <span class="math inline">\(R\)</span> is positive definite and <span class="math inline">\(B^\T P_0B\)</span> is positive semi-definite (<span class="math inline">\(\mathbf{u}^\T B^\T P_0B\mathbf{u} = (B\mathbf{u})^\T P_0(B\mathbf{u}) \ge 0\)</span>), so their sum is positive definite and hence invertible. The Hessian of the objective with respect to <span class="math inline">\(\mathbf{u}\)</span> is <span class="math inline">\(2(R + B^\T P_0B)\)</span>, which is positive definite, so the objective is strictly convex in <span class="math inline">\(\mathbf{u}\)</span> and the critical point is its unique global minimum.</p>
+<p><strong>(c)</strong> With <span class="math inline">\(\mathbf{u} = K_1\mathbf{x}\)</span>, we have <span class="math inline">\(A\mathbf{x} + B\mathbf{u} = (A + BK_1)\mathbf{x}\)</span>, so <span class="math display">\[
+J_1(\mathbf{x}) = \mathbf{x}^\T Q\mathbf{x} + \mathbf{x}^\T K_1^\T RK_1\mathbf{x} + \mathbf{x}^\T(A + BK_1)^\T P_0(A + BK_1)\mathbf{x} = \mathbf{x}^\T P_1\mathbf{x}.
+\]</span> Because <span class="math inline">\(J_1\)</span> has the same form as <span class="math inline">\(J_0\)</span> (a quadratic with a positive definite matrix), the exact same derivation applies at every step. This gives a closed-form recursion and a linear controller at every time step.</p>
+<p><strong>(d)</strong> The dominant costs are matrix products of size <span class="math inline">\(d \times d\)</span> (<span class="math inline">\(O(d^3)\)</span>) and inverting the <span class="math inline">\(k \times k\)</span> matrix <span class="math inline">\(R + B^\T P_{n-1}B\)</span> (<span class="math inline">\(O(k^3)\)</span> with Gaussian elimination). So each step costs roughly <span class="math inline">\(O(d^3 + k^3)\)</span>, and the full backward pass costs <span class="math inline">\(O(N(d^3 + k^3))\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4---lqr-for-an-omnidirectional-vehicle-with-friction" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4---lqr-for-an-omnidirectional-vehicle-with-friction">Exercise 4 - LQR for an Omnidirectional Vehicle with Friction</h2>
+<p>Consider the 1D version of lecture’s example #1: <span class="math inline">\(m\ddot{p} = u - \alpha\dot{p}\)</span>, with <span class="math inline">\(m = 1\)</span>, <span class="math inline">\(\alpha = 0.5\)</span>, and <span class="math inline">\(\delta t = 0.1\)</span>, and state <span class="math inline">\(\mathbf{x} = (p, v)\)</span>.</p>
+<p><strong>(a)</strong> Write down <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> for the discretized system.</p>
+<p><strong>(b)</strong> Write a numpy function <code>lqr(A, B, Q, R, N)</code> that returns the list of gains <span class="math inline">\(K_N, \ldots, K_1\)</span> (in the order they are used, forward in time), and simulate the closed-loop system from <span class="math inline">\(\mathbf{x}_0 = (10, -5)\)</span> for <span class="math inline">\(N = 100\)</span> steps with <span class="math inline">\(Q = I\)</span> and <span class="math inline">\(R = \rho\)</span>.</p>
+<p><strong>(c)</strong> Compare the trajectories for <span class="math inline">\(\rho = 100\)</span> and <span class="math inline">\(\rho = 1\)</span>. Which converges faster? Which uses larger controls?</p>
+<p><strong>(d)</strong> LQR does not let us put hard bounds on the controls. Suppose the motor can only produce <span class="math inline">\(|u| \le 2\)</span>. What could you do?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math display">\[
+A = \begin{bmatrix} 1 &amp; \delta t \\ 0 &amp; 1 - \alpha\delta t/m \end{bmatrix} = \begin{bmatrix} 1 &amp; 0.1 \\ 0 &amp; 0.95 \end{bmatrix}, \qquad
+B = \begin{bmatrix} 0 \\ \delta t/m \end{bmatrix} = \begin{bmatrix} 0 \\ 0.1 \end{bmatrix}.
+\]</span></p>
+<p><strong>(b)</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lqr(A, B, Q, R, N):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> Q.copy()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    gains <span class="op">=</span> []</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N):</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        K <span class="op">=</span> <span class="op">-</span>np.linalg.solve(R <span class="op">+</span> B.T <span class="op">@</span> P <span class="op">@</span> B, B.T <span class="op">@</span> P <span class="op">@</span> A)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        P <span class="op">=</span> Q <span class="op">+</span> K.T <span class="op">@</span> R <span class="op">@</span> K <span class="op">+</span> (A <span class="op">+</span> B <span class="op">@</span> K).T <span class="op">@</span> P <span class="op">@</span> (A <span class="op">+</span> B <span class="op">@</span> K)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        gains.append(K)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gains[::<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="fl">1.0</span>, <span class="fl">0.1</span>], [<span class="fl">0.0</span>, <span class="fl">0.95</span>]])</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([[<span class="fl">0.0</span>], [<span class="fl">0.1</span>]])</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> np.eye(<span class="dv">2</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> rho <span class="kw">in</span> [<span class="fl">100.0</span>, <span class="fl">1.0</span>]:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    R <span class="op">=</span> np.array([[rho]])</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.array([<span class="fl">10.0</span>, <span class="op">-</span><span class="fl">5.0</span>])</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    xs, us <span class="op">=</span> [x], []</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> K <span class="kw">in</span> lqr(A, B, Q, R, N<span class="op">=</span><span class="dv">100</span>):</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        u <span class="op">=</span> K <span class="op">@</span> x</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> A <span class="op">@</span> x <span class="op">+</span> B <span class="op">@</span> u</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        xs.append(x)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        us.append(u)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(rho, xs[<span class="op">-</span><span class="dv">1</span>], np.<span class="bu">abs</span>(np.array(us)).<span class="bu">max</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>np.linalg.solve</code> is used instead of explicitly inverting the matrix, which is cheaper and more accurate. The list is reversed because the first gain computed (<span class="math inline">\(K_1\)</span>, one step left) is the last one used.</p>
+<p><strong>(c)</strong> With <span class="math inline">\(\rho = 1\)</span> controls are cheap, so the controller applies large forces and the state converges to zero much faster. With <span class="math inline">\(\rho = 100\)</span> the controls are much smaller and the state converges slowly. Running the code above, after <span class="math inline">\(100\)</span> steps (<span class="math inline">\(10\)</span> s) the position is about <span class="math inline">\(-0.15\)</span> with <span class="math inline">\(\rho = 100\)</span> but about <span class="math inline">\(-0.002\)</span> with <span class="math inline">\(\rho = 1\)</span>, while the largest control magnitude is about <span class="math inline">\(0.1\)</span> with <span class="math inline">\(\rho = 100\)</span> and about <span class="math inline">\(3.0\)</span> with <span class="math inline">\(\rho = 1\)</span>. In both cases the controls also go to zero, because the state does.</p>
+<p><strong>(d)</strong> Options include increasing <span class="math inline">\(\rho\)</span> until the controls stay within bounds for the expected range of initial states, clipping the LQR control to <span class="math inline">\([-2, 2]\)</span> (which loses the optimality guarantee and can destabilize the system), or switching to a method that handles constraints explicitly, such as model predictive control (MPC), which solves a constrained optimization problem at every time step.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5---trajectory-following" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5---trajectory-following">Exercise 5 - Trajectory Following</h2>
+<p>We want the linear system <span class="math inline">\(\mathbf{x}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t\)</span> to follow a reference trajectory <span class="math inline">\(\mathbf{x}_0^*, \mathbf{x}_1^*, \ldots, \mathbf{x}_N^*\)</span>. Define the error <span class="math inline">\(\bar{\mathbf{x}}_t = \mathbf{x}_t - \mathbf{x}_t^*\)</span>.</p>
+<p><strong>(a)</strong> Show that <span class="math inline">\(\bar{\mathbf{x}}_{t+1} = A\bar{\mathbf{x}}_t + B\mathbf{u}_t + \mathbf{c}_t\)</span>, and find <span class="math inline">\(\mathbf{c}_t\)</span>.</p>
+<p><strong>(b)</strong> Rewrite the error dynamics as a linear system in the augmented state <span class="math inline">\(\mathbf{z}_t = (\bar{\mathbf{x}}_t, 1)\)</span>. What should <span class="math inline">\(\bar{Q}\)</span> be so that the cost only penalizes the tracking error and not the constant <span class="math inline">\(1\)</span>? Is the resulting system time-invariant?</p>
+<p><strong>(c)</strong> For the vehicle with friction from Exercise 4, suppose the reference is a single stationary state with <span class="math inline">\(p^* = 3\)</span> and <span class="math inline">\(v^* = 0\)</span>. Compute <span class="math inline">\(\mathbf{c}_t\)</span>. What does the result tell you?</p>
+<p><strong>(d)</strong> Now suppose the reference moves at constant velocity <span class="math inline">\(v^* = 1\)</span> m/s. Compute <span class="math inline">\(\mathbf{c}_t\)</span>, and find the constant control <span class="math inline">\(u^*\)</span> that keeps the vehicle exactly on the reference.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Substituting <span class="math inline">\(\mathbf{x}_t = \bar{\mathbf{x}}_t + \mathbf{x}_t^*\)</span>: <span class="math display">\[
+\bar{\mathbf{x}}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t - \mathbf{x}_{t+1}^* = A\bar{\mathbf{x}}_t + B\mathbf{u}_t + \underbrace{A\mathbf{x}_t^* - \mathbf{x}_{t+1}^*}_{\mathbf{c}_t}.
+\]</span> The vector <span class="math inline">\(\mathbf{c}_t\)</span> is how far the uncontrolled dynamics would move off the reference in one step.</p>
+<p><strong>(b)</strong> <span class="math display">\[
+\mathbf{z}_{t+1} = \begin{bmatrix} A &amp; \mathbf{c}_t \\ \mathbf{0}^\T &amp; 1 \end{bmatrix}\mathbf{z}_t + \begin{bmatrix} B \\ \mathbf{0}^\T \end{bmatrix}\mathbf{u}_t,
+\qquad
+\bar{Q} = \begin{bmatrix} Q &amp; \mathbf{0} \\ \mathbf{0}^\T &amp; 0 \end{bmatrix}.
+\]</span> (<span class="math inline">\(\bar{Q}\)</span> is then only positive semi-definite, which is fine in practice.) In general <span class="math inline">\(\mathbf{c}_t\)</span> changes with <span class="math inline">\(t\)</span>, so the system is time-varying and we use the time-varying version of LQR, with <span class="math inline">\(\bar{A}_t\)</span> in place of <span class="math inline">\(A\)</span> in the recursion.</p>
+<p><strong>(c)</strong> <span class="math inline">\(A\mathbf{x}^* = (3 + 0.1 \cdot 0,\; 0.95 \cdot 0) = (3, 0) = \mathbf{x}^*\)</span>, so <span class="math inline">\(\mathbf{c}_t = \mathbf{0}\)</span>. A state at rest is an equilibrium of the uncontrolled dynamics, so the problem reduces to standard LQR on <span class="math inline">\(\bar{\mathbf{x}}\)</span>.</p>
+<p><strong>(d)</strong> With <span class="math inline">\(\mathbf{x}_t^* = (p_0 + t\delta t,\; 1)\)</span>, we get <span class="math inline">\(A\mathbf{x}_t^* = (p_0 + t\delta t + 0.1,\; 0.95)\)</span> and <span class="math inline">\(\mathbf{x}_{t+1}^* = (p_0 + (t+1)\delta t,\; 1)\)</span>, so <span class="math inline">\(\mathbf{c}_t = (0, -0.05)\)</span>. Friction slows the vehicle by <span class="math inline">\(0.05\)</span> m/s every step. To stay on the reference we need <span class="math inline">\(B u^* + \mathbf{c}_t = \mathbf{0}\)</span>, i.e.&nbsp;<span class="math inline">\(0.1u^* = 0.05\)</span>, so <span class="math inline">\(u^* = 0.5 = \alpha v^*\)</span>: the control exactly cancels friction. Note that an LQR cost that penalizes <span class="math inline">\(\|\mathbf{u}\|^2\)</span> (rather than <span class="math inline">\(\|\mathbf{u} - u^*\|^2\)</span>) will trade off some tracking error against this nonzero control.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-6---nonlinear-dynamics-and-linearization" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6---nonlinear-dynamics-and-linearization">Exercise 6 - Nonlinear Dynamics and Linearization</h2>
+<p>A pendulum of mass <span class="math inline">\(m\)</span> and length <span class="math inline">\(l\)</span> has angle <span class="math inline">\(\theta\)</span> measured from the downward vertical, and a motor applies torque <span class="math inline">\(u\)</span> at the pivot: <span class="math display">\[
+\ddot\theta = -\frac{g}{l}\sin\theta + \frac{u}{ml^2}.
+\]</span> Use the state <span class="math inline">\(\mathbf{x} = (\theta, \dot\theta)\)</span> and forward Euler with time step <span class="math inline">\(\delta t\)</span>.</p>
+<p><strong>(a)</strong> Write down the discrete-time dynamics <span class="math inline">\(\mathbf{x}_{t+1} = f(\mathbf{x}_t, u_t)\)</span>. Is it linear?</p>
+<p><strong>(b)</strong> We want to stabilize the pendulum upright, at <span class="math inline">\(\theta = \pi\)</span>. Find the equilibrium control <span class="math inline">\(u^*\)</span> and linearize the dynamics around <span class="math inline">\((\mathbf{x}^*, u^*)\)</span>, giving <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> for the error state <span class="math inline">\(\bar{\mathbf{x}} = \mathbf{x} - \mathbf{x}^*\)</span>.</p>
+<p><strong>(c)</strong> Repeat (b) for holding the pendulum horizontal, at <span class="math inline">\(\theta = \pi/2\)</span>. Why does lecture say that with nonlinear dynamics we cannot assume <span class="math inline">\(u = 0\)</span> keeps the system at the target?</p>
+<p><strong>(d)</strong> In the upright case, the linearization is only accurate for small <span class="math inline">\(\bar\theta\)</span>. Describe the idea behind iteratively solving nonlinear optimal control problems with LQR (as in lecture’s last slides).</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> <span class="math display">\[
+\theta_{t+1} = \theta_t + \delta t\,\dot\theta_t, \qquad
+\dot\theta_{t+1} = \dot\theta_t + \delta t\left(-\frac{g}{l}\sin\theta_t + \frac{u_t}{ml^2}\right).
+\]</span> It is not linear because of the <span class="math inline">\(\sin\theta_t\)</span> term.</p>
+<p><strong>(b)</strong> At <span class="math inline">\(\theta = \pi\)</span>, <span class="math inline">\(\sin\theta = 0\)</span>, so the pendulum stays still with <span class="math inline">\(u^* = 0\)</span>. The Jacobian of <span class="math inline">\(-\frac{g}{l}\sin\theta\)</span> is <span class="math inline">\(-\frac{g}{l}\cos\theta = \frac{g}{l}\)</span> at <span class="math inline">\(\theta = \pi\)</span>. So <span class="math display">\[
+A = \begin{bmatrix} 1 &amp; \delta t \\ \frac{g}{l}\delta t &amp; 1 \end{bmatrix}, \qquad B = \begin{bmatrix} 0 \\ \frac{\delta t}{ml^2} \end{bmatrix}.
+\]</span> The positive entry <span class="math inline">\(\frac{g}{l}\delta t\)</span> means that small deviations grow (the upright position is unstable without control), which LQR then corrects.</p>
+<p><strong>(c)</strong> At <span class="math inline">\(\theta = \pi/2\)</span>, gravity exerts a torque, so the equilibrium requires <span class="math inline">\(\frac{u^*}{ml^2} = \frac{g}{l}\)</span>, i.e.&nbsp;<span class="math inline">\(u^* = mgl\)</span>. The Jacobian is <span class="math inline">\(-\frac{g}{l}\cos(\pi/2) = 0\)</span>, so <span class="math display">\[
+\bar{\mathbf{x}}_{t+1} \approx \begin{bmatrix} 1 &amp; \delta t \\ 0 &amp; 1 \end{bmatrix}\bar{\mathbf{x}}_t + \begin{bmatrix} 0 \\ \frac{\delta t}{ml^2} \end{bmatrix}(u_t - u^*).
+\]</span> With <span class="math inline">\(u = 0\)</span> the pendulum would fall. In general, nonlinear systems may need a nonzero control to stay at the target, so we linearize around <span class="math inline">\((\mathbf{x}^*, u^*)\)</span> with <span class="math inline">\(f(\mathbf{x}^*, u^*) = \mathbf{x}^*\)</span> and let LQR compute the deviation <span class="math inline">\(u - u^*\)</span>.</p>
+<p><strong>(d)</strong> Start with a nominal sequence of controls and roll it out through the nonlinear dynamics to get a nominal trajectory. Linearize the dynamics (and, if needed, quadratize the cost) around this trajectory to get a time-varying LQR problem in the deviations, and solve it. Apply the resulting controls to the nonlinear system to get a new nominal trajectory, and repeat until convergence. This is the idea behind iterative LQR (iLQR) and differential dynamic programming (DDP).</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-7---lqr-vs.-pid" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-7---lqr-vs.-pid">Exercise 7 - LQR vs.&nbsp;PID</h2>
+<p><strong>(a)</strong> Lecture gave several reasons to prefer LQR over PID for multi-dimensional systems. Summarize three of them.</p>
+<p><strong>(b)</strong> Lecture also listed drawbacks of LQR. Name two, and for each suggest a situation where it matters.</p>
+<p><strong>(c)</strong> The dynamic programming recursion used in LQR also appeared in Lecture 4. Compare the LQR recursion <span class="math inline">\(J_n(\mathbf{x}) = \min_{\mathbf{u}}[c(\mathbf{x}, \mathbf{u}) + J_{n-1}(A\mathbf{x} + B\mathbf{u})]\)</span> with the graph search recursion <span class="math inline">\(D(v) = \min_{u \in N(v)}[d(v, u) + D(u)]\)</span>. What makes the LQR case solvable in closed form even though the state space is continuous?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> (1) PID gains are tuned for a small region of the state space and have no formal guarantees outside it. (2) With many state and control dimensions, tuning separate PID loops ignores the interactions between variables, while LQR handles the coupled system jointly through <span class="math inline">\(A\)</span>, <span class="math inline">\(B\)</span>, <span class="math inline">\(Q\)</span>, and <span class="math inline">\(R\)</span>. (3) Covering different regions of the state space with PID requires gain scheduling, which takes a lot of effort, whereas LQR computes optimal gains directly from the model and cost.</p>
+<p><strong>(b)</strong> (1) LQR requires linear dynamics, which most robots (cars, pendulums, quadrotors) only approximately satisfy near an operating point. (2) It cannot directly encode obstacles, state constraints, or hard control bounds, which matters, for example, when a car must stay in its lane while respecting steering limits.</p>
+<p><strong>(c)</strong> Both compute the optimal cost-to-go by minimizing the immediate cost plus the cost-to-go of the next state. In graph search the minimization is over a finite set of neighbors and <span class="math inline">\(D\)</span> is stored as a table. In LQR the state and control spaces are continuous, but because the dynamics are linear and the cost is quadratic, <span class="math inline">\(J_n\)</span> stays quadratic, so it is fully described by the matrix <span class="math inline">\(P_n\)</span> and the minimization over <span class="math inline">\(\mathbf{u}\)</span> has a closed-form solution.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

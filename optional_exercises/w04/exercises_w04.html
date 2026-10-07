@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 4 Optional Exercises: Planning – CSC477 - Fall 2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-aa2e280f5f0f1c206e9e1b595e865951.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-40808b6f0c3085988c400b067a015837.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Week 4 Optional Exercises: Planning – CSC477 - Fall 2026">
+<meta property="og:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta property="og:site_name" content="CSC477 - Fall 2026">
+<meta name="twitter:title" content="Week 4 Optional Exercises: Planning – CSC477 - Fall 2026">
+<meta name="twitter:description" content="Schedule, lecture slides, tutorials, and assignments.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Exercises</h2>
+   
+  <ul class="collapse">
+  <li><a href="#exercise-1---dynamic-programming-and-dijkstra" id="toc-exercise-1---dynamic-programming-and-dijkstra" class="nav-link active" data-scroll-target="#exercise-1---dynamic-programming-and-dijkstra">Exercise 1 - Dynamic Programming and Dijkstra</a></li>
+  <li><a href="#exercise-2---a-search-and-heuristics" id="toc-exercise-2---a-search-and-heuristics" class="nav-link" data-scroll-target="#exercise-2---a-search-and-heuristics">Exercise 2 - A* Search and Heuristics</a></li>
+  <li><a href="#exercise-3---configuration-space" id="toc-exercise-3---configuration-space" class="nav-link" data-scroll-target="#exercise-3---configuration-space">Exercise 3 - Configuration Space</a></li>
+  <li><a href="#exercise-4---one-iteration-of-rrt" id="toc-exercise-4---one-iteration-of-rrt" class="nav-link" data-scroll-target="#exercise-4---one-iteration-of-rrt">Exercise 4 - One Iteration of RRT</a></li>
+  <li><a href="#exercise-5---prm-vs.-rrt" id="toc-exercise-5---prm-vs.-rrt" class="nav-link" data-scroll-target="#exercise-5---prm-vs.-rrt">Exercise 5 - PRM vs.&nbsp;RRT</a></li>
+  <li><a href="#exercise-6---visibility-graphs-and-path-smoothing" id="toc-exercise-6---visibility-graphs-and-path-smoothing" class="nav-link" data-scroll-target="#exercise-6---visibility-graphs-and-path-smoothing">Exercise 6 - Visibility Graphs and Path Smoothing</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 4 Optional Exercises: Planning</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\T}{\top}
+\]</span></p>
+</div>
+<p>These exercises are optional and are not graded. They are based on the material from <a href="../../lecs/w04/lec04.html">Lecture 4</a>. Try each exercise on your own first, then click on <strong>Solution</strong> to reveal a worked answer.</p>
+<p>Exercises 1 and 2 use the following undirected graph, where the numbers are edge costs:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Edge</th>
+<th style="text-align: center;">S-A</th>
+<th style="text-align: center;">S-B</th>
+<th style="text-align: center;">A-B</th>
+<th style="text-align: center;">A-C</th>
+<th style="text-align: center;">B-C</th>
+<th style="text-align: center;">B-D</th>
+<th style="text-align: center;">C-D</th>
+<th style="text-align: center;">C-G</th>
+<th style="text-align: center;">D-G</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Cost</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+</tr>
+</tbody>
+</table>
+<section id="exercise-1---dynamic-programming-and-dijkstra" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---dynamic-programming-and-dijkstra">Exercise 1 - Dynamic Programming and Dijkstra</h2>
+<p><strong>(a)</strong> Use the dynamic programming recursion <span class="math inline">\(D(v, v_{dest}) = \min_{u \in N(v)}[d(v,u) + D(u, v_{dest})]\)</span> to compute the cost-to-go from every node to <span class="math inline">\(G\)</span>.</p>
+<p><strong>(b)</strong> Run Dijkstra’s algorithm from <span class="math inline">\(S\)</span>. Write down the order in which nodes are removed from the priority queue and the cost-to-come of each node at the moment it is removed. What is the shortest path from <span class="math inline">\(S\)</span> to <span class="math inline">\(G\)</span>?</p>
+<p><strong>(c)</strong> Why does Dijkstra’s algorithm require non-negative edge costs? Give a small example where a negative edge makes it return the wrong answer.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Working backwards from <span class="math inline">\(D(G) = 0\)</span>:</p>
+<ul>
+<li><span class="math inline">\(D(D) = \min(2 + 0,\; 2 + D(C)) = 2\)</span>.</li>
+<li><span class="math inline">\(D(C) = \min(3 + 0,\; 2 + 2,\; 1 + D(B),\; 5 + D(A)) = 3\)</span>.</li>
+<li><span class="math inline">\(D(B) = \min(1 + 3,\; 6 + 2,\; 2 + D(A),\; 4 + D(S)) = 4\)</span>.</li>
+<li><span class="math inline">\(D(A) = \min(2 + 4,\; 5 + 3,\; 1 + D(S)) = 6\)</span>.</li>
+<li><span class="math inline">\(D(S) = \min(1 + 6,\; 4 + 4) = 7\)</span>.</li>
+</ul>
+<p>(Terms that refer to nodes farther from the goal never achieve the minimum here, so the recursion terminates.)</p>
+<p><strong>(b)</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Step</th>
+<th style="text-align: center;">Removed</th>
+<th style="text-align: center;">Cost-to-come</th>
+<th style="text-align: left;">Updates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">S</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: left;">A = 1, B = 4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">B = 3, C = 6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">C = 4, D = 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">D = 6, G = 7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">D</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">(G stays 7)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">G</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: left;">done</td>
+</tr>
+</tbody>
+</table>
+<p>Following parent pointers back from <span class="math inline">\(G\)</span> gives the shortest path <span class="math inline">\(S \to A \to B \to C \to G\)</span>, with cost <span class="math inline">\(7\)</span>, which matches <span class="math inline">\(D(S)\)</span> from (a).</p>
+<p><strong>(c)</strong> Dijkstra’s algorithm assumes that once a node is removed from the queue, its cost-to-come is final, because any other path to it must pass through nodes with at least as large a cost-to-come. A negative edge breaks this. For example, with edges <span class="math inline">\(S \to A\)</span> (cost <span class="math inline">\(1\)</span>), <span class="math inline">\(S \to B\)</span> (cost <span class="math inline">\(2\)</span>), <span class="math inline">\(B \to A\)</span> (cost <span class="math inline">\(-2\)</span>), Dijkstra removes <span class="math inline">\(A\)</span> with cost <span class="math inline">\(1\)</span> before discovering the path <span class="math inline">\(S \to B \to A\)</span> with cost <span class="math inline">\(0\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2---a-search-and-heuristics" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2---a-search-and-heuristics">Exercise 2 - A* Search and Heuristics</h2>
+<p>Use the graph above with the heuristic</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Node</th>
+<th style="text-align: center;">S</th>
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+<th style="text-align: center;">C</th>
+<th style="text-align: center;">D</th>
+<th style="text-align: center;">G</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(h\)</span></td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(a)</strong> Is <span class="math inline">\(h\)</span> admissible? Is it monotonic (consistent), i.e.&nbsp;<span class="math inline">\(h(u) \le d(u, v) + h(v)\)</span> for every edge?</p>
+<p><strong>(b)</strong> Run A* from <span class="math inline">\(S\)</span> to <span class="math inline">\(G\)</span>. Write down the order in which nodes are expanded along with their <span class="math inline">\(f = g + h\)</span> values. Which nodes does A* avoid expanding compared to Dijkstra?</p>
+<p><strong>(c)</strong> Change <span class="math inline">\(h(B)\)</span> to <span class="math inline">\(10\)</span> and run A* again. What path does it return? Explain what went wrong.</p>
+<p><strong>(d)</strong> On a 4-connected grid with unit edge costs, is the Manhattan distance admissible? What about on an 8-connected grid where diagonal moves cost <span class="math inline">\(\sqrt{2}\)</span>? Propose an admissible heuristic for the 8-connected case.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Comparing to the true cost-to-go from Exercise 1(a), <span class="math inline">\((7, 6, 4, 3, 2, 0)\)</span>, we have <span class="math inline">\(h \le D\)</span> for every node, so <span class="math inline">\(h\)</span> is admissible. Checking every edge in both directions, e.g.&nbsp;<span class="math inline">\(h(S) = 6 \le 1 + h(A) = 6\)</span>, <span class="math inline">\(h(C) = 3 \le 3 + h(G) = 3\)</span>, <span class="math inline">\(h(B) = 4 \le 1 + h(C) = 4\)</span>, and so on, shows that <span class="math inline">\(h\)</span> is also consistent.</p>
+<p><strong>(b)</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Step</th>
+<th style="text-align: center;">Expanded</th>
+<th style="text-align: center;"><span class="math inline">\(g\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(f\)</span></th>
+<th style="text-align: left;">Queue after expansion (<span class="math inline">\(f\)</span> values)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">S</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">A: 6, B: 8</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">B: 7 (updated), C: 9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: left;">C: 7 (updated), D: 11</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: left;">G: 7, D: 8 (updated)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">G</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: left;">done</td>
+</tr>
+</tbody>
+</table>
+<p>A* returns the same path <span class="math inline">\(S \to A \to B \to C \to G\)</span> with cost <span class="math inline">\(7\)</span>, but it never expands <span class="math inline">\(D\)</span>, which Dijkstra did. On large grids, the savings are much bigger, because the heuristic steers the search toward the goal.</p>
+<p><strong>(c)</strong> With <span class="math inline">\(h(B) = 10\)</span>: expanding <span class="math inline">\(S\)</span> gives <span class="math inline">\(A\)</span> (<span class="math inline">\(f = 6\)</span>) and <span class="math inline">\(B\)</span> (<span class="math inline">\(f = 14\)</span>). Expanding <span class="math inline">\(A\)</span> gives <span class="math inline">\(B\)</span> (<span class="math inline">\(g = 3\)</span>, <span class="math inline">\(f = 13\)</span>) and <span class="math inline">\(C\)</span> (<span class="math inline">\(g = 6\)</span>, <span class="math inline">\(f = 9\)</span>). Expanding <span class="math inline">\(C\)</span> gives <span class="math inline">\(G\)</span> (<span class="math inline">\(g = 9\)</span>, <span class="math inline">\(f = 9\)</span>) and <span class="math inline">\(D\)</span> (<span class="math inline">\(g = 8\)</span>, <span class="math inline">\(f = 10\)</span>). A* then expands <span class="math inline">\(G\)</span> and returns <span class="math inline">\(S \to A \to C \to G\)</span> with cost <span class="math inline">\(9\)</span>, which is not optimal. The heuristic overestimates the cost-to-go from <span class="math inline">\(B\)</span> (<span class="math inline">\(10 &gt; 4\)</span>), so A* wrongly postpones the node that lies on the optimal path.</p>
+<p><strong>(d)</strong> On a 4-connected grid, every move changes the Manhattan distance by at most <span class="math inline">\(1\)</span> at a cost of <span class="math inline">\(1\)</span>, so Manhattan distance never overestimates and is admissible. On an 8-connected grid, a diagonal move reduces the Manhattan distance by <span class="math inline">\(2\)</span> at a cost of only <span class="math inline">\(\sqrt{2}\)</span>, so Manhattan distance can overestimate and is not admissible. Euclidean distance is admissible in both cases. A tighter admissible choice for 8-connected grids is the octile distance <span class="math inline">\(h = \max(\Delta x, \Delta y) + (\sqrt{2} - 1)\min(\Delta x, \Delta y)\)</span>, which is the exact cost on an empty grid.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3---configuration-space" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3---configuration-space">Exercise 3 - Configuration Space</h2>
+<p><strong>(a)</strong> A circular robot of radius <span class="math inline">\(0.5\)</span> m moves (translates only) in a 2D world containing the square obstacle <span class="math inline">\([2, 4] \times [1, 3]\)</span>. Describe the corresponding configuration space obstacle, and compute its area.</p>
+<p><strong>(b)</strong> Why is it useful to plan in configuration space rather than in the workspace?</p>
+<p><strong>(c)</strong> If the robot is not a disk but a triangle, and it can also rotate, what is the dimension of its configuration space? How does the shape of the configuration space obstacle change with the robot’s orientation?</p>
+<p><strong>(d)</strong> A robot arm has <span class="math inline">\(6\)</span> joints. You discretize each joint angle into <span class="math inline">\(N = 100\)</span> bins. How many nodes does the grid have? What does this suggest about using grid-based planners for this arm?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> The configuration space obstacle is the Minkowski sum of the square and a disk of radius <span class="math inline">\(0.5\)</span>: a rounded square spanning <span class="math inline">\([1.5, 4.5] \times [0.5, 3.5]\)</span>, with quarter-circle corners of radius <span class="math inline">\(0.5\)</span>. Its area is the original square (<span class="math inline">\(4\)</span>), plus four rectangles of size <span class="math inline">\(2 \times 0.5\)</span> along the edges (<span class="math inline">\(4\)</span>), plus four quarter circles (<span class="math inline">\(\pi \cdot 0.5^2 \approx 0.785\)</span>), for a total of about <span class="math inline">\(8.79\)</span> m<span class="math inline">\(^2\)</span>.</p>
+<p><strong>(b)</strong> In configuration space the robot becomes a single point, so collision checking reduces to testing whether a point lies inside a (dilated) obstacle, and standard graph search or sampling-based planners apply directly.</p>
+<p><strong>(c)</strong> The configuration is <span class="math inline">\((x, y, \theta)\)</span>, so the configuration space is 3D. For each fixed orientation <span class="math inline">\(\theta\)</span>, the configuration space obstacle is the Minkowski sum of the obstacle with the robot’s shape (reflected about its reference point) rotated by <span class="math inline">\(\theta\)</span>, so the cross-section changes shape as <span class="math inline">\(\theta\)</span> varies. This is why explicitly constructing configuration space obstacles is rarely done for robots with high-dimensional states.</p>
+<p><strong>(d)</strong> <span class="math inline">\(100^6 = 10^{12}\)</span> nodes, far too many to store or search. This combinatorial explosion is why sampling-based planners such as RRT and PRM are used for high-dimensional systems.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4---one-iteration-of-rrt" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4---one-iteration-of-rrt">Exercise 4 - One Iteration of RRT</h2>
+<p>An RRT for an omnidirectional robot in 2D currently has two nodes: the root <span class="math inline">\((0, 0)\)</span> and its child <span class="math inline">\((1, 0)\)</span>. The steering function moves at most a distance <span class="math inline">\(\eta = 1\)</span> along the straight line toward the sample. There is one circular obstacle centered at <span class="math inline">\((2, 1.5)\)</span> with radius <span class="math inline">\(0.5\)</span>.</p>
+<p><strong>(a)</strong> The sampler returns <span class="math inline">\(x_{\text{rand}} = (3, 1)\)</span>. Which node is nearest? What is the new node <span class="math inline">\(x_{\text{new}}\)</span>?</p>
+<p><strong>(b)</strong> Is the edge from the nearest node to <span class="math inline">\(x_{\text{new}}\)</span> collision-free? Is <span class="math inline">\(x_{\text{new}}\)</span> added to the tree?</p>
+<p><strong>(c)</strong> Brute-force nearest neighbor search examines every node. What is the total cost of nearest neighbor queries over <span class="math inline">\(n\)</span> RRT iterations? What data structure from lecture improves this, and to what?</p>
+<p><strong>(d)</strong> Lecture said that RRT exhibits a “Voronoi bias”. Explain what this means and why it makes the tree expand quickly into unexplored space.</p>
+<p><strong>(e)</strong> Why does sampling roll, pitch, and yaw uniformly not give a uniform distribution over 3D rotations?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> The distance to <span class="math inline">\((0, 0)\)</span> is <span class="math inline">\(\sqrt{10} \approx 3.16\)</span> and to <span class="math inline">\((1, 0)\)</span> is <span class="math inline">\(\sqrt{5} \approx 2.24\)</span>, so the nearest node is <span class="math inline">\((1, 0)\)</span>. The direction to the sample is <span class="math inline">\((2, 1)/\sqrt{5} \approx (0.894, 0.447)\)</span>, and the sample is farther than <span class="math inline">\(\eta\)</span>, so <span class="math inline">\(x_{\text{new}} = (1, 0) + 1 \cdot (0.894, 0.447) = (1.894, 0.447)\)</span>.</p>
+<p><strong>(b)</strong> The closest point on the segment from <span class="math inline">\((1, 0)\)</span> to <span class="math inline">\((1.894, 0.447)\)</span> to the obstacle center: projecting <span class="math inline">\((2, 1.5) - (1, 0) = (1, 1.5)\)</span> onto the unit direction gives <span class="math inline">\(t = 0.894 + 0.671 = 1.565 &gt; 1\)</span>, so the closest point is the endpoint <span class="math inline">\(x_{\text{new}}\)</span>. Its distance to the center is <span class="math inline">\(\|(0.106, -1.053)\| \approx 1.06 &gt; 0.5\)</span>, so the edge is collision-free and <span class="math inline">\(x_{\text{new}}\)</span> is added to the tree with parent <span class="math inline">\((1, 0)\)</span>.</p>
+<p><strong>(c)</strong> Iteration <span class="math inline">\(i\)</span> examines <span class="math inline">\(i\)</span> nodes, so the total is <span class="math inline">\(\sum_{i=1}^n i = O(n^2)\)</span>. A balanced kd-tree answers each query in <span class="math inline">\(O(\log n)\)</span> (in low dimensions), giving <span class="math inline">\(O(n\log n)\)</span> total. Locality-sensitive hashing is another option.</p>
+<p><strong>(d)</strong> Each node “owns” the Voronoi cell of points that are closer to it than to any other node. A uniform sample selects a node with probability proportional to the area of its Voronoi cell. Nodes on the frontier of the tree have large Voronoi cells extending into unexplored space, so they are extended most often, pulling the tree toward unexplored regions.</p>
+<p><strong>(e)</strong> The map from Euler angles to rotations is not volume-preserving. Near gimbal lock, many different Euler angle triples represent the same rotation, so uniform Euler angles oversample those rotations (the clustering near the “north pole” shown in lecture). Sampling quaternions with the formula from lecture gives a truly uniform distribution.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5---prm-vs.-rrt" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5---prm-vs.-rrt">Exercise 5 - PRM vs.&nbsp;RRT</h2>
+<p><strong>(a)</strong> When is a PRM preferable to an RRT, and vice versa?</p>
+<p><strong>(b)</strong> In the offline phase, the PRM stores a matrix <span class="math inline">\(D[i, j]\)</span> of shortest-path distances between all pairs of nodes. How much memory does this take for <span class="math inline">\(n = 10^4\)</span> nodes stored as 4-byte floats? How is a query between two new endpoints answered?</p>
+<p><strong>(c)</strong> Both PRMs and RRTs struggle with narrow passages. Explain why, using the probability that a uniform sample lands inside a passage whose area is <span class="math inline">\(0.1\%\)</span> of the free space.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> A PRM is built once and reused, so it is better for many queries in the same static environment (multi-query planning, e.g.&nbsp;a robot arm in a fixed workcell). An RRT grows a tree from a specific start, so it is better for a single query, for changing environments, and for systems with differential constraints, since it only needs to steer forward from existing nodes instead of connecting arbitrary pairs of states.</p>
+<p><strong>(b)</strong> <span class="math inline">\(n^2 = 10^8\)</span> entries <span class="math inline">\(\times\)</span> <span class="math inline">\(4\)</span> bytes <span class="math inline">\(= 400\)</span> MB. To answer a query <span class="math inline">\(A \to B\)</span>, connect <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> to nearby PRM nodes (found with a nearest-neighbor or range search, e.g.&nbsp;using a kd-tree) via collision-free edges. This adds one row and one column to <span class="math inline">\(D\)</span>. The shortest path is then <span class="math inline">\(\min_{i, j}[d(A, i) + D[i,j] + d(j, B)]\)</span> over the nodes <span class="math inline">\(i\)</span> connected to <span class="math inline">\(A\)</span> and <span class="math inline">\(j\)</span> connected to <span class="math inline">\(B\)</span>.</p>
+<p><strong>(c)</strong> A sample lands in the passage with probability <span class="math inline">\(p = 0.001\)</span>, so on average <span class="math inline">\(1000\)</span> samples are needed per sample in the passage, and several consecutive samples in the passage are needed to connect through it. The probability of not getting even one sample in the passage after <span class="math inline">\(n\)</span> samples is <span class="math inline">\((1 - p)^n\)</span>, e.g.&nbsp;about <span class="math inline">\(37\%\)</span> after <span class="math inline">\(1000\)</span> samples. Most of the computational effort goes into the large open regions.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-6---visibility-graphs-and-path-smoothing" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6---visibility-graphs-and-path-smoothing">Exercise 6 - Visibility Graphs and Path Smoothing</h2>
+<p><strong>(a)</strong> Why is the shortest path in a 2D polygonal environment always contained in the visibility graph? What practical problem does lecture point out with this shortest path?</p>
+<p><strong>(b)</strong> Consider the smoothing cost from lecture. To keep the path attached to the goal, we also include the last segment, <span class="math inline">\(\|\mathbf{x}_{\text{dest}} - \mathbf{y}_N\|^2\)</span>, in the length term. For a path with a single intermediate point, <span class="math inline">\(\mathbf{x}_{\text{src}} = (0, 0)\)</span>, <span class="math inline">\(\mathbf{x}_1 = (1, 1)\)</span>, <span class="math inline">\(\mathbf{x}_{\text{dest}} = (2, 0)\)</span>, the cost is <span class="math display">\[
+f(\mathbf{y}_1) = \|\mathbf{y}_1 - \mathbf{x}_1\|^2 + \alpha\left(\|\mathbf{y}_1 - \mathbf{x}_{\text{src}}\|^2 + \|\mathbf{x}_{\text{dest}} - \mathbf{y}_1\|^2\right).
+\]</span> Find the minimizer <span class="math inline">\(\mathbf{y}_1\)</span> as a function of <span class="math inline">\(\alpha\)</span>. Evaluate it for <span class="math inline">\(\alpha = 0\)</span>, <span class="math inline">\(\alpha = 1\)</span>, and <span class="math inline">\(\alpha \to \infty\)</span>, and interpret the results.</p>
+<p><strong>(c)</strong> Why might the smoothed path need to be checked for collisions again?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> A shortest path in a polygonal environment is made of straight segments that only bend at obstacle vertices (pulling a string tight around obstacles). Each segment connects two mutually visible points, so it is an edge of the visibility graph. The problem is that this path touches obstacle corners and runs along edges, leaving no safety margin, so in practice the obstacles should be dilated (e.g., by the robot’s radius plus a margin) before building the graph.</p>
+<p><strong>(b)</strong> Setting the gradient to zero: <span class="math display">\[
+2(\mathbf{y}_1 - \mathbf{x}_1) + 2\alpha(\mathbf{y}_1 - \mathbf{x}_{\text{src}}) - 2\alpha(\mathbf{x}_{\text{dest}} - \mathbf{y}_1) = 0
+\;\Rightarrow\;
+\mathbf{y}_1 = \frac{\mathbf{x}_1 + \alpha(\mathbf{x}_{\text{src}} + \mathbf{x}_{\text{dest}})}{1 + 2\alpha} = \frac{(1 + 2\alpha,\; 1)}{1 + 2\alpha}.
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\alpha = 0\)</span>: <span class="math inline">\(\mathbf{y}_1 = (1, 1)\)</span>, i.e.&nbsp;the original path is unchanged.</li>
+<li><span class="math inline">\(\alpha = 1\)</span>: <span class="math inline">\(\mathbf{y}_1 = (1, 1/3)\)</span>, a compromise between the original path and a short path.</li>
+<li><span class="math inline">\(\alpha \to \infty\)</span>: <span class="math inline">\(\mathbf{y}_1 \to (1, 0)\)</span>, the midpoint of the straight line from start to goal (the shortest path, ignoring the original one).</li>
+</ul>
+<p><strong>(c)</strong> Smoothing pulls the path away from the planner’s collision-free waypoints toward a straighter line, which can cut corners through obstacles. The smoothed path should be checked for collisions, and smoothing should stop (or be constrained) where it comes too close to obstacles.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/csc477\.github\.io\/2026F_website");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Florian Shkurti</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/csc477/2026F_website/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with ❤️, <a href="https://quarto.org/">Quarto</a> and inspiration from <a href="https://sta210-s22.github.io/website/">STA210</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
