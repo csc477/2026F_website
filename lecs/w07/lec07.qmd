@@ -686,7 +686,7 @@ $$p(x \in R) = c$$
 
 ::: {.columns}
 ::: {.column}
-$p(|x - \mu| < \sigma) \approx 0.67$
+$p(|x - \mu| < \sigma) \approx 0.68$
 
 $p(|x - \mu| < 2\sigma) \approx 0.95$
 
@@ -723,7 +723,7 @@ $$\text{Cov}[X, Y] = E[XY] - E[X]E[Y]$$
 $$\begin{align}
 & \text{Var}[X] = \text{Cov}[X] = \text{Cov}[X, X] = E[X^2] - E[X]^2 \\
 & \text{Cov}[AX + b] = A\text{Cov}[X]A^T \\
-& \text{Cov}[X + Y] = \text{Cov}[X] + \text{Cov}[Y] - 2\text{Cov}[X, Y]
+& \text{Cov}[X + Y] = \text{Cov}[X] + \text{Cov}[Y] + \text{Cov}[X, Y] + \text{Cov}[Y, X]
 \end{align}$$
 
 ## Covariance Matrix

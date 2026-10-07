@@ -1,0 +1,181 @@
+---
+title: "Week 3 Optional Exercises: PID Control and Potential Fields"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 3](/lecs/w03/lec03.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+## Exercise 1 - Why P-Control Oscillates
+
+A car drives at constant speed $v$ along a straight line (the x-axis) and we control its angular velocity $\omega$. Let $y$ be the cross-track error (CTE), i.e. the signed distance to the line, and $\theta$ the heading relative to the line. The dynamics are $\dot{y} = v\sin\theta$ and $\dot\theta = \omega$.
+
+**(a)** Assume $\theta$ stays small so that $\sin\theta \approx \theta$. Show that $\ddot{y} \approx v\,\omega$.
+
+**(b)** Use the P-controller $\omega = K_p e$ with error $e = 0 - y = -y$. Derive the resulting differential equation for $y$ and describe its solution. Does the car reach the line? Does it overshoot? Does it settle?
+
+**(c)** Now use the PD-controller $\omega = K_p e + K_d \dot{e}$. Derive the new differential equation. For $v = 2$ m/s and $K_p = 0.5$, what value of $K_d$ makes the system critically damped? *Hint:* $\ddot{y} + 2\zeta\omega_n\dot{y} + \omega_n^2 y = 0$ is critically damped when $\zeta = 1$.
+
+**(d)** Why did lecture say that a very small $K_p$ is not a good fix for the oscillations?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Differentiating $\dot{y} \approx v\theta$ gives $\ddot{y} \approx v\dot\theta = v\omega$.
+
+**(b)** $\ddot{y} = -vK_p\,y$. This is a harmonic oscillator with angular frequency $\sqrt{vK_p}$, with solutions $y(t) = A\cos(\sqrt{vK_p}\,t + \varphi)$. The car does reach the line, but it always overshoots, and in this idealized model it oscillates forever without settling. The controller only reacts to the current error, so it is still turning toward the line when it crosses it.
+
+**(c)** With $e = -y$ we get $\dot{e} = -\dot{y}$, so $\omega = -K_p y - K_d\dot{y}$ and
+$$
+\ddot{y} + vK_d\,\dot{y} + vK_p\,y = 0.
+$$
+Matching terms, $\omega_n = \sqrt{vK_p} = 1$ rad/s and $2\zeta\omega_n = vK_d$. Critical damping ($\zeta = 1$) requires $K_d = 2\omega_n / v = 2\sqrt{K_p/v} = 1$. The derivative term acts like friction: it predicts that the error is about to shrink and reduces the turning rate before the line is reached.
+
+**(d)** A small $K_p$ lowers the oscillation frequency but in this model does not add damping, and the car turns very slowly, so it takes a long time to converge to the line and reacts poorly to curves.
+:::
+
+## Exercise 2 - Steady-State Error and the Integral Term
+
+The car's wheels are misaligned, which adds a constant bias $b$ to the turning rate: $\dot\theta = \omega + b$. Use the small-angle model from Exercise 1, so $\ddot{y} = v(\omega + b)$.
+
+**(a)** With the PD-controller from Exercise 1(c), find the steady-state cross-track error $y_\infty$. Evaluate it for $b = 0.05$ rad/s and $K_p = 0.5$.
+
+**(b)** Add an integral term $K_i\int_0^t e(\tau)\,d\tau$. Argue that the steady-state error must now be zero.
+
+**(c)** Explain integrator windup, using the example of a car whose maximum turning rate is $\omega_{\max}$ and which starts $10$ m away from the line. Give two of the heuristic fixes from lecture.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** In steady state $y$ is constant, so $\dot{y} = \ddot{y} = 0$. Then $0 = v(-K_p y_\infty + b)$, giving $y_\infty = b/K_p = 0.05/0.5 = 0.1$ m. The car drives parallel to the line, offset by $10$ cm, where the controller's turning command exactly cancels the bias.
+
+**(b)** In steady state the control $\omega_\infty$ must be constant (it must equal $-b$). If the error were a nonzero constant $e_\infty$, the integral term would grow like $K_i e_\infty t$ and the control could not be constant. So the only possible steady state has $e_\infty = 0$, and the integral term supplies the constant $-b$ by itself.
+
+**(c)** Starting $10$ m away, the controller asks for a turning rate larger than $\omega_{\max}$, so the actuator saturates. While saturated, the error decreases slowly, but the integral keeps accumulating a large value. When the car finally reaches the line, the accumulated integral is still large and keeps commanding a turn, so the car overshoots significantly and must accumulate an opposite error before the integral unwinds. Fixes from lecture: limit (clamp) the integral term, stop integrating while the command is saturated, or reduce the integral gain.
+:::
+
+## Exercise 3 - Implementing a Discrete PID
+
+**(a)** A sensor reading jumps from $0$ to $1$ at time step $0$ and stays there. How many steps does an exponential filter $\hat{x}_t = \alpha\hat{x}_{t-1} + (1-\alpha)x_t$ with $\alpha = 0.9$ need to reach $95\%$ of the new value? How many steps does a moving average with window $k = 10$ need to reach $100\%$?
+
+**(b)** Write a Python class `PID` with a method `step(error, dt)` that returns a control. It should approximate the integral by a sum, use a filtered finite difference for the derivative, clamp the output to $[-u_{\max}, u_{\max}]$, and stop integrating while the output is saturated.
+
+**(c)** Using the Ziegler-Nichols table from lecture, you find that a P-controller oscillates consistently at $K_u = 2$ with period $T_u = 1.5$ s. Compute $K_p$, $T_i$, $T_d$ for the classic PID, and convert them to the gains $K_i$ and $K_d$ in the form $\omega = K_p e + K_d\dot{e} + K_i\int e$.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Starting from $\hat{x}_{-1} = 0$, after $n$ steps $\hat{x} = 1 - \alpha^n$. We need $0.9^n \le 0.05$, i.e. $n \ge \ln 0.05 / \ln 0.9 \approx 28.4$, so $29$ steps. The moving average increases by $1/10$ per step and reaches $1$ after $10$ steps. Both filters reduce noise at the cost of delay, and delay in the measured error makes a controller more prone to oscillation.
+
+**(b)**
+
+```python
+class PID:
+    def __init__(self, kp, ki, kd, u_max, alpha=0.8):
+        self.kp, self.ki, self.kd = kp, ki, kd
+        self.u_max = u_max
+        self.alpha = alpha
+        self.integral = 0.0
+        self.prev_error = None
+        self.d_error = 0.0
+
+    def step(self, error, dt):
+        if self.prev_error is not None:
+            raw = (error - self.prev_error) / dt
+            self.d_error = self.alpha * self.d_error + (1 - self.alpha) * raw
+        self.prev_error = error
+
+        candidate_integral = self.integral + error * dt
+        u = self.kp * error + self.ki * candidate_integral + self.kd * self.d_error
+
+        if abs(u) > self.u_max:
+            u = max(-self.u_max, min(self.u_max, u))
+        else:
+            self.integral = candidate_integral
+        return u
+```
+
+The integral is only updated when the output is not saturated, which prevents windup.
+
+**(c)** Classic PID: $K_p = 0.6K_u = 1.2$, $T_i = T_u/2 = 0.75$ s, $T_d = T_u/8 = 0.1875$ s. Since $\omega = K_p\left[e + T_d\dot{e} + \frac{1}{T_i}\int e\right]$, we have $K_i = K_p/T_i = 1.6$ and $K_d = K_pT_d = 0.225$.
+:::
+
+## Exercise 4 - Potential Fields in 1D
+
+An omnidirectional robot moves along the x-axis. The goal is at $x_{\text{goal}} = 4$ and a point obstacle is at $x_{\text{obs}} = 2$. Use the potentials from lecture with $\alpha = \beta = 1$ and influence radius $r = 1$:
+$$
+U_{\text{att}}(x) = d(x, x_{\text{goal}})^2, \qquad
+U_{\text{rep}}(x) = \begin{cases} \left(\frac{1}{d(x,x_{\text{obs}})} - \frac{1}{r}\right)^2 & d < r \\ 0 & d \ge r \end{cases}
+$$
+
+**(a)** Derive $F_{\text{rep}}(x) = -\nabla_x U_{\text{rep}}(x)$ for $d < r$ and check that it matches the expression from lecture. What is $\nabla_x d(x, x_{\text{obs}})$ for a point obstacle in general (in any dimension)?
+
+**(b)** The robot starts at $x = 0$. Compute the total force at $x = 1.2$ and at $x = 1.5$.
+
+**(c)** Use (b) to argue that the robot gets stuck before reaching the obstacle. Find (numerically) the point where it gets stuck.
+
+**(d)** The robot is now in 2D and the goal is far away, at distance $100$ m. What problem does the quadratic attractive potential cause? What alternative did lecture propose, and what force does it produce?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** By the chain rule,
+$$
+\nabla_x U_{\text{rep}} = 2\left(\frac{1}{d} - \frac{1}{r}\right)\cdot\left(-\frac{1}{d^2}\right)\nabla_x d,
+\quad\text{so}\quad
+F_{\text{rep}} = 2\left(\frac{1}{d} - \frac{1}{r}\right)\frac{\nabla_x d}{d^2},
+$$
+which matches lecture. For a point obstacle, $d = \|x - x_{\text{obs}}\|$ and $\nabla_x d = \frac{x - x_{\text{obs}}}{\|x - x_{\text{obs}}\|}$, the unit vector pointing away from the obstacle. So the repulsive force always pushes away from the obstacle, and it grows without bound as $d \to 0$.
+
+**(b)** For $x < 2$, $d = 2 - x$ and $\nabla_x d = -1$. Also $F_{\text{att}} = -2(x - 4) = 2(4 - x)$.
+
+- At $x = 1.2$: $d = 0.8$, $F_{\text{att}} = 5.6$, $F_{\text{rep}} = -2(1.25 - 1)/0.64 \approx -0.78$, so $F \approx 4.82$ (toward the goal).
+- At $x = 1.5$: $d = 0.5$, $F_{\text{att}} = 5$, $F_{\text{rep}} = -2(2 - 1)/0.25 = -8$, so $F = -3$ (away from the goal).
+
+**(c)** The total force is continuous and changes sign between $x = 1.2$ and $x = 1.5$, so there is a point in between where it is zero. Near that point the force pushes the robot toward it from both sides, so it is a local minimum of $U_{\text{total}}$. Setting $F = 0$ with $d = 2 - x$ gives $(1/d - 1)/d^2 = 2 + d$, i.e. $1 - d = 2d^3 + d^4$. Bisection gives $d \approx 0.557$, i.e. $x \approx 1.44$. In 1D the robot cannot go around the obstacle, so it is stuck there forever.
+
+**(d)** The attractive force $-2(x - x_{\text{goal}})$ has magnitude $200$, which dwarfs any repulsive force and can drive the robot into obstacles (or exceed its actuator limits). Lecture suggested normalizing the force, or using $U_{\text{att}} = d(x, x_{\text{goal}})$, which gives the unit-magnitude force $F_{\text{att}} = -\frac{x - x_{\text{goal}}}{d(x, x_{\text{goal}})}$.
+:::
+
+## Exercise 5 - Local Minima and Navigation Functions
+
+**(a)** Sketch a 2D environment with a U-shaped obstacle that causes a robot using potential fields to get stuck. Mark the location of the local minimum.
+
+**(b)** Lecture gave two simple ways to escape a local minimum. Name them and describe a situation where each fails.
+
+**(c)** What is a navigation function? Why are navigation functions rarely used in practice?
+
+**(d)** Besides local minima, lecture listed unstable oscillations as a drawback of potential fields. Describe a scenario in which they occur.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Put the goal on the far side of a "U" whose opening faces the robot. The robot enters the U, pulled by the attractive force. Deep inside, the repulsive forces from the three walls balance the attractive force pulling it through the back wall, producing a local minimum near the closed end of the U.
+
+**(b)** (1) Random moves: they work for shallow minima but rarely escape a deep U-shaped trap, since the robot falls back into the same minimum. (2) Backing up the way the robot came: this requires remembering the path, and the robot may fall back into the same minimum if it does not also change its strategy (e.g., by following the wall).
+
+**(c)** A navigation function is a potential $\phi(x)$ with a single global minimum at the goal and no other local minima, so every non-goal state has a neighbor with lower potential and gradient descent always reaches the goal. Computing one generally requires global knowledge of the environment and is about as hard as planning a path to the goal, which removes the main appeal of potential fields (they are cheap and local).
+
+**(d)** In a narrow corridor, the repulsive forces from the two walls push the robot back and forth. At high speed, or with large time steps, the robot overshoots the center line each time, causing oscillations that can grow and lead to collisions. Sudden changes, such as passing the end of a wall, can also cause abrupt jumps in force.
+:::
+
+## Exercise 6 - Dynamic Window Approach
+
+A robot at the origin, facing the goal along the x-axis, uses DWA. It samples four controls and simulates each for $1$ s:
+
+| Control | $(v, \omega)$ | Collision? | Heading error to goal | Clearance (m) |
+|:---:|:---:|:---:|:---:|:---:|
+| A | $(1.0, 0.0)$ | yes | $0°$ | $0.0$ |
+| B | $(0.8, 0.4)$ | no | $23°$ | $0.6$ |
+| C | $(0.5, -0.6)$ | no | $34°$ | $1.2$ |
+| D | $(0.2, 0.0)$ | no | $0°$ | $0.1$ |
+
+**(a)** Use the score $S = 1.0 \cdot \text{heading} + 1.0 \cdot \text{clearance} + 1.0 \cdot v$, where $\text{heading} = 1 - |\text{heading error}|/180°$ and clearance is capped at $1$ m. Which control does DWA pick?
+
+**(b)** How does the choice change if the weight on clearance is increased to $2$?
+
+**(c)** Compared to potential fields, why does DWA handle the robot's motion constraints better? What does it still share with potential fields?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** A is eliminated because it leads to a collision. For the others:
+
+- B: $(1 - 23/180) + 0.6 + 0.8 \approx 0.872 + 0.6 + 0.8 = 2.272$.
+- C: $(1 - 34/180) + 1.0 + 0.5 \approx 0.811 + 1.0 + 0.5 = 2.311$.
+- D: $1 + 0.1 + 0.2 = 1.3$.
+
+DWA picks C.
+
+**(b)** B: $0.872 + 1.2 + 0.8 = 2.872$. C: $0.811 + 2.0 + 0.5 = 3.311$. D: $1 + 0.2 + 0.2 = 1.4$. C is still chosen, now by a larger margin.
+
+**(c)** DWA only samples controls that the robot can actually execute (within its velocity and acceleration limits) and forward-simulates the robot's dynamics, so the resulting trajectories are feasible. Potential fields produce a force direction that a nonholonomic robot may not be able to follow. Like potential fields, DWA is a local, reactive method: it only looks a short time ahead, so it can still get stuck in dead ends unless it follows a global navigation plan.
+:::

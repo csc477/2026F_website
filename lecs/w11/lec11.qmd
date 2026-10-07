@@ -266,7 +266,7 @@ $$\left. \rule{0pt}{1cm} \right\} p(z_t|x_t^{[m]}) = \mathcal{N}(z_t; d_{1:4}, \
 :::{.semi-tiny-font .absolute bottom="30" left=200}
 Q: What is the probability of the actual measurement given the state hypothesized by the particle?
 
-A: $p(\bar{z}_t | x_t^{[m]}) = \mathcal{N}(\bar{z}_t; d_{1:4}, \sigma^2 \mathbb{I}_4) = \eta \exp(-\|\bar{z}_t - d_{1:4}\|^2 / \sigma^2)$
+A: $p(\bar{z}_t | x_t^{[m]}) = \mathcal{N}(\bar{z}_t; d_{1:4}, \sigma^2 \mathbb{I}_4) = \eta \exp(-\|\bar{z}_t - d_{1:4}\|^2 / (2\sigma^2))$
 :::
 
 ## How to update particle weights after an observation
@@ -275,7 +275,7 @@ A: $p(\bar{z}_t | x_t^{[m]}) = \mathcal{N}(\bar{z}_t; d_{1:4}, \sigma^2 \mathbb{
 :::{.semi-tiny-font .absolute bottom="30" left=200}
 Q: What is the probability of the actual measurement given the state hypothesized by the particle?
 
-A: $p(\bar{z}_{t}|x_{t}^{[m]}) = \prod_{i=1}^{4} p(\bar{r}_{i}|x_{t}^{[m]}) = \prod_{i=1}^{4} \mathcal{N}(\bar{r}_{i}; d_{i}, \sigma^{2}) = \prod_{i=1}^{4} \eta \exp(-(\bar{r}_{i}-d_{i})/\sigma^{2})$
+A: $p(\bar{z}_{t}|x_{t}^{[m]}) = \prod_{i=1}^{4} p(\bar{r}_{i}|x_{t}^{[m]}) = \prod_{i=1}^{4} \mathcal{N}(\bar{r}_{i}; d_{i}, \sigma^{2}) = \prod_{i=1}^{4} \eta \exp(-(\bar{r}_{i}-d_{i})^{2}/(2\sigma^{2}))$
 :::
 
 :::{.semi-tiny-font .red .absolute bottom="30" left=-50}
@@ -489,7 +489,7 @@ $\mathbf{\Downarrow}$
 
 ## How to address particle deprivation
 
-- Idea #1: don’t resample when only a few particles contribute
+- Idea #1: don’t resample at every step, only when a few particles carry most of the weight
 
 - Idea #2: inject random particles during resampling
 
@@ -497,18 +497,18 @@ $\mathbf{\Downarrow}$
 
 ## How to address particle deprivation
 
--   Idea #1: don’t resample when only a few particles contribute
+-   Idea #1: don’t resample at every step, only when a few particles carry most of the weight
     -   Effective sample size: $N_{\text{eff}} = \frac{1}{\sum_{i=1}^{N}w_{i}^{2}}$
     -   When all particles have equal, normalized weights (1/N) then $N_{\text{eff}} = N$
-    -   When a single particle carries the entire weight then $N_{\text{eff}} = 1/N$
+    -   When a single particle carries the entire weight then $N_{\text{eff}} = 1$
     -   and we have loss of particle diversity.
-    -   Resample only when $N_{\text{eff}} > N_{\text{thresh}}$
+    -   Resample only when $N_{\text{eff}} < N_{\text{thresh}}$
 -   Idea #2: inject random particles during resampling
 -   Idea #3: increase the number of particles (may be impractical depending on the computational complexity of the system)
 
 ## How to address particle deprivation
 
--   Idea #1: don’t resample when only a few particles contribute
+-   Idea #1: don’t resample at every step, only when a few particles carry most of the weight
 -   Idea #2: inject random particles during resampling
     -   A small percentage of the particles’ states should be set randomly
         -   Pro: simple to code, reduces (but does not fix) particle deprivation

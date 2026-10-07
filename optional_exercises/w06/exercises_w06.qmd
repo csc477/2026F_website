@@ -1,0 +1,203 @@
+---
+title: "Week 6 Optional Exercises: Maps, Map Alignment, and Occupancy Grid Mapping"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 6](/lecs/w06/lec06.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+## Exercise 1 - Occupancy Grids, Quadtrees, and Octrees
+
+**(a)** A robot maps a $100 \times 100$ m building with a 2D occupancy grid at $5$ cm resolution, storing one byte per cell. How much memory does the map need? How much would a 3D grid of the same area, $10$ m tall, at the same resolution need?
+
+**(b)** Consider an $8 \times 8$ binary grid (rows and columns indexed $0$ to $7$) that is empty except for a $2 \times 2$ occupied block in the corner, at rows $0$-$1$ and columns $0$-$1$. Build the quadtree (subdividing down to single cells if needed). How many nodes does it have?
+
+**(c)** Now move the same $2 \times 2$ block to rows $3$-$4$ and columns $3$-$4$. How many nodes does the quadtree have now? Which of the two problems with quadtrees and octrees mentioned in lecture does this illustrate?
+
+**(d)** Lecture said that occupancy grids support $O(1)$ lookup and update, whereas a quadtree query can be $O(n)$ in the worst case. Why?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** The 2D grid has $2000 \times 2000 = 4 \times 10^6$ cells, i.e. $4$ MB. The 3D grid has $2000 \times 2000 \times 200 = 8 \times 10^8$ cells, i.e. $800$ MB, even though most of the volume is empty space. This is why occupancy grids do not scale well to higher dimensions, and why octrees (e.g., OctoMap) are popular for 3D mapping.
+
+**(b)** The root ($8 \times 8$) is partially occupied, so it has $4$ children ($4 \times 4$). The top-left $4 \times 4$ quadrant is partially occupied, so it has $4$ children ($2 \times 2$). Its top-left $2 \times 2$ child is fully occupied, so it is a leaf. The other quadrants are fully empty leaves. Total: $1 + 4 + 4 = 9$ nodes.
+
+**(c)** The block now straddles the center of the grid, so each $4 \times 4$ quadrant contains exactly one occupied cell. Each quadrant is partial and has $4$ children of size $2 \times 2$, and in each quadrant the $2 \times 2$ child containing the occupied cell is partial and has $4$ single-cell children. Total: $1 + 4 + 4 \times (4 + 4) = 37$ nodes. Shifting the obstacle by a few cells quadrupled the size of the tree. This is Problem 2 from lecture: quadtrees and octrees are sensitive to small changes in the location of obstacles.
+
+**(d)** In a grid, the cell containing a point is found directly by integer division of its coordinates, so lookup is a single array access. A quadtree must be traversed from the root to a leaf. Because the tree is not balanced, a query in a region with many fine subdivisions may have to traverse a long path (in the worst case proportional to the number of nodes).
+:::
+
+## Exercise 2 - Signed Distance Functions
+
+A 2D world contains a circular obstacle with center $\mathbf{c} = (3, 0.5)$ and radius $1$, and a wall that occupies the half-plane $y \ge 2$. Use the convention that the signed distance function (SDF) is positive in free space and negative inside obstacles.
+
+**(a)** Write down the SDF of the circle and the SDF of the wall. How do you combine them into the SDF of the whole world?
+
+**(b)** Evaluate the SDF and its gradient at $\mathbf{x} = (1, 0.5)$.
+
+**(c)** A disk-shaped robot of radius $0.8$ has its center at $\mathbf{x}$. Is it in collision? How does the SDF make collision checking easy for disk-shaped robots?
+
+**(d)** What is $\|\nabla \text{SDF}(\mathbf{x})\|$ wherever the gradient exists? How could the SDF be used together with the potential fields from Lecture 3?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $\text{SDF}_{\text{circle}}(\mathbf{x}) = \|\mathbf{x} - \mathbf{c}\| - 1$ and $\text{SDF}_{\text{wall}}(\mathbf{x}) = 2 - y$. The distance to the closest obstacle is the minimum over all obstacles: $\text{SDF}(\mathbf{x}) = \min(\text{SDF}_{\text{circle}}(\mathbf{x}), \text{SDF}_{\text{wall}}(\mathbf{x}))$.
+
+**(b)** $\text{SDF}_{\text{circle}}(1, 0.5) = 2 - 1 = 1$ and $\text{SDF}_{\text{wall}}(1, 0.5) = 1.5$, so $\text{SDF} = 1$, attained by the circle. The gradient is the gradient of the active term: $\frac{\mathbf{x} - \mathbf{c}}{\|\mathbf{x} - \mathbf{c}\|} = (-1, 0)$, pointing directly away from the circle.
+
+**(c)** The robot is in collision if and only if the SDF at its center is less than its radius. Since $1 > 0.8$, it is collision-free, with $0.2$ m of clearance. Once the SDF has been computed (e.g., on a grid), each collision check is a single lookup, for any obstacle shape.
+
+**(d)** $\|\nabla\text{SDF}\| = 1$: moving a small distance directly away from the nearest obstacle increases the distance by the same amount. The SDF directly provides the quantities $d(x, \text{obs})$ and $\nabla_x d(x, \text{obs})$ needed by the repulsive potential and force in Lecture 3, for arbitrary obstacle shapes.
+:::
+
+## Exercise 3 - Topological Maps and Homotopy
+
+**(a)** In a Generalized Voronoi Graph (GVG) in the plane, what is the defining property of the points on an edge? What about the nodes? Why is following GVG edges a "safe" way to navigate?
+
+**(b)** Lecture said that the GVG is sensitive to small changes in the obstacle boundary. Give an example.
+
+**(c)** In a world with no obstacles, show that any two paths $\tau_1, \tau_2 : [0, T] \to \R^2$ with the same endpoints are homotopic, by writing down an explicit homotopy $H(s, t)$.
+
+**(d)** A single circular obstacle lies between the start and the goal. Describe two paths that are not homotopic. How could the winding angle of a path around the obstacle be used to tell homotopy classes apart?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Points on GVG edges are equidistant from their two closest obstacles. Nodes are points equidistant from three or more obstacles, where edges meet. Following the edges maximizes the clearance from the nearest obstacles, which produces a very safe roadmap that avoids obstacles as much as possible.
+
+**(b)** Adding a small bump to a straight wall creates a new GVG branch that leads toward the bump, because points near the bump are now equidistant from two different parts of the boundary. Small amounts of sensor noise on the boundary can therefore create many spurious branches.
+
+**(c)** $H(s, t) = (1 - s)\,\tau_1(t) + s\,\tau_2(t)$. It is continuous, $H(0, t) = \tau_1(t)$, $H(1, t) = \tau_2(t)$, and the endpoints are fixed for all $s$ because $\tau_1$ and $\tau_2$ share them. With no obstacles, none of the intermediate paths can collide, so the paths are homotopic.
+
+**(d)** A path that passes to the left of the obstacle and a path that passes to the right cannot be continuously deformed into each other without crossing the obstacle, so they are in different homotopy classes. The winding angle (the total signed angle swept by the vector from the obstacle center to a point on the path, as the point moves along the path) differs between them: for the same endpoints, paths passing on opposite sides have winding angles that differ by $2\pi$, and paths that loop around the obstacle $k$ extra times differ by $2\pi k$. Paths in the same homotopy class have the same winding angle.
+:::
+
+## Exercise 4 - Scan Alignment with Known Correspondences
+
+Consider three 2D points $\mathbf{q}_1 = (0, 0)$, $\mathbf{q}_2 = (1, 0)$, $\mathbf{q}_3 = (0, 1)$ and their corresponding points $\mathbf{p}_1 = (2, 1)$, $\mathbf{p}_2 = (2, 2)$, $\mathbf{p}_3 = (1, 1)$.
+
+**(a)** Follow the five steps from lecture to compute $R^*$ and $\mathbf{t}^*$ that minimize $\frac{1}{N}\sum_i\|\mathbf{p}_i - (R\mathbf{q}_i + \mathbf{t})\|^2$. *Hint:* for the SVD step, it helps to notice that $W = R\,S$ for a rotation $R$ and a symmetric matrix $S$.
+
+**(b)** Verify your answer by checking that $R^*\mathbf{q}_i + \mathbf{t}^* = \mathbf{p}_i$ for all $i$.
+
+**(c)** In rare cases (e.g., with very noisy or degenerate data), $UV^\T$ has determinant $-1$. What does that mean, and how is it usually fixed?
+
+**(d)** Write a numpy function `align(P, Q)` that implements the closed-form solution for $N \times d$ arrays of corresponding points.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Step 1: $\boldsymbol{\mu}_q = (\frac{1}{3}, \frac{1}{3})$ and $\boldsymbol{\mu}_p = (\frac{5}{3}, \frac{4}{3})$.
+
+Step 2: $\bar{\mathbf{q}}_i = (-\frac{1}{3}, -\frac{1}{3}), (\frac{2}{3}, -\frac{1}{3}), (-\frac{1}{3}, \frac{2}{3})$ and $\bar{\mathbf{p}}_i = (\frac{1}{3}, -\frac{1}{3}), (\frac{1}{3}, \frac{2}{3}), (-\frac{2}{3}, -\frac{1}{3})$.
+
+Step 3: Summing the outer products,
+$$
+W = \sum_i \bar{\mathbf{p}}_i\bar{\mathbf{q}}_i^\T = \begin{bmatrix} \frac{1}{3} & -\frac{2}{3} \\ \frac{2}{3} & -\frac{1}{3} \end{bmatrix}.
+$$
+
+Step 4: Note that $\bar{\mathbf{p}}_i = R_{90}\bar{\mathbf{q}}_i$ with $R_{90} = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$, so $W = R_{90}S$ with $S = \sum_i\bar{\mathbf{q}}_i\bar{\mathbf{q}}_i^\T = \begin{bmatrix} \frac{2}{3} & -\frac{1}{3} \\ -\frac{1}{3} & \frac{2}{3} \end{bmatrix}$. $S$ has eigenvalues $1$ and $\frac{1}{3}$ with eigenvectors $\frac{1}{\sqrt{2}}(1, -1)$ and $\frac{1}{\sqrt{2}}(1, 1)$, so $S = V\Sigma V^\T$ with
+$$
+V = \frac{1}{\sqrt{2}}\begin{bmatrix} 1 & 1 \\ -1 & 1 \end{bmatrix}, \quad \Sigma = \diag(1, \tfrac{1}{3}), \quad U = R_{90}V = \frac{1}{\sqrt{2}}\begin{bmatrix} 1 & -1 \\ 1 & 1 \end{bmatrix}.
+$$
+
+Step 5: $W$ has full rank, so $R^* = UV^\T = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$ (a $90°$ rotation), and $\mathbf{t}^* = \boldsymbol{\mu}_p - R^*\boldsymbol{\mu}_q = (\frac{5}{3}, \frac{4}{3}) - (-\frac{1}{3}, \frac{1}{3}) = (2, 1)$.
+
+**(b)** $R^*(0,0) + (2,1) = (2,1)$, $R^*(1,0) + (2,1) = (0,1) + (2,1) = (2,2)$, and $R^*(0,1) + (2,1) = (-1,0) + (2,1) = (1,1)$. The alignment is exact, so the error is zero.
+
+**(c)** A determinant of $-1$ means $UV^\T$ is a reflection, not a rotation. The standard fix is $R^* = U\,\diag(1, \ldots, 1, \det(UV^\T))\,V^\T$, which flips the sign associated with the smallest singular value and gives the best proper rotation.
+
+**(d)**
+
+```python
+import numpy as np
+
+def align(P, Q):
+    mu_p, mu_q = P.mean(axis=0), Q.mean(axis=0)
+    W = (P - mu_p).T @ (Q - mu_q)
+    U, _, Vt = np.linalg.svd(W)
+    D = np.eye(P.shape[1])
+    D[-1, -1] = np.sign(np.linalg.det(U @ Vt))
+    R = U @ D @ Vt
+    t = mu_p - R @ mu_q
+    return R, t
+```
+:::
+
+## Exercise 5 - Iterative Closest Point
+
+**(a)** Write the ICP algorithm as pseudocode, using the closed-form alignment from Exercise 4 as a subroutine.
+
+**(b)** Why is ICP only guaranteed to converge to a local minimum? Describe a situation where it converges to the wrong alignment.
+
+**(c)** A robot drives down a long, featureless corridor and aligns consecutive laser scans with ICP. Which component of the motion is poorly determined, and why?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+
+```
+R, t = initial guess (e.g., from odometry)
+repeat:
+    for each source point q_i:
+        p_i = nearest neighbor of (R q_i + t) in the target scan   # e.g. with a kd-tree
+    R, t = align({p_i}, {q_i})                                     # closed form
+    compute error(R, t)
+until the error no longer decreases significantly
+```
+
+**(b)** Each iteration decreases the error, but the nearest-neighbor correspondences are only correct if the current estimate is already close. With a poor initial guess (e.g., a large rotation, or a symmetric environment such as a square room), points get associated with the wrong neighbors and ICP converges to an incorrect alignment where the error is locally minimal. A good initial guess, for instance from odometry, is important.
+
+**(c)** The motion along the corridor is poorly determined: the walls look the same after any translation along the corridor, so many alignments have nearly the same error. The lateral position and heading are well determined by the walls. This is an example of a degenerate geometry for scan matching.
+:::
+
+## Exercise 6 - Occupancy Grid Mapping with Log-Odds
+
+**(a)** For a $100 \times 100$ binary grid, how many distinct maps are there? Why does lecture approximate $p(\mathbf{m} \mid \mathbf{z}_{1:t}, \mathbf{x}_{1:t})$ by a product over cells, and what does this approximation ignore?
+
+**(b)** Starting from $\text{belief}_t(m_{ij} = 1) = \eta\, p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 1)\,\text{belief}_{t-1}(m_{ij} = 1)$ and the analogous expression for $m_{ij} = 0$, derive the log-odds update and show that $\eta$ cancels.
+
+**(c)** Use the prior $p(m_{ij} = 1) = 0.5$ and an inverse sensor model that returns $0.7$ when a cell is observed as occupied and $0.3$ when it is observed as free. A cell is observed as occupied three times and as free once. Compute its log-odds and its occupancy probability.
+
+**(d)** Why is it numerically better to store log-odds than probabilities? Why might an implementation clamp the log-odds to a range such as $[-5, 5]$?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** There are $2^{100 \times 100} = 2^{10000}$ possible maps, far too many to represent a distribution over. Treating cells as independent given the path and measurements reduces the problem to $10^4$ separate binary estimation problems. The approximation ignores correlations between cells. For example, a single range measurement says that some cell near the measured range is occupied, which couples neighboring cells; treating them independently can produce maps that are inconsistent with the measurements, as in the example in lecture.
+
+**(b)** Dividing the two expressions,
+$$
+\frac{\text{belief}_t(m_{ij} = 1)}{\text{belief}_t(m_{ij} = 0)} = \frac{\eta\, p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 1)}{\eta\, p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 0)} \cdot \frac{\text{belief}_{t-1}(m_{ij} = 1)}{\text{belief}_{t-1}(m_{ij} = 0)}.
+$$
+The normalizer $\eta$ is the same for both values of $m_{ij}$, so it cancels. Taking logarithms gives $l_t^{(ij)} = \log\frac{p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 1)}{p(\mathbf{z}_t \mid \mathbf{x}_t, m_{ij} = 0)} + l_{t-1}^{(ij)}$.
+
+**(c)** The prior log-odds is $l_0 = \log 1 = 0$, so the update is $l_t = l_{t-1} + \log\frac{p}{1-p}$ with $p$ from the inverse sensor model. Each "occupied" observation adds $\log\frac{0.7}{0.3} = \log\frac{7}{3} \approx 0.847$, and each "free" observation adds $\log\frac{3}{7} \approx -0.847$. So
+$$
+l = 3\log\tfrac{7}{3} - \log\tfrac{7}{3} = 2\log\tfrac{7}{3} \approx 1.695,
+\qquad
+\text{belief} = 1 - \frac{1}{1 + e^{l}} = \frac{49/9}{1 + 49/9} = \frac{49}{58} \approx 0.845.
+$$
+The order of the observations does not matter, since the updates simply add up.
+
+**(d)** Updates become additions instead of multiplications followed by normalization, which is cheap and avoids underflow and rounding problems when probabilities get very close to $0$ or $1$. Clamping prevents a cell from becoming so certain that it can no longer change. Without it, a cell observed as free thousands of times would take thousands of "occupied" observations to flip, which is a problem if the environment changes (e.g., a door closes or a person stands still).
+:::
+
+## Exercise 7 - The Inverse Sensor Model
+
+A robot is at $(x, y, \theta) = (0, 0, 0)$ and its laser returns a single beam with angle $\psi = 0$ and range $r_k = 3$ m. Use the inverse sensor model from lecture with obstacle thickness $\alpha = 0.2$ m, beam width $\beta = 2°$, and maximum range $r_{\max} = 10$ m. For each cell center below, say whether the model returns the prior, "occupied", or "free":
+
+**(a)** $(1, 0)$
+
+**(b)** $(3.05, 0)$
+
+**(c)** $(5, 0)$
+
+**(d)** $(2, 1)$
+
+**(e)** Suppose instead that the beam returned $r_k = r_{\max} = 10$ m (no obstacle detected). Which cells along the beam are marked free, and which are marked occupied? Why does the model treat this case specially?
+
+::: {.callout-tip collapse="true" title="Solution"}
+For each cell, compute $r = \|(x_i, y_i)\|$ and $\phi = \operatorname{atan2}(y_i, x_i) - \theta$, and compare them to the beam.
+
+**(a)** $r = 1$ and $\phi = 0$, so the cell is within the beam. Since $r \le r_k$ (and not within $\alpha/2$ of $r_k$), the laser passed through it: **free**.
+
+**(b)** $r = 3.05$ and $\phi = 0$. Since $|r - r_k| = 0.05 < \alpha/2 = 0.1$ and $r_k < r_{\max}$: **occupied**.
+
+**(c)** $r = 5 > r_k + \alpha/2 = 3.1$. The cell is behind the obstacle, so the measurement says nothing about it: **prior**.
+
+**(d)** $\phi = \operatorname{atan2}(1, 2) \approx 26.6° > \beta/2 = 1°$, so the cell is outside the beam: **prior**.
+
+**(e)** All cells within the beam with $r$ below $10$ m are marked free, and no cell is marked occupied, because the "occupied" case requires $r_k < r_{\max}$. A max-range reading usually means that nothing reflected the beam (e.g., open space, glass, or a dark surface), not that there is an obstacle exactly at $r_{\max}$.
+:::

@@ -1,0 +1,222 @@
+---
+title: "Week 11 Optional Exercises: Particle Filter"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 11](/lecs/w11/lec11.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+## Exercise 1 - Representing Beliefs
+
+**(a)** Fill in the table from lecture: for each of the Kalman filter, the EKF, and the particle filter, state whether the dynamics and sensor models may be nonlinear, and whether the belief may be multimodal.
+
+**(b)** A histogram filter represents the belief over a robot pose $(p_x, p_y, \theta)$ with $100$ bins per dimension. How many bins does it need? How many would it need for a drone pose $(p_x, p_y, p_z, \phi, \theta, \psi)$ with the same resolution?
+
+**(c)** A robot in a symmetric corridor sees a door, and there are two identical doors. Sketch the posterior. Which of the three filters from (a) can represent it?
+
+**(d)** With $M$ weighted particles $\{(\mathbf{x}^{[m]}, w^{[m]})\}$ and $W = \sum_m w^{[m]}$, how would you estimate the mean of the belief? Why can this estimate be misleading in (c)?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+
+|                | Kalman Filter | EKF       | Particle Filter |
+|:--------------:|:-------------:|:---------:|:---------------:|
+| Dynamics model | Linear        | Nonlinear | Nonlinear       |
+| Sensor model   | Linear        | Nonlinear | Nonlinear       |
+| Belief         | Gaussian      | Gaussian  | Multimodal      |
+
+**(b)** $100^3 = 10^6$ bins for a planar robot, and $100^6 = 10^{12}$ bins for a drone. This is the exponential dependence on the dimension mentioned in lecture, which is why histogram filters are only practical in low dimensions.
+
+**(c)** The posterior has two peaks, one in front of each door. Only the particle filter (or a histogram filter) can represent it; the KF and EKF must squeeze it into a single Gaussian.
+
+**(d)** $\hat{\mathbf{x}} = \frac{1}{W}\sum_m w^{[m]}\mathbf{x}^{[m]}$. With two well-separated modes, the mean lies between the two doors, where the robot almost certainly is not. In multimodal cases, it is more useful to report the most likely mode (e.g., by clustering the particles) or to keep the full particle set.
+:::
+
+## Exercise 2 - Particle Weights
+
+A robot moves on a line and measures its distance to two landmarks at $l_1 = 0$ and $l_2 = 10$. The measurement model is $\mathbf{z} = (|x - l_1|, |x - l_2|) + \mathbf{n}$, with $\mathbf{n} \sim \mathcal{N}(\mathbf{0}, \sigma^2 I)$, $\sigma = 1$, and the two ranges are conditionally independent given $x$. After propagation, the filter has four particles at $x = 2, 3, 4, 7$. It receives $\tilde{\mathbf{z}} = (3.2, 6.9)$.
+
+**(a)** Write $p(\tilde{\mathbf{z}} \mid x)$ as a product of two 1D Gaussians.
+
+**(b)** Compute the unnormalized weight $w^{[m]} \propto \exp\left(-\frac{\|\tilde{\mathbf{z}} - h(x^{[m]})\|^2}{2\sigma^2}\right)$ for each particle, and normalize the weights.
+
+**(c)** Why can we drop the normalization constant of the Gaussian?
+
+**(d)** Suppose only the landmark at $l_1 = 0$ is used, and there is a fifth particle at $x = -3$. Which particles now have equal weight? What does this mean for the posterior?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+$$
+p(\tilde{\mathbf{z}} \mid x) = \mathcal{N}(\tilde{z}_1;\, |x - l_1|, \sigma^2)\;\mathcal{N}(\tilde{z}_2;\, |x - l_2|, \sigma^2) \propto \exp\left(-\frac{(\tilde{z}_1 - |x - l_1|)^2 + (\tilde{z}_2 - |x - l_2|)^2}{2\sigma^2}\right).
+$$
+
+**(b)**
+
+| Particle $x$ | Predicted $h(x)$ | Squared error | Unnormalized $w$ | Normalized $w$ |
+|:---:|:---:|:---:|:---:|:---:|
+| 2 | (2, 8) | 2.65 | 0.266 | 0.154 |
+| 3 | (3, 7) | 0.05 | 0.975 | 0.565 |
+| 4 | (4, 6) | 1.45 | 0.484 | 0.281 |
+| 7 | (7, 3) | 29.65 | $3.6 \times 10^{-7}$ | $\approx 0$ |
+
+The particle at $x = 3$ explains the measurement best, and the one at $x = 7$ is essentially eliminated.
+
+**(c)** The constant $\frac{1}{(2\pi\sigma^2)^{k/2}}$ is the same for every particle, so it cancels when the weights are normalized. Only relative weights matter for resampling.
+
+**(d)** The range to $l_1$ is $|x|$, so the particles at $x = 3$ and $x = -3$ predict the same measurement and get the same weight. The measurement cannot tell the two positions apart, so the posterior is bimodal. A particle filter keeps both hypotheses until a later measurement (e.g., to $l_2$) or motion disambiguates them.
+:::
+
+## Exercise 3 - Resampling
+
+A filter has five particles with normalized weights $(0.1, 0.2, 0.4, 0.1, 0.2)$, and draws $5$ new particles.
+
+**(a)** With independent sampling with replacement (multinomial resampling), what is the expected number of copies of particle 3? What is the probability that particle 3 is not sampled at all? That particle 1 is not sampled?
+
+**(b)** Run lecture's Algorithm #2 (systematic resampling) by hand with $r = 0.05$. Which particles are selected?
+
+**(c)** Show that with Algorithm #2, particle 3 gets exactly two copies for *any* $r \in [0, 1/N)$. Why is this an advantage over (a)?
+
+**(d)** Implement systematic resampling in numpy in a vectorized way. *Hint:* `np.searchsorted`.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Each draw selects particle 3 with probability $0.4$, so the expected number of copies is $5 \times 0.4 = 2$. The probability that it is never selected is $0.6^5 \approx 0.078$, and for particle 1 it is $0.9^5 \approx 0.59$. So even the best particle is lost about $8\%$ of the time.
+
+**(b)** The pointers are $u_n = r + (n-1)/N = 0.05, 0.25, 0.45, 0.65, 0.85$. The cumulative weights are $0.1, 0.3, 0.7, 0.8, 1.0$. Each pointer selects the first particle whose cumulative weight is at least $u_n$: particles $1, 2, 3, 3, 5$.
+
+**(c)** Particle 3 owns the interval $(0.3, 0.7]$ of the cumulative weights, which has length $0.4 = 2/N$. The pointers are spaced exactly $1/N = 0.2$ apart, so exactly two of them land in any interval of length $0.4$ (up to boundary cases of probability zero). In general, systematic resampling gives each particle either $\lfloor Nw_i \rfloor$ or $\lceil Nw_i \rceil$ copies, so it has much lower variance than multinomial resampling, which reduces the loss of particle diversity. It also runs in linear time.
+
+**(d)**
+
+```python
+import numpy as np
+
+def systematic_resample(weights, rng):
+    N = len(weights)
+    u = rng.uniform(0, 1 / N) + np.arange(N) / N
+    idx = np.searchsorted(np.cumsum(weights), u)
+    return np.minimum(idx, N - 1)  # guard against round-off in cumsum
+
+rng = np.random.default_rng(0)
+print(systematic_resample(np.array([0.1, 0.2, 0.4, 0.1, 0.2]), rng))
+```
+
+The returned indices are used as `particles = particles[idx]`, and the weights are reset to $1/N$.
+:::
+
+## Exercise 4 - Particle Deprivation and Effective Sample Size
+
+The effective sample size of normalized weights $w_1, \dots, w_N$ is $N_{\text{eff}} = 1 / \sum_i w_i^2$.
+
+**(a)** Compute $N_{\text{eff}}$ when all weights equal $1/N$, when a single particle has all the weight, and for the weights from Exercise 3.
+
+**(b)** Should the filter resample when $N_{\text{eff}}$ is above or below a threshold? Explain.
+
+**(c)** What is particle deprivation? Why does it happen even if the filter is implemented correctly?
+
+**(d)** Lecture suggested injecting a small percentage of random particles at each resampling step. What problem does this solve? What does it cost?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Uniform weights: $N_{\text{eff}} = 1 / (N \cdot 1/N^2) = N$. One particle with all the weight: $N_{\text{eff}} = 1/1 = 1$. Exercise 3: $\sum_i w_i^2 = 0.01 + 0.04 + 0.16 + 0.01 + 0.04 = 0.26$, so $N_{\text{eff}} \approx 3.85$ out of $5$.
+
+**(b)** Resample when $N_{\text{eff}}$ falls *below* a threshold (e.g., $N/2$). A low $N_{\text{eff}}$ means only a few particles carry most of the weight, and the others are wasted computation, so resampling focuses them on the likely states. When the weights are nearly uniform, resampling only discards diversity at random without any benefit, so it is better to skip it (e.g., when the robot is not moving and keeps receiving the same measurement).
+
+**(c)** Particle deprivation occurs when no particle is near the true state. Each resampling step randomly discards particles (Exercise 3 (a)), so with a finite number of particles, diversity is gradually lost, and after enough steps the particles can all end up in a wrong region. This is especially likely with few particles, in large state spaces, or with very accurate sensors that make the weights very peaked.
+
+**(d)** Random particles allow the filter to recover when it has converged to the wrong state, such as after the robot is kidnapped or after particle deprivation. The cost is that the posterior is no longer correct, even with infinitely many particles, since a fraction of the particles is always spread over the whole state space regardless of the evidence.
+:::
+
+## Exercise 5 - Why the Weights Are the Likelihood
+
+**(a)** Using importance sampling, show that $\E_{x \sim f}[x] = \E_{x \sim g}\left[x\frac{f(x)}{g(x)}\right]$ whenever $g(x) > 0$ wherever $f(x) > 0$.
+
+**(b)** Estimate the mean of $f = \mathcal{N}(1, 1)$ using only samples from $g = \mathcal{N}(0, 4)$ in numpy.
+
+**(c)** In the particle filter, the particles are sampled from the predicted belief $g = \overline{bel}(\mathbf{x}_t)$, and we want to represent the posterior $f = bel(\mathbf{x}_t) = \eta\, p(\mathbf{z}_t \mid \mathbf{x}_t)\overline{bel}(\mathbf{x}_t)$. Show that the importance weight is proportional to $p(\mathbf{z}_t \mid \mathbf{x}_t)$.
+
+**(d)** Why must the propagation step add noise? What happens after a few resampling steps if the dynamics are simulated deterministically?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $\E_{x \sim f}[x] = \int x f(x)\,dx = \int x\frac{f(x)}{g(x)}g(x)\,dx = \E_{x \sim g}\left[x\frac{f(x)}{g(x)}\right]$. The condition on the supports ensures we never divide by zero where $f$ has mass.
+
+**(b)**
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(0)
+x = rng.normal(0, 2, size=10**6)                 # samples from g = N(0, 4)
+f = np.exp(-(x - 1)**2 / 2) / np.sqrt(2 * np.pi)
+g = np.exp(-x**2 / 8) / np.sqrt(8 * np.pi)
+print(np.mean(x * f / g))                         # approximately 1
+```
+
+**(c)** $w(\mathbf{x}_t) = \frac{f(\mathbf{x}_t)}{g(\mathbf{x}_t)} = \frac{\eta\, p(\mathbf{z}_t \mid \mathbf{x}_t)\overline{bel}(\mathbf{x}_t)}{\overline{bel}(\mathbf{x}_t)} = \eta\, p(\mathbf{z}_t \mid \mathbf{x}_t)$. The constant $\eta$ is the same for every particle, so it disappears when the weights are normalized.
+
+**(d)** The noise in propagation represents the uncertainty in the motion, and it is what makes the copies of a resampled particle spread apart again. With deterministic propagation, copies of the same particle remain identical forever. Since each resampling step reduces the number of distinct particles, after a few steps all particles collapse to a single state, and the filter can no longer represent uncertainty.
+:::
+
+## Exercise 6 - A Complete 1D Particle Filter
+
+Implement a particle filter for the robot in Exercise 2. The robot starts at an unknown position in $[0, 10]$, and at each step it moves by $u = 0.5$ with motion noise $\mathcal{N}(0, 0.1^2)$, then measures its ranges to the two landmarks with $\sigma = 1$.
+
+**(a)** Write a function `pf_step(particles, u, z, rng)` that propagates, weights, and resamples the particles (use `systematic_resample` from Exercise 3).
+
+**(b)** Simulate $10$ steps with $M = 500$ particles, starting with particles drawn uniformly from $[0, 10]$, and print the mean and standard deviation of the particles at each step.
+
+**(c)** Is this a global localization or a position tracking problem? Would an EKF work as well here?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** and **(b)**
+
+```python
+import numpy as np
+
+L = np.array([0.0, 10.0])
+sigma_z, sigma_u = 1.0, 0.1
+
+def h(x):
+    return np.abs(x[:, None] - L[None, :])
+
+def pf_step(particles, u, z, rng):
+    particles = particles + u + rng.normal(0, sigma_u, size=particles.shape)
+    log_w = -np.sum((z - h(particles))**2, axis=1) / (2 * sigma_z**2)
+    w = np.exp(log_w - log_w.max())
+    w /= w.sum()
+    return particles[systematic_resample(w, rng)]
+
+rng = np.random.default_rng(1)
+x_true = 1.0
+particles = rng.uniform(0, 10, size=500)
+for t in range(10):
+    x_true += 0.5 + rng.normal(0, sigma_u)
+    z = h(np.array([x_true]))[0] + rng.normal(0, sigma_z, size=2)
+    particles = pf_step(particles, 0.5, z, rng)
+    print(f"t={t}  true={x_true:.2f}  mean={particles.mean():.2f}  std={particles.std():.2f}")
+```
+
+Subtracting `log_w.max()` before exponentiating avoids underflow when all weights are tiny. The standard deviation starts near $2.9$ (uniform on $[0, 10]$), drops to about $0.5$ after the first measurement, and to about $0.3$ after ten steps, with the mean tracking the true position to within a few tenths.
+
+**(c)** It is global localization, since the initial position is unknown. Here, the two ranges together determine the position uniquely, so an EKF initialized with a wide Gaussian would probably converge too, but it relies on the linearization of $|x - l|$ being accurate, and it would fail if only one landmark were visible, since the posterior would then be bimodal (Exercise 2 (d)).
+:::
+
+## Exercise 7 - Monte Carlo Localization with a Ceiling Map
+
+In lecture, a robot localized itself in a museum using a camera that looked up at the ceiling and measured its brightness.
+
+**(a)** The robot is under a light. Sketch $p(z \mid \mathbf{x})$ over the map. Why is the resulting belief multimodal?
+
+**(b)** The robot is in a dark area of the ceiling. Is this measurement informative?
+
+**(c)** Explain how the particle cloud evolves as the robot drives around, starting from particles spread uniformly across the museum.
+
+**(d)** Why would this problem be very hard for an EKF?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $p(z \mid \mathbf{x})$ is high at every position under any light in the map and low elsewhere. The building has many lights, so many positions explain the measurement equally well, and the particles concentrate in many small clusters, one under each light.
+
+**(b)** It is only weakly informative. It rules out the positions under lights, but almost every other position is consistent with it. The measurement still matters, since the absence of a light eliminates hypotheses.
+
+**(c)** At first, the particles are everywhere. Each measurement increases the weights of particles at positions whose ceiling brightness matches what the camera sees, and resampling concentrates the particles there. As the robot moves, each hypothesis predicts a different sequence of bright and dark patches, and the hypotheses that do not match the observed sequence are eliminated. Eventually, a single cluster remains around the true pose, and the problem becomes position tracking.
+
+**(d)** The belief is highly multimodal for most of the process, and the measurement model (brightness as a function of position) is extremely nonlinear and has no useful derivative in dark areas. An EKF would commit to a single, possibly wrong hypothesis right away and could not recover.
+:::

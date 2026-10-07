@@ -857,7 +857,7 @@ $$
 p(\mathbf{m}|\mathbf{z}_{1:t}, \mathbf{x}_{1:t})
 $$
 
-- This is intractable. E.g. for a 100 x 100 grid there are $2^{1000}$ possible binary maps.
+- This is intractable. E.g. for a 100 x 100 grid there are $2^{10000}$ possible binary maps.
 
 
 - We can approximate $$p(\mathbf{m}|\mathbf{z}_{1:t}, \mathbf{x}_{1:t}) \simeq \prod_{i,j} p(m_{ij} | \mathbf{z}_{1:t}, \mathbf{x}_{1:t})$$

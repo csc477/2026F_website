@@ -1,0 +1,169 @@
+---
+title: "Week 1 Optional Exercises: Sensors and Actuators"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 1](/lecs/w01/lec01.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+## Exercise 1 - Sensor Characteristics
+
+Two range sensors, A and B, are pointed at a wall that is exactly $2.00$ m away. Each sensor takes five measurements:
+
+| Sensor | Measurements (m) |
+|:------:|:-----------------|
+| A | 2.08, 2.11, 2.10, 2.12, 2.09 |
+| B | 1.90, 2.12, 1.95, 2.08, 1.95 |
+
+**(a)** For each sensor, compute the mean measurement and the sample standard deviation.
+
+**(b)** Using the terminology from lecture (accuracy, repeatability), describe each sensor. Which one would you rather have on your robot, and what would you do to improve it?
+
+**(c)** A different (infrared) distance sensor outputs a voltage $V$ that depends on the distance $d$ as $V(d) = 2/d$ (volts, with $d$ in meters), for $d \in [0.5, 4]$ m. Compute the sensitivity $\frac{dV}{dd}$ at $d = 1$ m and at $d = 4$ m. Is this sensor linear?
+
+**(d)** The voltage from the sensor in (c) is read by a 10-bit analog-to-digital converter (ADC) over the range $[0, 5]$ V. What is the smallest voltage change the ADC can resolve? What is the corresponding distance resolution at $d = 1$ m and at $d = 4$ m?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Sensor A: the mean is $10.50 / 5 = 2.10$ m. The deviations from the mean are $-0.02, 0.01, 0, 0.02, -0.01$, whose squares sum to $0.001$. The sample standard deviation is $\sqrt{0.001/4} \approx 0.016$ m.
+
+Sensor B: the mean is $10.00 / 5 = 2.00$ m. The deviations are $-0.10, 0.12, -0.05, 0.08, -0.05$, whose squares sum to $0.0358$. The sample standard deviation is $\sqrt{0.0358/4} \approx 0.095$ m.
+
+**(b)** Sensor A is repeatable (small spread) but not accurate: it has a systematic bias of $+0.10$ m. Sensor B is accurate on average (no bias) but has poor repeatability (large spread). Sensor A is usually preferable, because a constant bias can be removed by calibration: measure a few known distances, estimate the bias, and subtract it. The random noise of sensor B can only be reduced by averaging many measurements, which costs time and assumes the scene does not change.
+
+**(c)** $\frac{dV}{dd} = -\frac{2}{d^2}$. At $d = 1$ m the sensitivity is $-2$ V/m, and at $d = 4$ m it is $-0.125$ V/m. The sensor is not linear, because the ratio of output to input is not constant: the same change in distance produces a much smaller change in voltage at long range.
+
+**(d)** The ADC has $2^{10} = 1024$ levels, so its voltage resolution is $5 / 1024 \approx 4.9$ mV. The distance resolution is approximately $\Delta d \approx \Delta V / |dV/dd|$:
+
+- At $d = 1$ m: $\Delta d \approx 0.0049 / 2 \approx 2.4$ mm.
+- At $d = 4$ m: $\Delta d \approx 0.0049 / 0.125 \approx 39$ mm.
+
+The resolution in distance gets worse at long range because the sensitivity drops.
+:::
+
+## Exercise 2 - Pinhole Projection
+
+Consider a pinhole camera with focal length $f = 500$ (expressed in pixels). Use the perspective projection from lecture, $x = f X / Z$ and $y = f Y / Z$, where $(X, Y, Z)$ is a 3D point in the camera frame and $(x, y)$ are image coordinates relative to the image center.
+
+**(a)** Project the point $(X, Y, Z) = (0.4, -0.2, 2.0)$ m.
+
+**(b)** Project the point $(0.8, -0.4, 4.0)$ m. What do you notice? What does this say about recovering 3D structure from a single image?
+
+**(c)** A person who is $1.8$ m tall stands $10$ m in front of the camera. Approximately how many pixels tall do they appear in the image? How far away would they need to stand to appear $45$ pixels tall?
+
+**(d)** Suppose an RGBD camera tells you that the pixel $(x, y) = (-50, 25)$ has depth $Z = 3$ m. Compute the 3D point $(X, Y, Z)$.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $x = 500 \cdot 0.4 / 2 = 100$ and $y = 500 \cdot (-0.2) / 2 = -50$.
+
+**(b)** $x = 500 \cdot 0.8 / 4 = 100$ and $y = 500 \cdot (-0.4)/4 = -50$, which is the same pixel. Every point on the ray through the camera center and $(0.4, -0.2, 2.0)$ projects to the same pixel. The projection discards depth, so a single image cannot tell you how far away a point is without additional information (a depth sensor, a second view, a known object size, and so on).
+
+**(c)** The height in the image is $f \cdot H / Z = 500 \cdot 1.8 / 10 = 90$ pixels. To appear $45$ pixels tall, the person must be at $Z = f H / h = 500 \cdot 1.8 / 45 = 20$ m. The apparent size is inversely proportional to depth.
+
+**(d)** Inverting the projection, $X = x Z / f = -50 \cdot 3 / 500 = -0.3$ m and $Y = y Z / f = 25 \cdot 3 / 500 = 0.15$ m. So the point is $(-0.3, 0.15, 3)$ m. This is how RGBD cameras produce pointclouds.
+:::
+
+## Exercise 3 - Global vs. Rolling Shutter
+
+A CMOS camera with a rolling shutter has $1000$ rows. The rows are exposed and read out one after the other, with a delay of $20\,\mu$s between consecutive rows.
+
+**(a)** How long does it take to capture the full image, from the first row to the last?
+
+**(b)** A thin vertical pole moves horizontally across the image at $2000$ pixels per second. Describe how the pole appears in the image and compute how many pixels the bottom of the pole is shifted relative to the top.
+
+**(c)** Give two situations in robotics where rolling-shutter effects are a problem, and explain why a global shutter avoids them.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $1000 \times 20\,\mu\text{s} = 20$ ms.
+
+**(b)** The last row is captured $20$ ms after the first. In that time the pole moves $2000 \times 0.02 = 40$ pixels, so it appears as a slanted line whose bottom is displaced $40$ pixels relative to its top (in the direction of motion).
+
+**(c)** Examples include a camera on a fast-moving vehicle or drone, a camera mounted on a vibrating platform (the image wobbles, the so-called jello effect), and fast rotating objects such as propellers. Rolling-shutter images also violate the assumption, used by most visual odometry and multi-view geometry algorithms, that each image is taken from a single camera pose. A global shutter exposes all pixels at the same time, so the whole image corresponds to one instant and one pose.
+:::
+
+## Exercise 4 - LIDAR
+
+A LIDAR measures range using the time of flight of a laser pulse. Use $c = 3 \times 10^8$ m/s.
+
+**(a)** Write the range $d$ as a function of the round-trip time $t$. What is the round-trip time for an object $30$ m away?
+
+**(b)** To achieve a range resolution of $1$ cm, what timing resolution does the sensor need?
+
+**(c)** A 2D LIDAR returns $1024$ points per $360°$ scan. What is the angular spacing between beams? At a distance of $10$ m, how far apart are adjacent points on a wall perpendicular to the beam? Could the LIDAR miss a pole of diameter $5$ cm at that distance?
+
+**(d)** The LIDAR from (c) produces $10$ scans per second while the robot drives at $2$ m/s. How far does the robot move during a single scan? Why does this matter, given that we usually treat all points in a scan as if they were measured at the same time?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** The pulse travels to the object and back, so $d = c t / 2$. For $d = 30$ m, $t = 2d / c = 60 / (3 \times 10^8) = 200$ ns.
+
+**(b)** $\Delta t = 2 \Delta d / c = 0.02 / (3 \times 10^8) \approx 67$ ps. This is why LIDARs require very precise timing electronics.
+
+**(c)** The angular spacing is $360° / 1024 \approx 0.35°$, which is about $6.1 \times 10^{-3}$ rad. At $10$ m, adjacent points are about $10 \times 6.1 \times 10^{-3} \approx 6.1$ cm apart. A $5$ cm pole is narrower than this spacing, so it can fall between two beams and be missed entirely.
+
+**(d)** One scan takes $0.1$ s, during which the robot moves $0.2$ m. The first and last points of the scan are measured from robot poses $20$ cm apart, so treating them as simultaneous distorts the scan (straight walls can look bent or doubled). At high speeds the scan should be "de-skewed" by compensating for the robot's motion during the scan.
+:::
+
+## Exercise 5 - Integrating Inertial Sensors
+
+**(a)** A gyroscope measuring yaw rate has a constant bias $b_g = 0.01°/\text{s}$ and no other noise. The robot is stationary and we integrate the gyroscope to estimate heading. What is the heading error after $1$ minute? After $1$ hour?
+
+**(b)** An accelerometer has a constant bias $b_a = 0.01$ m/s$^2$. We double-integrate it, starting from zero velocity, to estimate position. Derive the position error as a function of time, and evaluate it after $10$ s, $1$ minute, and $1$ hour.
+
+**(c)** An accelerometer lies flat on a table. What does it measure? What does it measure while in free fall in a vacuum?
+
+**(d)** Suppose the estimated orientation of the accelerometer from (c) is wrong by a tilt of $1°$, so when we subtract gravity we subtract it in the wrong direction. What spurious horizontal acceleration results? Compare it to the bias in (b).
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** The heading error grows linearly: $\Delta\theta(t) = b_g t$. After $60$ s it is $0.6°$, and after $3600$ s it is $36°$. This is why IMUs fuse the gyroscope with other sensors (e.g., a magnetometer for absolute heading) to reduce drift.
+
+**(b)** The velocity error is $\Delta v(t) = b_a t$ and the position error is $\Delta p(t) = \frac{1}{2} b_a t^2$, which grows quadratically.
+
+- $t = 10$ s: $\Delta p = 0.5 \cdot 0.01 \cdot 100 = 0.5$ m.
+- $t = 60$ s: $\Delta p = 0.5 \cdot 0.01 \cdot 3600 = 18$ m.
+- $t = 3600$ s: $\Delta p = 0.5 \cdot 0.01 \cdot 3600^2 = 64{,}800$ m, about $65$ km.
+
+This is why IMUs do not typically provide position estimates on their own.
+
+**(c)** On the table it measures $1$ g, pointing upward (the table pushes up on the sensor; equivalently, it measures acceleration relative to free fall). In free fall in a vacuum it measures $0$ g.
+
+**(d)** A tilt error of $1°$ leaks a component $g \sin(1°) \approx 9.81 \times 0.0175 \approx 0.17$ m/s$^2$ of gravity into the horizontal axes. That is $17$ times larger than the bias in (b), so after $1$ minute it alone would cause a position error of about $0.5 \cdot 0.17 \cdot 3600 \approx 308$ m. Orientation errors are one of the main sources of position drift in inertial navigation.
+:::
+
+## Exercise 6 - GPS
+
+**(a)** A GPS receiver estimates the distance to a satellite from the signal travel time. If its time estimate is off by $1\,\mu$s, what is the resulting distance error?
+
+**(b)** The coarse/acquisition (C/A) code is a $1023$-bit sequence that repeats every $1$ ms. What is the duration of one bit (one "chip")? What distance does light travel during one chip? What does this suggest about how precisely the receiver must align the received code with its stored copy?
+
+**(c)** Why does the receiver need signals from at least $4$ satellites, rather than $3$, to compute its position?
+
+**(d)** Explain, using a sketch with two satellites in 2D, why the position estimate is less precise when all visible satellites lie in a small region of the sky (high dilution of precision) than when they are spread out.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $3 \times 10^8 \times 10^{-6} = 300$ m. Small timing errors produce large position errors.
+
+**(b)** One chip lasts $1\text{ ms} / 1023 \approx 0.98\,\mu$s, during which light travels about $293$ m. To get position estimates accurate to a few meters, the receiver must estimate the time shift between the received and stored codes to within a small fraction of one chip, which it does by correlating the two signals.
+
+**(c)** The receiver's clock is cheap and not synchronized with the atomic clocks on the satellites, so the clock offset is an extra unknown in addition to the three position coordinates. Four unknowns require at least four range measurements.
+
+**(d)** Each range measurement places the receiver on a circle (a sphere in 3D) around a satellite, and the noise turns each circle into a thin ring. The position lies in the intersection of the rings. When the satellites are in very different directions, the rings cross at nearly right angles and the intersection is small. When the satellites are in nearly the same direction, the rings cross at a shallow angle and the intersection becomes a long, thin region, so the same range noise causes a much larger position uncertainty.
+:::
+
+## Exercise 7 - Encoders and Pulse Width Modulation
+
+**(a)** A wheel of radius $5$ cm has a rotary encoder with $1024$ ticks per revolution. What distance does the wheel travel per tick? If the encoder reports $5000$ ticks, how far has the wheel rolled (assuming no slip)?
+
+**(b)** Instead of the encoder, a Hall effect sensor detects a magnet on the wheel, producing one pulse per revolution. You count $3$ pulses in $0.5$ s. Estimate the wheel speed in m/s. Why is this a coarse speed estimate at low speeds?
+
+**(c)** A DC motor is powered from a $12$ V supply through a PWM signal. What duty cycle gives an average voltage of $4.5$ V? If the PWM frequency is $20$ kHz, how long is the "on" part of each period?
+
+**(d)** Why is PWM typically run at a high frequency (kHz range) rather than, say, $10$ Hz?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** The circumference is $2\pi \cdot 0.05 \approx 0.314$ m, so each tick corresponds to $0.314 / 1024 \approx 0.31$ mm. $5000$ ticks correspond to $5000 / 1024 \approx 4.88$ revolutions, or about $1.53$ m.
+
+**(b)** $3$ pulses in $0.5$ s is $6$ revolutions per second, so the speed is $6 \times 0.314 \approx 1.88$ m/s. With one pulse per revolution, at low speed there may be zero or one pulse in a measurement window, so the speed estimate is quantized and delayed. An encoder with many ticks per revolution gives much finer speed estimates.
+
+**(c)** Duty cycle $= 4.5 / 12 = 37.5\%$. The period is $1 / 20{,}000 = 50\,\mu$s, so the signal is on for $0.375 \times 50 = 18.75\,\mu$s per period.
+
+**(d)** The motor's inductance and mechanical inertia average out the pulses only if they are much faster than the motor's response time. At $10$ Hz the motor would visibly speed up and slow down with each pulse. High frequencies also avoid audible whine (above about $20$ kHz).
+:::

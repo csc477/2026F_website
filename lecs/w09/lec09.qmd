@@ -1004,7 +1004,7 @@ $$\begin{align}
 \sigma^2 &= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
+&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
 \end{align}$$
 
 :::
@@ -1050,7 +1050,7 @@ $$\begin{align}
 \sigma^2 &= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
+&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}]
 \end{align}$$
 
 :::
@@ -1096,7 +1096,7 @@ $$\begin{align}
 \sigma^2 &= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
+&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-1}] + \text{Cov}[w_{t-1}]
 \end{align}$$
 
@@ -1141,7 +1141,7 @@ $$\begin{align}
 \sigma^2 &= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
+&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-1}] + \text{Cov}[w_{t-1}] \\
 &= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-2}] + \text{Cov}[w_{t-1}] 
 \end{align}$$
@@ -1187,7 +1187,7 @@ $$\begin{align}
 \sigma^2 &= \text{Cov}[x_t|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + u_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1} + w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
-&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] - 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
+&= \text{Cov}[x_{t-1}|z_{0:t-1}, u_{0:t-1}] + \text{Cov}[w_{t-1}|z_{0:t-1}, u_{0:t-1}] + 2\text{Cov}[x_{t-1}, w_{t-1}|z_{0:t-1}, u_{0:t-1}] \\
 &= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-1}] + \text{Cov}[w_{t-1}] \\
 &= \text{Cov}[x_{t-1}|z_{0:t-1},u_{0:t-2}] + \text{Cov}[w_{t-1}] \\
 &= \sigma_{C}^{2} + q^{2}
@@ -1325,7 +1325,7 @@ $$\begin{align}
 $$\begin{align*}
 \Sigma_{t+1|t} &= \text{Cov}[x_{t+1}|z_{0:t}] \\
 &= \text{Cov}[Ax_t + w_t|z_{0:t}] \\
-&= \text{Cov}[Ax_t|z_{0:t}] + \text{Cov}[w_t|z_{0:t}] - 2\text{Cov}[Ax_t, w_t|z_{0:t}] \\
+&= \text{Cov}[Ax_t|z_{0:t}] + \text{Cov}[w_t|z_{0:t}] + \text{Cov}[Ax_t, w_t|z_{0:t}] + \text{Cov}[w_t, Ax_t|z_{0:t}] \\
 &= A\text{Cov}[x_t|z_{0:t}]A^T + \text{Cov}[w_t] \\
 &= A\Sigma_{t|t}A^T + Q \\
 &= \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 1^2 & 0 \\ 0 & 10^2 \end{bmatrix} \begin{bmatrix} 1 & 0 \\ 1 & 1 \end{bmatrix} + \begin{bmatrix} 1^2 & 0 \\ 0 & 1^2 \end{bmatrix} = \begin{bmatrix} 102 & 100 \\ 100 & 101 \end{bmatrix}

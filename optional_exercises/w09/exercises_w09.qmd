@@ -1,0 +1,214 @@
+---
+title: "Week 9 Optional Exercises: Bayes' Filter and Kalman Filter"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 9](/lecs/w09/lec09.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+We use the notation from lecture: dynamics $\mathbf{x}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t + G\mathbf{w}_t$ with $\mathbf{w}_t \sim \mathcal{N}(\mathbf{0}, Q)$, and measurements $\mathbf{z}_t = H\mathbf{x}_t + \mathbf{n}_t$ with $\mathbf{n}_t \sim \mathcal{N}(\mathbf{0}, R)$. (Note that the roles of $Q$ and $R$ are swapped compared to the GraphSLAM slides in Lecture 7.)
+
+## Exercise 1 - Deriving the Bayes Filter
+
+**(a)** What is the difference between filtering and smoothing? Give an example of a robotics application that needs filtering, and one where smoothing is acceptable.
+
+**(b)** State the two assumptions of the Bayes filter (the Markov assumption for the dynamics and the static world assumption) as equations.
+
+**(c)** The derivation in lecture arrives at $bel(x_t) = \eta\, p(z_t \mid x_t)\int p(x_t \mid u_{t-1}, x_{t-1})\, bel(x_{t-1})\, dx_{t-1}$. For each of the following steps, name the rule or assumption that justifies it:
+
+1. $p(x_t \mid u_{0:t-1}, z_{0:t}) = \eta\, p(z_t \mid x_t, u_{0:t-1}, z_{0:t-1})\, p(x_t \mid u_{0:t-1}, z_{0:t-1})$
+2. $p(z_t \mid x_t, u_{0:t-1}, z_{0:t-1}) = p(z_t \mid x_t)$
+3. $p(x_t \mid u_{0:t-1}, z_{0:t-1}) = \int p(x_t, x_{t-1} \mid u_{0:t-1}, z_{0:t-1})\, dx_{t-1}$
+4. $p(x_t \mid x_{t-1}, u_{0:t-1}, z_{0:t-1}) = p(x_t \mid x_{t-1}, u_{t-1})$
+5. $p(x_{t-1} \mid u_{0:t-1}, z_{0:t-1}) = p(x_{t-1} \mid u_{0:t-2}, z_{0:t-1})$
+
+**(d)** Which part of the final expression is the prediction step and which is the update step? Why does the prediction step generally increase uncertainty while the update step decreases it?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Filtering estimates the current state $p(x_t \mid z_{0:t}, u_{0:t-1})$ online, using only past and present data. Smoothing estimates the whole trajectory $p(x_{0:T} \mid z_{0:T}, u_{0:T-1})$ using all the data, including measurements that arrive after each state. A controller on a drone needs a filter, because it must act on the current state estimate in real time. Building a map offline from a recorded dataset (e.g., GraphSLAM) can use smoothing.
+
+**(b)** Markov: $p(x_t \mid x_{0:t-1}, u_{0:t-1}) = p(x_t \mid x_{t-1}, u_{t-1})$. Static world: $p(z_t \mid x_t, u_{0:t-1}, z_{0:t-1}) = p(z_t \mid x_t)$.
+
+**(c)**
+
+1. Conditional Bayes' rule, with $\eta = 1/p(z_t \mid u_{0:t-1}, z_{0:t-1})$.
+2. The static world assumption.
+3. The law of total probability (marginalization over $x_{t-1}$), for conditional distributions.
+4. The Markov assumption for the dynamics (after using $p(A, B \mid C) = p(A \mid B, C)\,p(B \mid C)$).
+5. The control $u_{t-1}$ only affects the state at time $t$, so it carries no information about $x_{t-1}$.
+
+**(d)** The integral is the prediction step: it propagates the previous belief through the dynamics, giving $\overline{bel}(x_t)$. Multiplying by $p(z_t \mid x_t)$ and normalizing is the update step. Prediction averages over all the places the robot could have moved to from all its possible previous states, which spreads the belief out (we are speculating about the future). The update reweights the prediction by how well each state explains the new measurement, which concentrates the belief.
+:::
+
+## Exercise 2 - A Discrete Bayes Filter
+
+A robot lives in a circular corridor with $5$ cells, numbered $0$ to $4$ (cell $4$ is next to cell $0$). There are doors at cells $0$ and $3$, and walls at the other cells. The robot's door sensor reports "door" with probability $0.8$ in front of a door and with probability $0.2$ in front of a wall. When commanded to move one cell to the right, the robot moves one cell with probability $0.8$ and stays put with probability $0.2$. The initial belief is uniform.
+
+**(a)** The robot senses "door". Compute the updated belief.
+
+**(b)** The robot is commanded to move one cell to the right. Compute the predicted belief.
+
+**(c)** The robot senses "wall". Compute the updated belief. Where is the robot most likely to be?
+
+**(d)** Could a Kalman filter represent the belief from (c)? Why or why not?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Multiplying the uniform prior by the likelihoods $(0.8, 0.2, 0.2, 0.8, 0.2)$ and normalizing (the sum is $2.2$) gives
+$$
+bel = \tfrac{1}{11}(4, 1, 1, 4, 1) \approx (0.364, 0.091, 0.091, 0.364, 0.091).
+$$
+
+**(b)** $\overline{bel}(i) = 0.8\, bel(i - 1) + 0.2\, bel(i)$ (indices modulo $5$):
+$$
+\overline{bel} = \tfrac{1}{11}(1.6,\, 3.4,\, 1,\, 1.6,\, 3.4) \approx (0.145, 0.309, 0.091, 0.145, 0.309).
+$$
+The sum is still $1$, as it should be after a prediction step.
+
+**(c)** Multiplying by the wall likelihoods $(0.2, 0.8, 0.8, 0.2, 0.8)$ gives $\tfrac{1}{11}(0.32, 2.72, 0.8, 0.32, 2.72)$, which sums to $6.88/11$. Normalizing,
+$$
+bel \approx (0.047, 0.395, 0.116, 0.047, 0.395).
+$$
+The robot is most likely in cell $1$ or cell $4$, i.e. just to the right of one of the two doors, and the two hypotheses are equally likely. More measurements are needed to disambiguate them.
+
+**(d)** No. The belief has two separate peaks (it is multimodal), whereas a Kalman filter represents the belief as a single Gaussian, which is unimodal. Histogram filters and particle filters (Lecture 11) can represent such beliefs.
+:::
+
+## Exercise 3 - The 1D Kalman Filter
+
+**(a)** A robot's predicted belief is $\overline{bel}(x_t) = \mathcal{N}(10, 4)$, and it receives a measurement $z_t = 12$ from the model $z_t = x_t + n_t$ with $n_t \sim \mathcal{N}(0, 4)$. Compute the posterior mean and variance using the formulas from lecture.
+
+**(b)** Show that the posterior variance satisfies $\frac{1}{\sigma^2} = \frac{1}{\sigma_A^2} + \frac{1}{\sigma_B^2}$. What does this say about the posterior variance compared to the prior and measurement variances?
+
+**(c)** Continuing from (a), the robot applies the command $u_t = 10$ with dynamics $x_{t+1} = x_t + u_t + w_t$, $w_t \sim \mathcal{N}(0, 1)$, and then measures $z_{t+1} = 20$ with measurement noise variance $1$. Compute the predicted belief and the updated belief.
+
+**(d)** Write the 1D Kalman gain $k = \frac{\sigma_B^2}{\sigma_A^2 + \sigma_B^2}$ in terms of the prior variance $\sigma_B^2$ and the measurement variance $\sigma_A^2$. What happens to it as $\sigma_A^2 \to 0$? As $\sigma_A^2 \to \infty$? As $\sigma_B^2 \to \infty$? Interpret each case.
+
+**(e)** A robot that does not move ($x_{t+1} = x_t + w_t$ with $w_t \sim \mathcal{N}(0, 1)$) measures its position at every step with noise variance $1$. Find the steady-state posterior variance. Have you seen this number before in the course?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** With $\mu_B = 10$, $\sigma_B^2 = 4$ (prior) and $\mu_A = 12$, $\sigma_A^2 = 4$ (measurement), the gain is $\frac{4}{8} = 0.5$. So $\mu = 10 + 0.5(12 - 10) = 11$ and $\sigma^2 = 4 - 0.5 \cdot 4 = 2$. With equal variances, the posterior mean is the average and the variance is halved.
+
+**(b)** $\sigma^2 = \sigma_B^2 - \frac{\sigma_B^4}{\sigma_A^2 + \sigma_B^2} = \frac{\sigma_A^2\sigma_B^2}{\sigma_A^2 + \sigma_B^2}$, and taking reciprocals gives $\frac{1}{\sigma^2} = \frac{\sigma_A^2 + \sigma_B^2}{\sigma_A^2\sigma_B^2} = \frac{1}{\sigma_B^2} + \frac{1}{\sigma_A^2}$. Precisions (inverse variances) add, so the posterior variance is smaller than both the prior variance and the measurement variance: every measurement, no matter how noisy, reduces uncertainty.
+
+**(c)** Prediction: $\mu = 11 + 10 = 21$ and $\sigma^2 = 2 + 1 = 3$. Update: $k = \frac{3}{3 + 1} = 0.75$, so $\mu = 21 + 0.75(20 - 21) = 20.25$ and $\sigma^2 = 3 - 0.75 \cdot 3 = 0.75$.
+
+**(d)**
+
+- $\sigma_A^2 \to 0$ (perfect sensor): $k \to 1$ and the posterior mean equals the measurement.
+- $\sigma_A^2 \to \infty$ (useless sensor): $k \to 0$ and the measurement is ignored.
+- $\sigma_B^2 \to \infty$ (no prior knowledge): $k \to 1$ and again the posterior follows the measurement.
+
+The gain balances how much we trust the prediction against how much we trust the measurement.
+
+**(e)** Let $P$ be the posterior variance at steady state. The predicted variance is $P + 1$, and after the update it is $\frac{(P + 1) \cdot 1}{(P + 1) + 1}$. Setting this equal to $P$ gives $P(P + 2) = P + 1$, i.e. $P^2 + P - 1 = 0$, so $P = \frac{\sqrt{5} - 1}{2} \approx 0.618$. The predicted variance is then $P + 1 \approx 1.618$, the golden ratio, which is exactly the steady-state LQR cost-to-go from Week 5, Exercise 2(c). This is no coincidence: the Kalman filter covariance recursion and the LQR Riccati recursion are mathematically "dual" to each other.
+:::
+
+## Exercise 4 - A 2D Kalman Filter
+
+A robot moves on a line with state $\mathbf{x} = (p, v)$ and constant-velocity dynamics with $\delta t = 1$:
+$$
+A = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}, \qquad Q = I, \qquad H = \begin{bmatrix} 1 & 0 \end{bmatrix}, \qquad R = 2.
+$$
+(There is no control, and $G = I$.) The current belief is $\boldsymbol\mu_{t|t} = (0, 1)$ and $\Sigma_{t|t} = \diag(1, 4)$.
+
+**(a)** Compute the predicted mean $\boldsymbol\mu_{t+1|t}$ and covariance $\Sigma_{t+1|t}$. Why are position and velocity now correlated?
+
+**(b)** The robot measures $\tilde{z}_{t+1} = 3$. Compute the residual, its covariance $S_{t+1}$, the Kalman gain $K_{t+1}$, and the updated mean and covariance.
+
+**(c)** The robot only measured position, yet the velocity estimate changed. Explain why. What would have happened to the velocity estimate if the prediction step had not introduced any correlation?
+
+**(d)** Suppose instead that the robot could only measure velocity, $H = \begin{bmatrix} 0 & 1 \end{bmatrix}$. What would happen to the uncertainty in position over time?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $\boldsymbol\mu_{t+1|t} = A\boldsymbol\mu_{t|t} = (1, 1)$ and
+$$
+\Sigma_{t+1|t} = A\Sigma_{t|t}A^\T + Q = \begin{bmatrix} 5 & 4 \\ 4 & 4 \end{bmatrix} + I = \begin{bmatrix} 6 & 4 \\ 4 & 5 \end{bmatrix}.
+$$
+The predicted position depends on the uncertain velocity ($p_{t+1} = p_t + v_t$), so a higher-than-expected velocity implies a farther-than-expected position: the two errors are correlated.
+
+**(b)** The expected measurement is $H\boldsymbol\mu_{t+1|t} = 1$, so the residual is $3 - 1 = 2$. Its covariance is $S = H\Sigma_{t+1|t}H^\T + R = 6 + 2 = 8$, and
+$$
+K = \Sigma_{t+1|t}H^\T S^{-1} = \tfrac{1}{8}\begin{bmatrix} 6 \\ 4 \end{bmatrix} = \begin{bmatrix} 0.75 \\ 0.5 \end{bmatrix}.
+$$
+Then $\boldsymbol\mu_{t+1|t+1} = (1, 1) + 2 \cdot (0.75, 0.5) = (2.5, 2)$ and
+$$
+\Sigma_{t+1|t+1} = \Sigma_{t+1|t} - KH\Sigma_{t+1|t} = \begin{bmatrix} 6 & 4 \\ 4 & 5 \end{bmatrix} - \begin{bmatrix} 4.5 & 3 \\ 3 & 2 \end{bmatrix} = \begin{bmatrix} 1.5 & 1 \\ 1 & 3 \end{bmatrix}.
+$$
+
+**(c)** The off-diagonal entry of $\Sigma_{t+1|t}$ means that position errors and velocity errors go together. Measuring a larger position than expected is evidence that the velocity was also larger than expected, so the Kalman gain for velocity, $\Sigma_{vp}/S = 0.5$, is nonzero. If the predicted covariance were diagonal, the gain for velocity would be $0$, and the velocity estimate would not change at all.
+
+**(d)** Position would not be observable: velocity measurements say nothing about where the robot started, so the position variance would keep growing with every prediction step (roughly linearly, like a random walk, plus the integrated velocity uncertainty), and measurements would never reduce it.
+:::
+
+## Exercise 5 - Tracking a Cannonball
+
+Lecture modeled a cannonball with state $\mathbf{x} = (p_x, p_y, v_x, v_y)$, gravity entering through a known "control" $\mathbf{u}_t$, acceleration noise $\mathbf{w}_t \in \R^2$, and position measurements.
+
+**(a)** Why does the model include a term $B\mathbf{u}_t$ even though nobody controls the cannonball?
+
+**(b)** With $G = \begin{bmatrix} \delta t^2/2 & 0 \\ 0 & \delta t^2/2 \\ \delta t & 0 \\ 0 & \delta t \end{bmatrix}$ and $Q = q^2 I_2$, compute $GQG^\T$. Why does it have nonzero off-diagonal entries?
+
+**(c)** Write a numpy function `kf_step(mu, Sigma, u, z, A, B, G, Q, H, R)` that performs one prediction step followed by one update step.
+
+**(d)** In lecture's simulation, the filter was initialized with an incorrect y-velocity ($5$ instead of $10$) but a large initial variance. What would happen if it had been initialized with the same incorrect mean but a very small variance?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Gravity adds a known, constant amount to the position and velocity at every step. The Kalman filter equations require the dynamics to have the form $A\mathbf{x} + B\mathbf{u} + G\mathbf{w}$ with zero-mean noise, so the known additive term is included as $B\mathbf{u}_t$ with $B = I$ and $\mathbf{u}_t = (0, -g\delta t^2/2, 0, -g\delta t)$.
+
+**(b)**
+$$
+GQG^\T = q^2\begin{bmatrix}
+\delta t^4/4 & 0 & \delta t^3/2 & 0 \\
+0 & \delta t^4/4 & 0 & \delta t^3/2 \\
+\delta t^3/2 & 0 & \delta t^2 & 0 \\
+0 & \delta t^3/2 & 0 & \delta t^2
+\end{bmatrix}.
+$$
+The same random acceleration affects both the position and the velocity along each axis, so the noise in $p_x$ is correlated with the noise in $v_x$ (and similarly for $y$). The $x$ and $y$ axes remain uncorrelated because their accelerations are independent.
+
+**(c)**
+
+```python
+import numpy as np
+
+def kf_step(mu, Sigma, u, z, A, B, G, Q, H, R):
+    mu_pred = A @ mu + B @ u
+    Sigma_pred = A @ Sigma @ A.T + G @ Q @ G.T
+
+    residual = z - H @ mu_pred
+    S = H @ Sigma_pred @ H.T + R
+    K = np.linalg.solve(S, H @ Sigma_pred).T
+    mu_new = mu_pred + K @ residual
+    Sigma_new = Sigma_pred - K @ H @ Sigma_pred
+    Sigma_new = 0.5 * (Sigma_new + Sigma_new.T)
+    return mu_new, Sigma_new
+```
+
+The gain is computed with `np.linalg.solve` instead of an explicit inverse (using $K^\T = S^{-1}H\Sigma_{t+1|t}$, since both $S$ and $\Sigma_{t+1|t}$ are symmetric), and the last line forces the covariance to stay symmetric despite rounding errors, as suggested in lecture.
+
+**(d)** With a small initial variance, the filter is (wrongly) confident in its initial velocity, so the Kalman gain for velocity is small and the measurements barely correct it. The estimate would converge to the true velocity only very slowly, and in the meantime the true state would lie far outside the filter's $3\sigma$ bounds. An overconfident filter can be worse than an uncertain one; when in doubt, initialize with a large covariance.
+:::
+
+## Exercise 6 - Kalman Filter Assumptions
+
+**(a)** For each of the following assumptions, explain what goes wrong if it is violated:
+
+1. The dynamics and measurement models are linear.
+2. The initial belief is Gaussian.
+3. The noise terms are independent across time.
+
+**(b)** A GPS receiver occasionally returns a position that is off by $100$ m because of reflections from buildings. Why is this a problem for a Kalman filter with Gaussian measurement noise? Suggest a simple fix.
+
+**(c)** What is the computational cost of one Kalman filter update for an $n$-dimensional state and an $m$-dimensional measurement? Which operation did lecture flag as potentially expensive?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+
+1. A Gaussian passed through a nonlinear function is no longer Gaussian, so the belief cannot be represented by a mean and covariance anymore, and there is no closed-form update. The Extended Kalman Filter (Lecture 10) addresses this by linearizing.
+2. The Kalman filter always represents the belief as a Gaussian. A non-Gaussian initial belief (e.g., "the robot is in one of two rooms") cannot be represented, and approximating it by a single Gaussian can be very misleading.
+3. If the noise is correlated over time (e.g., a slowly drifting sensor bias), the filter treats consecutive measurements as independent pieces of evidence and becomes overconfident. Correlated noise should instead be modeled explicitly, for example by adding the bias to the state.
+
+**(b)** Gaussian noise assigns almost zero probability to a $100$ m error when the standard deviation is a few meters, so the filter treats the outlier as very informative and pulls the estimate far away from the truth. A common fix is outlier rejection ("gating"): compute the Mahalanobis distance of the residual, $\delta z^\T S^{-1}\delta z$, and skip the update if it is too large (e.g., above a chi-squared threshold).
+
+**(c)** The prediction and update involve $n \times n$ matrix products, costing $O(n^3)$, and the inversion of the $m \times m$ residual covariance $S$, costing $O(m^3)$ with Gaussian elimination (lecture quoted $O(m^{2.4})$ for the best known algorithms). The matrix inversion was flagged as potentially expensive and error-prone, which is why it is better to solve linear systems instead of forming $S^{-1}$ explicitly.
+:::

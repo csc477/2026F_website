@@ -1,0 +1,227 @@
+---
+title: "Week 13 Optional Exercises: Visual Odometry, Visual SLAM, and Optical Flow"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the second part of [Lecture 13](/lecs/w13/lec13.html): epipolar geometry, visual odometry, visual SLAM, and optical flow. The first part of the lecture (cameras, features, stereo, and triangulation) is covered in the [Week 12 exercises](/optional_exercises/w12/exercises_w12.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+Throughout, $\hat{\mathbf{x}}$ and $\hat{\mathbf{x}}'$ are normalized homogeneous image coordinates ($K^{-1}[u, v, 1]^\T$) of the same point in cameras 1 and 2, and the 3D point satisfies $\mathbf{x} = R\mathbf{x}' + \mathbf{t}$, where $\mathbf{x}$ and $\mathbf{x}'$ are its coordinates in the two camera frames. The cross product matrix is
+$$
+[\mathbf{t}]_\times = \begin{bmatrix} 0 & -t_2 & t_1 \\ t_2 & 0 & -t_0 \\ -t_1 & t_0 & 0 \end{bmatrix}.
+$$
+
+## Exercise 1 - The Epipolar Constraint
+
+**(a)** Explain why the vectors $\hat{\mathbf{x}}$, $R\hat{\mathbf{x}}'$, and $\mathbf{t}$ are coplanar (all expressed in camera 1's frame), and derive the epipolar constraint $\hat{\mathbf{x}}^\T E\,\hat{\mathbf{x}}' = 0$ with $E = [\mathbf{t}]_\times R$.
+
+**(b)** Compute $E$ for the rectified stereo pair $R = I$ and $\mathbf{t} = (1, 0, 0)$, and write out the epipolar constraint. Which familiar rule from stereo do you obtain? Where are the epipoles?
+
+**(c)** Given a point $\hat{\mathbf{x}}'$ in image 2, what is the set of possible matches in image 1? How does this speed up matching?
+
+**(d)** Show that $E$ and $\lambda E$ define the same constraint for any $\lambda \neq 0$. What does this imply about recovering $\mathbf{t}$ from $E$?
+
+**(e)** Verify the constraint numerically in numpy for a random rotation, translation, and set of points.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** In camera 1's frame, camera 1's center is the origin, and camera 2's center is at $\mathbf{t}$. The 3D point lies along the direction $\hat{\mathbf{x}}$ from camera 1, and along the direction $R\hat{\mathbf{x}}'$ from camera 2's center. The two camera centers and the point define a plane (the epipolar plane), which contains $\hat{\mathbf{x}}$, $\mathbf{t}$, and $R\hat{\mathbf{x}}'$. The vector $\mathbf{t} \times R\hat{\mathbf{x}}'$ is normal to this plane, so
+$$
+\hat{\mathbf{x}} \cdot (\mathbf{t} \times R\hat{\mathbf{x}}') = \hat{\mathbf{x}}^\T[\mathbf{t}]_\times R\,\hat{\mathbf{x}}' = 0.
+$$
+
+**(b)** $E = [\mathbf{t}]_\times = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & 1 & 0 \end{bmatrix}$. With $\hat{\mathbf{x}} = (x, y, 1)$ and $\hat{\mathbf{x}}' = (x', y', 1)$: $E\hat{\mathbf{x}}' = (0, -1, y')$, so $\hat{\mathbf{x}}^\T E\hat{\mathbf{x}}' = y' - y = 0$. The matches lie on the same row, as for parallel stereo cameras. The baseline is parallel to the image planes, so the epipoles are at infinity, and all epipolar lines are horizontal.
+
+**(c)** The matches lie on the epipolar line $\ell = E\hat{\mathbf{x}}'$ in image 1, i.e., the points with $\hat{\mathbf{x}}^\T\ell = 0$. The search for correspondences becomes a 1D search along a line instead of a 2D search over the whole image, and matches far from the line can be rejected as outliers.
+
+**(d)** $\hat{\mathbf{x}}^\T(\lambda E)\hat{\mathbf{x}}' = \lambda\,\hat{\mathbf{x}}^\T E\hat{\mathbf{x}}'$, which is zero exactly when the original is zero. So $E$ can only be estimated up to scale, and since $[\lambda\mathbf{t}]_\times R = \lambda E$, the translation $\mathbf{t}$ is recovered only up to scale: we get its direction but not its length. $E$ has $5$ degrees of freedom ($3$ for the rotation, $2$ for the direction of $\mathbf{t}$), which is why Nister's algorithm needs $5$ point correspondences.
+
+**(e)**
+
+```python
+import numpy as np
+
+def skew(t):
+    return np.array([[0, -t[2], t[1]], [t[2], 0, -t[0]], [-t[1], t[0], 0]])
+
+rng = np.random.default_rng(0)
+c, s = np.cos(np.deg2rad(10)), np.sin(np.deg2rad(10))
+R = np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
+t = np.array([1.0, 0.2, 0.1])
+E = skew(t) @ R
+
+x2 = rng.normal(size=(5, 3)) + np.array([0, 0, 5])   # points in camera 2's frame
+x1 = x2 @ R.T + t                                     # same points in camera 1's frame
+x1_hat = x1 / x1[:, 2:]
+x2_hat = x2 / x2[:, 2:]
+print(np.einsum("ni,ij,nj->n", x1_hat, E, x2_hat))   # all approximately 0
+```
+:::
+
+## Exercise 2 - Scale Ambiguity in Monocular Visual Odometry
+
+**(a)** Let ${}^k\mathbf{p} = {}^k_wR\,{}^w\mathbf{p} + {}^k\mathbf{t}_{kw}$ for every camera $k$ and point. Show that scaling every 3D point and every translation by the same factor $s > 0$ produces exactly the same pixel measurements.
+
+**(b)** Why does this mean that no number of matched keypoints can make the scale observable with a single camera?
+
+**(c)** List three ways to recover the metric scale.
+
+**(d)** Lecture said that the scale also drifts over time, and that this is most apparent during in-place rotations. Explain why.
+
+**(e)** Are points at infinity (e.g., distant mountains or stars) useful for estimating the camera's rotation? Its translation?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** With scaled quantities, the point in camera $k$'s frame is ${}^k_wR(s\,{}^w\mathbf{p}) + s\,{}^k\mathbf{t}_{kw} = s\,{}^k\mathbf{p}$. The pinhole projection divides by depth: $\frac{sX}{sZ} = \frac{X}{Z}$ and $\frac{sY}{sZ} = \frac{Y}{Z}$, so the pixels are unchanged.
+
+**(b)** Every measurement is unchanged by the scaling, so the reprojection error is identical for every value of $s$. The cost function has a whole family of minima, and no amount of data can distinguish them. The scale is unobservable, not just poorly estimated.
+
+**(c)**
+
+- A stereo camera with a known baseline (Week 12, Exercise 5).
+- An object of known size in the scene (the Perspective-n-Point problem, e.g., P3P with known distances between three points).
+- Another sensor that measures metric quantities, such as an IMU (accelerations), wheel odometry, GPS, or a range sensor.
+
+**(d)** New 3D points are triangulated from pairs of frames, and their depth is expressed in the current scale. During an in-place rotation, there is no baseline between frames, so new points cannot be triangulated reliably and their depths are essentially unconstrained. When the camera starts translating again, the new points can end up at a different scale than the old ones, and the estimated trajectory changes scale.
+
+**(e)** Rotation: yes. For a point infinitely far away, $\mathbf{x} = R\mathbf{x}' + \mathbf{t}$ is dominated by $R\mathbf{x}'$, so its bearing only changes when the camera rotates, like a star used for navigation. Translation: essentially no, since translating the camera does not change the bearing of a point at infinity.
+:::
+
+## Exercise 3 - Visual Odometry Drift
+
+**(a)** Visual odometry composes frame-to-frame transformations: $T_k = T_{k-1}T_{k,k-1}$. Explain why the estimation errors accumulate over time, and why the uncertainty of $C_k$ combines the uncertainty of $C_{k-1}$ with that of $T_{k,k-1}$.
+
+**(b)** A robot drives straight, $1$ m per frame, for $100$ frames. Each frame-to-frame estimate has a small heading error of $0.1°$, always in the same direction. Estimate the final heading error and the final lateral position error. *Hint:* $\sum_{k=1}^{100} k = 5050$, and use $\sin\epsilon \approx \epsilon$.
+
+**(c)** Compare your answer to lecture's example, which had a $6.5$ m position error after a $400$ m trajectory. Why is a small heading error so harmful?
+
+**(d)** How does loop closure correct drift?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Each relative transformation $T_{k,k-1}$ is estimated from noisy features and has some error. The pose $T_k$ is the product of all relative transformations so far, so every error is carried into all subsequent poses, and nothing in pure visual odometry ever removes it. Linearizing $T_k = T_{k-1}T_{k,k-1}$ with respect to both factors gives $\Sigma_k \approx J_1\Sigma_{k-1}J_1^\T + J_2\Sigma_{T}J_2^\T$, where $J_1$ and $J_2$ are the Jacobians with respect to $T_{k-1}$ and $T_{k,k-1}$. This is the same structure as the EKF prediction step, and the uncertainty grows without bound.
+
+**(b)** After $k$ frames, the heading error is $0.1k$ degrees, so the final heading error is $10°$. During frame $k$, the robot moves $1$ m in a direction that is off by $0.1k°$, so the lateral error is approximately
+$$
+\sum_{k=1}^{100} \sin(0.1k°) \approx \frac{0.1\pi}{180}\sum_{k=1}^{100} k = 0.001745 \times 5050 \approx 8.8 \text{ m},
+$$
+after only $100$ m.
+
+**(c)** The heading error is integrated twice: it grows linearly with the number of frames, and the position error is the sum of the heading errors, so it grows quadratically. A $0.1°$ per frame bias is small enough to be hard to detect, but it produces an error comparable to lecture's $6.5$ m within $100$ m. This is why gyroscopes or points at infinity are so valuable for constraining the rotation.
+
+**(d)** When the robot recognizes a place it has visited before, it adds a constraint between the current pose and the old pose. This constraint is accurate, since it does not depend on the long chain of accumulated relative transformations. Optimizing the whole trajectory with this constraint (as in GraphSLAM) distributes the accumulated error along the loop.
+:::
+
+## Exercise 4 - Outliers and RANSAC
+
+Lecture showed how outliers (wrong feature matches) corrupt motion estimation. RANSAC is the standard way to deal with them: repeatedly fit a model to a random minimal set of $s$ matches, count how many other matches agree with it (the inliers), and keep the model with the most inliers.
+
+**(a)** Why do outliers have such a large effect on a least squares estimate?
+
+**(b)** Let $w$ be the fraction of inliers. Show that the number of iterations needed to draw at least one all-inlier sample with probability $p$ is
+$$
+N = \frac{\log(1 - p)}{\log(1 - w^s)}.
+$$
+
+**(c)** Compute $N$ for $p = 0.99$ and $w = 0.5$, for the $5$-point algorithm ($s = 5$) and for an $8$-point algorithm ($s = 8$). What would $N$ be if the motion model only needed $s = 1$ match (e.g., a planar robot with a known motion model)?
+
+**(d)** For estimating the essential matrix, how would you decide whether a match is an inlier?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Least squares minimizes the sum of squared residuals, so a single match with a large error contributes a huge term to the cost, and the solution shifts a lot to reduce it. Equivalently, least squares is maximum likelihood under Gaussian noise, which assigns essentially zero probability to large errors, so it treats an outlier as extremely informative.
+
+**(b)** A random sample of $s$ matches is all inliers with probability $w^s$ (approximately, for many matches). The probability that all $N$ samples contain at least one outlier is $(1 - w^s)^N$. Setting this to $1 - p$ and solving for $N$ gives the formula.
+
+**(c)**
+
+- $s = 5$: $N = \frac{\log 0.01}{\log(1 - 1/32)} \approx 145$.
+- $s = 8$: $N = \frac{\log 0.01}{\log(1 - 1/256)} \approx 1177$.
+- $s = 1$: $N = \frac{\log 0.01}{\log 0.5} \approx 7$.
+
+The number of iterations grows exponentially with the size of the minimal set, which is why minimal solvers (and motion models that reduce the number of unknowns) matter so much.
+
+**(d)** Compute the distance from each point to the epipolar line predicted by $E$ (in pixels), and count the match as an inlier if this distance is below a threshold of a few pixels, chosen according to the feature localization noise. After RANSAC, $E$ is re-estimated using all inliers.
+:::
+
+## Exercise 5 - Bundle Adjustment and Visual SLAM
+
+The bundle adjustment (structure from motion) cost from lecture optimizes both the camera poses and the 3D points:
+$$
+\min_{\{{}^k_wR,\, {}^k\mathbf{t}_{kw}\},\, \{{}^w\mathbf{p}_j\}} \sum_{k, j} \left\|\tilde{\mathbf{z}}^{(k, j)} - h_{\text{pinhole}}\left({}^k_wR\,{}^w\mathbf{p}_j + {}^k\mathbf{t}_{kw}\right)\right\|^2.
+$$
+
+**(a)** Compare this to the triangulation problem (Week 12, Exercise 6) and the camera localization problem. Which variables are known and which are unknown in each?
+
+**(b)** A sequence has $K = 10$ cameras and $N = 1000$ points, and each point is seen by $5$ cameras. Count the unknowns and the scalar measurements.
+
+**(c)** Even with many more measurements than unknowns, the problem has $7$ directions in which the cost does not change for a monocular camera. What are they? How can they be removed?
+
+**(d)** Each residual depends on only one camera and one point. What structure does this give the Jacobian, and why does it matter?
+
+**(e)** According to lecture, how does visual SLAM differ from bundle adjustment?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+
+- Triangulation: camera poses known, 3D points unknown.
+- Camera localization (visual odometry): 3D points unknown and not estimated. We use the epipolar constraint instead of the reprojection error, since the reprojection error requires known 3D points.
+- Bundle adjustment: both camera poses and 3D points are unknown and jointly estimated.
+
+**(b)** Unknowns: $6 \times 10 + 3 \times 1000 = 3060$. Measurements: $1000 \times 5 \times 2 = 10000$ scalar pixel coordinates.
+
+**(c)** $6$ degrees of freedom come from moving the whole reconstruction (all cameras and points) by a rigid transformation, which does not change any relative geometry. The seventh is the global scale (Exercise 2). These are removed by fixing the first camera's pose and fixing the scale, e.g., by setting the distance between the first two cameras to $1$, or by adding a metric measurement.
+
+**(d)** Each row of the Jacobian has nonzero entries only in the $6$ columns of one camera and the $3$ columns of one point, so the Jacobian is very sparse. The normal equations $J^\T J$ then have a block structure (the "arrowhead" structure) that sparse solvers can exploit, for example by eliminating the points first using the Schur complement. Without this, solving with $3060$ unknowns would be much slower, and large problems would be infeasible.
+
+**(e)** Visual SLAM may additionally include loop closure constraints, a dynamics model connecting consecutive poses, and estimates of velocities and accelerations (e.g., from an IMU). It also typically runs online and incrementally, while bundle adjustment is a batch optimization over all images.
+:::
+
+## Exercise 6 - Optical Flow and Lucas-Kanade
+
+**(a)** Starting from brightness constancy $I(x, y, t) = I(x + u, y + v, t + 1)$ and a first-order Taylor expansion, derive the optical flow constraint $I_xu + I_yv + I_t = 0$.
+
+**(b)** How many unknowns and equations does this give per pixel? Show that if $(u, v)$ satisfies the constraint, so does $(u + u', v + v')$ for any $(u', v')$ perpendicular to $\nabla I$. What is this problem called?
+
+**(c)** Lucas-Kanade assumes that all pixels in a small window share the same flow. For a window with three pixels with $(I_x, I_y, I_t) = (1, 0, -2)$, $(0, 1, -1)$, and $(1, 1, -3)$, set up $A\mathbf{d} = \mathbf{b}$ and solve the normal equations for $\mathbf{d} = (u, v)$.
+
+**(d)** Show that the Lucas-Kanade normal equations matrix $A^\T A$ is the matrix $M$ from the Harris corner detector (Week 12, Exercise 4). What happens on an edge? What does this tell you about which pixels to track?
+
+**(e)** Implement Lucas-Kanade for a single window in numpy, and test it on a Gaussian blob shifted by $(0.3, -0.2)$ pixels.
+
+**(f)** When do the assumptions of optical flow break down, and how can large motions be handled?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $I(x + u, y + v, t + 1) \approx I(x, y, t + 1) + I_xu + I_yv$. Substituting into brightness constancy gives $0 \approx [I(x, y, t + 1) - I(x, y, t)] + I_xu + I_yv = I_t + I_xu + I_yv$.
+
+**(b)** One equation and two unknowns. If $\nabla I \cdot (u', v') = 0$, then $I_x(u + u') + I_y(v + v') + I_t = (I_xu + I_yv + I_t) + \nabla I \cdot (u', v') = 0$. Only the flow component along the gradient can be measured, and the component along an edge cannot. This is the aperture problem.
+
+**(c)**
+$$
+A = \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}, \quad \mathbf{b} = -\begin{bmatrix} -2 \\ -1 \\ -3 \end{bmatrix} = \begin{bmatrix} 2 \\ 1 \\ 3 \end{bmatrix}, \quad A^\T A = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}, \quad A^\T\mathbf{b} = \begin{bmatrix} 5 \\ 4 \end{bmatrix}.
+$$
+Solving $A^\T A\,\mathbf{d} = A^\T\mathbf{b}$ gives $\mathbf{d} = \frac{1}{3}\begin{bmatrix} 2 & -1 \\ -1 & 2 \end{bmatrix}\begin{bmatrix} 5 \\ 4 \end{bmatrix} = (2, 1)$. All three constraints are satisfied exactly.
+
+**(d)** The rows of $A$ are $(I_x(\mathbf{p}_i), I_y(\mathbf{p}_i))$, so $A^\T A = \sum_i \begin{bmatrix} I_x^2 & I_xI_y \\ I_xI_y & I_y^2 \end{bmatrix} = M$. On an edge, $M$ has a zero (or tiny) eigenvalue, so $A^\T A$ is singular (or ill-conditioned), and the flow along the edge is undetermined, which is the aperture problem again. Pixels where both eigenvalues are large, i.e., corners, are the ones that can be tracked reliably. This is the idea behind the Shi-Tomasi "good features to track" detector and the KLT tracker.
+
+**(e)**
+
+```python
+import numpy as np
+
+y, x = np.mgrid[0:31, 0:31].astype(float)
+
+def blob(cx, cy, s=4.0):
+    return np.exp(-((x - cx)**2 + (y - cy)**2) / (2 * s**2))
+
+I0 = blob(15, 15)
+I1 = blob(15.3, 14.8)                      # shifted by (u, v) = (0.3, -0.2)
+
+Iy, Ix = np.gradient(I0)                   # np.gradient returns d/drow, d/dcol
+It = I1 - I0
+win = slice(10, 21)                        # 11 x 11 window around the blob
+A = np.stack([Ix[win, win].ravel(), Iy[win, win].ravel()], axis=1)
+b = -It[win, win].ravel()
+print(np.linalg.lstsq(A, b, rcond=None)[0])  # approximately [0.31, -0.20]
+```
+
+The small error comes from the first-order Taylor approximation and the finite-difference gradients.
+
+**(f)** Brightness constancy fails with illumination changes, specular reflections, auto-exposure, and occlusions. The small motion assumption fails when objects move more than about a pixel between frames, so the Taylor expansion is no longer accurate. The spatial coherence assumption fails at motion boundaries, where a window contains two different motions. Large motions are handled with an image pyramid: estimate the flow on a heavily downsampled image, where the motion is small, then use it to initialize the estimate at the next finer level, and iterate Lucas-Kanade at each level.
+:::

@@ -89,11 +89,11 @@ Today’s slides have been influenced by: Pieter Abbeel (ECE287), Sergey Levine 
 
 ## What you can do with LQR control
 
-{{< video https://www.youtube.com/watch?v=DhpYfjwm0Zs width=600 height="400" >}}
+{{< video https://www.youtube.com/watch?v=DhpYfjwm0Zs width="80%" height="80%">}}
 
 ## What you can do with (variants of) LQR control
 
-{{< video https://youtu.be/VCdxqn0fcnE width=600 height="400" >}}
+{{< video https://youtu.be/VCdxqn0fcnE width="80%" height="80%" >}}
 
 [Pieter Abbeel, Helicopter Aerobatics]{.small-font}
 
@@ -127,7 +127,7 @@ $$
 
 :::::::: columns
 ::::: {.column width="70%"}
-![](img/Lecture4_30.png){.absolute width="30" height="30" top="90" left="0"} 
+![](img/Lecture4_30.png){.absolute width="30" height="30" top="102" left="-32"} 
 
 - Omnidirectional robot
 
@@ -172,7 +172,7 @@ $$
 
 ::::: columns
 ::: {.column width="70%" .medium-font}
-![](img/Lecture4_30.png){.absolute width="30" height="30" top="90" left="0"} 
+![](img/Lecture4_30.png){.absolute width="30" height="30" top="97" left="-32"} 
 
 - Omnidirectional robot
 
@@ -203,15 +203,15 @@ $$
 ::: {.column width="30%" .medium-font}
 ![](img/Lecture4_31.jpg)
 
-{{< video https://youtu.be/fEImNJQ3hUM width=400 height="250" >}}
+{{< video https://youtu.be/fEImNJQ3hUM width="100%" height="80%" >}}
 :::
 :::::
 
 . . .
 
-![](img/x.png){.absolute bottom="49.5%" left="0" width="35" height="35"}
+![](img/x.png){.absolute top="283" left="-35" width="35" height="35"}
 
-![](img/o.png){.absolute bottom="185" left="40%" width="30" height="30"}
+![](img/o.png){.absolute top="452" left="40%" width="30" height="30"}
 
 ## The goal of LQR
 
@@ -587,9 +587,9 @@ $(R + B^T P_0 B)\mathbf{u} = -B^T P_0 A\mathbf{x}$
 
 So, the optimal control for the last time step is:
 
-$\mathbf{u} = -(R + B^TP_0B)^{-1} B^TP_0A_x$
+$\mathbf{u} = -(R + B^TP_0B)^{-1} B^TP_0A\textbf{x}$
 
-$\mathbf{u} = K_1x$
+$\mathbf{u} = K_1\textbf{x}$
 
 [Linear controller in terms of the state]{.red}
 
@@ -671,59 +671,42 @@ the recursion]{.red}
 
 ## Finite-Horizon LQR: algorithm summary
 
-:::{.medium-font}
-$P_0 = Q$
-
-// n is the \# of steps left
-
-for n = 1…N
-
-$K_n = -(R + B^T P_{n-1} B)^{-1} B^T P_{n-1} A$
-
-$P_n = Q + K_n^T R K_n + (A + B K_n)^T P_{n-1} (A + B K_n)$
-
-Optimal control for time t = N – n is $u_t = K_t x_t$ with cost-to-go $J_t(x) = x^T P_tx$
-
-where the states are predicted forward in time according to linear dynamics
+::::: columns
+::: {.column width="40%"}
+$P_0 = Q$\
+// n is the number of steps left
 :::
 
-. . .
+::: {.column .red-annotation .fragment width="60%" fragment-index="3"}
+Potential problem for controls $\mathbf{u}$ of dimension $k$ \>\> 100:\
+Matrix inversion is expensive: $O(k^{2.3})$ for the best known algorithm and $O(k^3)$ for Gaussian Elimination.
+$\swarrow$
+:::
+:::::
 
-![](img/lqr-algosum1.png){.absolute left="50%" top="28%" width="40%" height="23%"}
-
-. . .
-
-![](img/algo-sum2.png){.absolute right="10" bottom="31%" width="25%" height="15%"}
-
-## Finite-Horizon LQR: algorithm summary
-
-:::{.medium-font}
-
-<br> 
-
-$P_0 = Q$
-
-// n is the \# of steps left
-
+::::: columns
+::: {.column width="80%"}
 for n = 1…N
 
-$K_n = -(R + B^T P_{n-1} B)^{-1} B^T P_{n-1} A$
-
-$P_n = Q + K_n^T R K_n + (A + B K_n)^T P_{n-1} (A + B K_n)$
-
-Optimal control for time t = N – n is $u_t = K_t x_t$ with cost-to-go $J_t(x) = x^T P_tx$
-
-where the states are predicted forward in time according to linear dynamics
-::: 
-
-
-::: {.red-annotation .absolute top=150 left=255}
-Potential problem for states of dimension \>\> 100:\
-Matrix inversion is expensive: O(k\^2.3) for the best\
-known algorithm and O(k\^3) for Gaussian Elimination
-
-![](img/downarrow2.png){width="70" height="70"}
+|       $K_n = -(R + B^T P_{n-1} B)^{-1} B^T P_{n-1} A$
+|       $P_n = Q + K_n^T R K_n + (A + B K_n)^T P_{n-1} (A + B K_n)$
 :::
+
+::: {.column .red-annotation .fragment width="70%" fragment-index="1"}
+One pass **backward** in time:\
+Matrix gains are precomputed based on the dynamics and the instantaneous cost
+:::
+:::::
+
+::::: columns
+::: {.column width="80%"}
+Optimal control parameters for time t = N – n are computed backwards in time: $\mathbf{u}_t = K_t \mathbf{x}_t$ with cost-to-go $J_t(\mathbf{x}) = \mathbf{x}^T P_t \mathbf{x}$, whereas the states are predicted forward in time according to linear dynamics
+:::
+
+::: {.column .red-annotation .fragment width="70%" fragment-index="2"}
+One pass **forward** in time: predict states, compute controls and cost-to-go
+:::
+:::::
 
 
 ## LQR summary
@@ -764,17 +747,6 @@ $$
 
 -   Turns out, the proof and the algorithm are almost the same
 
-$P_0 = Q_N$
-
-// n is the \# of steps left
-
-for n = 1…N
-
-$K_n = -\big( R_{N-n} + B_{N-n}^T P_{n-1} B_{N-n} \big)^{-1} B_{N-n}^T P_{n-1} A_{N-n}$
-
-$P_n = Q_{N-n} + K_n^T R_{N-n} K_n + (A_{N-n} + B_{N-n} K_n)^T P_{n-1} (A_{N-n} + B_{N-n} K_n)$
-
-Optimal controller for n-step horizon is $u_n = K_n x_n$ with cost-to-go $J_n(x) = x^T P_n x$
 
 ## Examples of models and solutions with LQR {.center}
 
@@ -1019,7 +991,7 @@ $$
 \begin{align}
 \bar{\mathbf{x}}_{t+1} &= \mathbf{x}_{t+1} - \mathbf{x}^{*}_{t+1} \\ 
 &= A \mathbf{x}_t + B \mathbf{u}_t - \mathbf{x}^{*}_{t+1} \\ 
-&= A \bar{\mathbf{x}}_t + B \mathbf{u}_t - \mathbf{x}^{*}_{t+1} - A \mathbf{x}^{*}_t 
+&= A \bar{\mathbf{x}}_t + B \mathbf{u}_t - \mathbf{x}^{*}_{t+1} + A \mathbf{x}^{*}_t 
 \end{align}
 $$
 
@@ -1213,9 +1185,3 @@ $$
 $$
 
 [$\qquad\qquad\qquad$ Solve this via LQR]{.red-annotation}
-
-## LQR examples: code to replicate these results
-
-- [https://github.com/florianshkurti/csc477_fall19.git](https://github.com/florianshkurti/comp417.git)
-
-- Look under csc477_fall19/lqr_examples/python

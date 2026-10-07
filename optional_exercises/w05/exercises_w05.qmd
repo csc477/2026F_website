@@ -1,0 +1,248 @@
+---
+title: "Week 5 Optional Exercises: Linear Quadratic Regulator (LQR)"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 5](/lecs/w05/lec05.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+Recall the finite-horizon LQR algorithm from lecture, for dynamics $\mathbf{x}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t$ and cost $c(\mathbf{x}, \mathbf{u}) = \mathbf{x}^\T Q\mathbf{x} + \mathbf{u}^\T R\mathbf{u}$:
+$$
+P_0 = Q, \qquad
+K_n = -(R + B^\T P_{n-1}B)^{-1}B^\T P_{n-1}A, \qquad
+P_n = Q + K_n^\T R K_n + (A + BK_n)^\T P_{n-1}(A + BK_n),
+$$
+where $n$ is the number of steps left, the optimal control with $n$ steps left is $\mathbf{u} = K_n\mathbf{x}$, and the optimal cost-to-go is $J_n(\mathbf{x}) = \mathbf{x}^\T P_n\mathbf{x}$.
+
+## Exercise 1 - Which Systems Are Linear?
+
+For each system, say whether it can be written as $\mathbf{x}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t$ with constant $A$ and $B$. If so, give $A$ and $B$.
+
+**(a)** Omnidirectional robot: $x_{t+1} = x_t + v_x\delta t$, $y_{t+1} = y_t + v_y\delta t$, $\theta_{t+1} = \theta_t + \omega_z\delta t$, with $\mathbf{u} = (v_x, v_y, \omega_z)$.
+
+**(b)** Simple car: $x_{t+1} = x_t + v\cos(\theta_t)\delta t$, $y_{t+1} = y_t + v\sin(\theta_t)\delta t$, $\theta_{t+1} = \theta_t + \omega\delta t$, with $\mathbf{u} = (v, \omega)$.
+
+**(c)** A 1D double integrator $\ddot{p} = u$, discretized with time step $\delta t$ (state $\mathbf{x} = (p, v)$).
+
+**(d)** A system with a constant drift: $x_{t+1} = x_t + u_t + 1$. Show how to turn it into a linear system by augmenting the state.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Linear, with $A = I_3$ and $B = \delta t\, I_3$.
+
+**(b)** Not linear. The control $v$ is multiplied by $\cos\theta_t$ and $\sin\theta_t$, which depend on the state, so the best we can write is $\mathbf{x}_{t+1} = \mathbf{x}_t + B(\mathbf{x}_t)\mathbf{u}_t$ with a state-dependent $B$.
+
+**(c)** Linear. Using $p_{t+1} = p_t + \delta t\, v_t$ and $v_{t+1} = v_t + \delta t\, u_t$:
+$$
+A = \begin{bmatrix} 1 & \delta t \\ 0 & 1 \end{bmatrix}, \qquad B = \begin{bmatrix} 0 \\ \delta t \end{bmatrix}.
+$$
+
+**(d)** The system is affine, not linear. With the augmented state $\mathbf{z} = (x, 1)$:
+$$
+\mathbf{z}_{t+1} = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}\mathbf{z}_t + \begin{bmatrix} 1 \\ 0 \end{bmatrix} u_t.
+$$
+This is the same trick that lecture used for trajectory following.
+:::
+
+## Exercise 2 - Scalar LQR by Hand
+
+Consider the scalar system $x_{t+1} = x_t + u_t$ (so $A = B = 1$) with $Q = R = 1$.
+
+**(a)** Compute $K_1, P_1, K_2, P_2$ by hand.
+
+**(b)** With horizon $N = 2$ and initial state $x_0 = 10$, compute the optimal controls $u_0, u_1$ and states $x_1, x_2$. Add up the total cost (including the terminal cost $x_2^2$) and check that it equals $P_2 x_0^2$.
+
+**(c)** As $n \to \infty$, $P_n$ converges to a fixed point $P$. Find it analytically, along with the corresponding steady-state gain $K$.
+
+**(d)** What happens to $K_1$ as $R \to 0$? As $R \to \infty$? Interpret both limits.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** For scalars, $K_n = -\frac{P_{n-1}}{1 + P_{n-1}}$ and $P_n = 1 + K_n^2 + (1 + K_n)^2P_{n-1}$.
+
+- $P_0 = 1$.
+- $K_1 = -\frac{1}{2}$ and $P_1 = 1 + \frac{1}{4} + \frac{1}{4} \cdot 1 = 1.5$.
+- $K_2 = -\frac{1.5}{2.5} = -0.6$ and $P_2 = 1 + 0.36 + 0.16 \cdot 1.5 = 1.6$.
+
+**(b)** At $t = 0$ there are $2$ steps left, so $u_0 = K_2x_0 = -6$ and $x_1 = 4$. At $t = 1$ there is $1$ step left, so $u_1 = K_1x_1 = -2$ and $x_2 = 2$. The total cost is $(100 + 36) + (16 + 4) + 4 = 160 = P_2x_0^2 = 1.6 \cdot 100$.
+
+Note that the gains are applied in reverse order of computation: they are computed backward in time and used forward in time.
+
+**(c)** At the fixed point, substituting $K = -P/(1 + P)$ into the update and simplifying gives $P = 1 + \frac{P}{1 + P}$, i.e. $P^2 - P - 1 = 0$. The positive root is $P = \frac{1 + \sqrt{5}}{2} \approx 1.618$, and $K = -\frac{P}{1 + P} \approx -0.618$. The sequence $P_0, P_1, P_2, \ldots = 1, 1.5, 1.6, 1.615, \ldots$ converges quickly to it.
+
+**(d)** $K_1 = -\frac{P_0}{R + P_0} = -\frac{1}{R + 1}$. As $R \to 0$, controls are free and $K_1 \to -1$, which drives the state to zero in a single step ("deadbeat" control). As $R \to \infty$, controls are very expensive and $K_1 \to 0$, so the controller barely acts. The ratio between $Q$ and $R$ trades off how aggressively the state is driven to zero against how much control effort is used.
+:::
+
+## Exercise 3 - Deriving the LQR Update
+
+**(a)** Starting from
+$$
+J_1(\mathbf{x}) = \mathbf{x}^\T Q\mathbf{x} + \min_{\mathbf{u}}\left[\mathbf{u}^\T R\mathbf{u} + (A\mathbf{x} + B\mathbf{u})^\T P_0(A\mathbf{x} + B\mathbf{u})\right],
+$$
+take the gradient with respect to $\mathbf{u}$, set it to zero, and derive $K_1$.
+
+**(b)** Explain why $R + B^\T P_0B$ is invertible, and why the critical point from (a) is a minimum rather than a maximum or saddle point.
+
+**(c)** Substitute $\mathbf{u} = K_1\mathbf{x}$ back into the expression and show that $J_1(\mathbf{x}) = \mathbf{x}^\T P_1\mathbf{x}$ with $P_1$ as in the algorithm. Why is it important that $J_1$ is again quadratic?
+
+**(d)** What is the computational cost of one step of the backward recursion when $\mathbf{x} \in \R^d$ and $\mathbf{u} \in \R^k$?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Expanding, the terms that depend on $\mathbf{u}$ are $\mathbf{u}^\T R\mathbf{u} + 2\mathbf{u}^\T B^\T P_0A\mathbf{x} + \mathbf{u}^\T B^\T P_0B\mathbf{u}$. Since $R$ and $P_0$ are symmetric, the gradient is
+$$
+2R\mathbf{u} + 2B^\T P_0A\mathbf{x} + 2B^\T P_0B\mathbf{u} = 0
+\;\Rightarrow\;
+\mathbf{u} = -(R + B^\T P_0B)^{-1}B^\T P_0A\,\mathbf{x} = K_1\mathbf{x}.
+$$
+
+**(b)** $R$ is positive definite and $B^\T P_0B$ is positive semi-definite ($\mathbf{u}^\T B^\T P_0B\mathbf{u} = (B\mathbf{u})^\T P_0(B\mathbf{u}) \ge 0$), so their sum is positive definite and hence invertible. The Hessian of the objective with respect to $\mathbf{u}$ is $2(R + B^\T P_0B)$, which is positive definite, so the objective is strictly convex in $\mathbf{u}$ and the critical point is its unique global minimum.
+
+**(c)** With $\mathbf{u} = K_1\mathbf{x}$, we have $A\mathbf{x} + B\mathbf{u} = (A + BK_1)\mathbf{x}$, so
+$$
+J_1(\mathbf{x}) = \mathbf{x}^\T Q\mathbf{x} + \mathbf{x}^\T K_1^\T RK_1\mathbf{x} + \mathbf{x}^\T(A + BK_1)^\T P_0(A + BK_1)\mathbf{x} = \mathbf{x}^\T P_1\mathbf{x}.
+$$
+Because $J_1$ has the same form as $J_0$ (a quadratic with a positive definite matrix), the exact same derivation applies at every step. This gives a closed-form recursion and a linear controller at every time step.
+
+**(d)** The dominant costs are matrix products of size $d \times d$ ($O(d^3)$) and inverting the $k \times k$ matrix $R + B^\T P_{n-1}B$ ($O(k^3)$ with Gaussian elimination). So each step costs roughly $O(d^3 + k^3)$, and the full backward pass costs $O(N(d^3 + k^3))$.
+:::
+
+## Exercise 4 - LQR for an Omnidirectional Vehicle with Friction
+
+Consider the 1D version of lecture's example #1: $m\ddot{p} = u - \alpha\dot{p}$, with $m = 1$, $\alpha = 0.5$, and $\delta t = 0.1$, and state $\mathbf{x} = (p, v)$.
+
+**(a)** Write down $A$ and $B$ for the discretized system.
+
+**(b)** Write a numpy function `lqr(A, B, Q, R, N)` that returns the list of gains $K_N, \ldots, K_1$ (in the order they are used, forward in time), and simulate the closed-loop system from $\mathbf{x}_0 = (10, -5)$ for $N = 100$ steps with $Q = I$ and $R = \rho$.
+
+**(c)** Compare the trajectories for $\rho = 100$ and $\rho = 1$. Which converges faster? Which uses larger controls?
+
+**(d)** LQR does not let us put hard bounds on the controls. Suppose the motor can only produce $|u| \le 2$. What could you do?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+$$
+A = \begin{bmatrix} 1 & \delta t \\ 0 & 1 - \alpha\delta t/m \end{bmatrix} = \begin{bmatrix} 1 & 0.1 \\ 0 & 0.95 \end{bmatrix}, \qquad
+B = \begin{bmatrix} 0 \\ \delta t/m \end{bmatrix} = \begin{bmatrix} 0 \\ 0.1 \end{bmatrix}.
+$$
+
+**(b)**
+
+```python
+import numpy as np
+
+def lqr(A, B, Q, R, N):
+    P = Q.copy()
+    gains = []
+    for _ in range(N):
+        K = -np.linalg.solve(R + B.T @ P @ B, B.T @ P @ A)
+        P = Q + K.T @ R @ K + (A + B @ K).T @ P @ (A + B @ K)
+        gains.append(K)
+    return gains[::-1]
+
+A = np.array([[1.0, 0.1], [0.0, 0.95]])
+B = np.array([[0.0], [0.1]])
+Q = np.eye(2)
+
+for rho in [100.0, 1.0]:
+    R = np.array([[rho]])
+    x = np.array([10.0, -5.0])
+    xs, us = [x], []
+    for K in lqr(A, B, Q, R, N=100):
+        u = K @ x
+        x = A @ x + B @ u
+        xs.append(x)
+        us.append(u)
+    print(rho, xs[-1], np.abs(np.array(us)).max())
+```
+
+`np.linalg.solve` is used instead of explicitly inverting the matrix, which is cheaper and more accurate. The list is reversed because the first gain computed ($K_1$, one step left) is the last one used.
+
+**(c)** With $\rho = 1$ controls are cheap, so the controller applies large forces and the state converges to zero much faster. With $\rho = 100$ the controls are much smaller and the state converges slowly. Running the code above, after $100$ steps ($10$ s) the position is about $-0.15$ with $\rho = 100$ but about $-0.002$ with $\rho = 1$, while the largest control magnitude is about $0.1$ with $\rho = 100$ and about $3.0$ with $\rho = 1$. In both cases the controls also go to zero, because the state does.
+
+**(d)** Options include increasing $\rho$ until the controls stay within bounds for the expected range of initial states, clipping the LQR control to $[-2, 2]$ (which loses the optimality guarantee and can destabilize the system), or switching to a method that handles constraints explicitly, such as model predictive control (MPC), which solves a constrained optimization problem at every time step.
+:::
+
+## Exercise 5 - Trajectory Following
+
+We want the linear system $\mathbf{x}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t$ to follow a reference trajectory $\mathbf{x}_0^*, \mathbf{x}_1^*, \ldots, \mathbf{x}_N^*$. Define the error $\bar{\mathbf{x}}_t = \mathbf{x}_t - \mathbf{x}_t^*$.
+
+**(a)** Show that $\bar{\mathbf{x}}_{t+1} = A\bar{\mathbf{x}}_t + B\mathbf{u}_t + \mathbf{c}_t$, and find $\mathbf{c}_t$.
+
+**(b)** Rewrite the error dynamics as a linear system in the augmented state $\mathbf{z}_t = (\bar{\mathbf{x}}_t, 1)$. What should $\bar{Q}$ be so that the cost only penalizes the tracking error and not the constant $1$? Is the resulting system time-invariant?
+
+**(c)** For the vehicle with friction from Exercise 4, suppose the reference is a single stationary state with $p^* = 3$ and $v^* = 0$. Compute $\mathbf{c}_t$. What does the result tell you?
+
+**(d)** Now suppose the reference moves at constant velocity $v^* = 1$ m/s. Compute $\mathbf{c}_t$, and find the constant control $u^*$ that keeps the vehicle exactly on the reference.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Substituting $\mathbf{x}_t = \bar{\mathbf{x}}_t + \mathbf{x}_t^*$:
+$$
+\bar{\mathbf{x}}_{t+1} = A\mathbf{x}_t + B\mathbf{u}_t - \mathbf{x}_{t+1}^* = A\bar{\mathbf{x}}_t + B\mathbf{u}_t + \underbrace{A\mathbf{x}_t^* - \mathbf{x}_{t+1}^*}_{\mathbf{c}_t}.
+$$
+The vector $\mathbf{c}_t$ is how far the uncontrolled dynamics would move off the reference in one step.
+
+**(b)**
+$$
+\mathbf{z}_{t+1} = \begin{bmatrix} A & \mathbf{c}_t \\ \mathbf{0}^\T & 1 \end{bmatrix}\mathbf{z}_t + \begin{bmatrix} B \\ \mathbf{0}^\T \end{bmatrix}\mathbf{u}_t,
+\qquad
+\bar{Q} = \begin{bmatrix} Q & \mathbf{0} \\ \mathbf{0}^\T & 0 \end{bmatrix}.
+$$
+($\bar{Q}$ is then only positive semi-definite, which is fine in practice.) In general $\mathbf{c}_t$ changes with $t$, so the system is time-varying and we use the time-varying version of LQR, with $\bar{A}_t$ in place of $A$ in the recursion.
+
+**(c)** $A\mathbf{x}^* = (3 + 0.1 \cdot 0,\; 0.95 \cdot 0) = (3, 0) = \mathbf{x}^*$, so $\mathbf{c}_t = \mathbf{0}$. A state at rest is an equilibrium of the uncontrolled dynamics, so the problem reduces to standard LQR on $\bar{\mathbf{x}}$.
+
+**(d)** With $\mathbf{x}_t^* = (p_0 + t\delta t,\; 1)$, we get $A\mathbf{x}_t^* = (p_0 + t\delta t + 0.1,\; 0.95)$ and $\mathbf{x}_{t+1}^* = (p_0 + (t+1)\delta t,\; 1)$, so $\mathbf{c}_t = (0, -0.05)$. Friction slows the vehicle by $0.05$ m/s every step. To stay on the reference we need $B u^* + \mathbf{c}_t = \mathbf{0}$, i.e. $0.1u^* = 0.05$, so $u^* = 0.5 = \alpha v^*$: the control exactly cancels friction. Note that an LQR cost that penalizes $\|\mathbf{u}\|^2$ (rather than $\|\mathbf{u} - u^*\|^2$) will trade off some tracking error against this nonzero control.
+:::
+
+## Exercise 6 - Nonlinear Dynamics and Linearization
+
+A pendulum of mass $m$ and length $l$ has angle $\theta$ measured from the downward vertical, and a motor applies torque $u$ at the pivot:
+$$
+\ddot\theta = -\frac{g}{l}\sin\theta + \frac{u}{ml^2}.
+$$
+Use the state $\mathbf{x} = (\theta, \dot\theta)$ and forward Euler with time step $\delta t$.
+
+**(a)** Write down the discrete-time dynamics $\mathbf{x}_{t+1} = f(\mathbf{x}_t, u_t)$. Is it linear?
+
+**(b)** We want to stabilize the pendulum upright, at $\theta = \pi$. Find the equilibrium control $u^*$ and linearize the dynamics around $(\mathbf{x}^*, u^*)$, giving $A$ and $B$ for the error state $\bar{\mathbf{x}} = \mathbf{x} - \mathbf{x}^*$.
+
+**(c)** Repeat (b) for holding the pendulum horizontal, at $\theta = \pi/2$. Why does lecture say that with nonlinear dynamics we cannot assume $u = 0$ keeps the system at the target?
+
+**(d)** In the upright case, the linearization is only accurate for small $\bar\theta$. Describe the idea behind iteratively solving nonlinear optimal control problems with LQR (as in lecture's last slides).
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+$$
+\theta_{t+1} = \theta_t + \delta t\,\dot\theta_t, \qquad
+\dot\theta_{t+1} = \dot\theta_t + \delta t\left(-\frac{g}{l}\sin\theta_t + \frac{u_t}{ml^2}\right).
+$$
+It is not linear because of the $\sin\theta_t$ term.
+
+**(b)** At $\theta = \pi$, $\sin\theta = 0$, so the pendulum stays still with $u^* = 0$. The Jacobian of $-\frac{g}{l}\sin\theta$ is $-\frac{g}{l}\cos\theta = \frac{g}{l}$ at $\theta = \pi$. So
+$$
+A = \begin{bmatrix} 1 & \delta t \\ \frac{g}{l}\delta t & 1 \end{bmatrix}, \qquad B = \begin{bmatrix} 0 \\ \frac{\delta t}{ml^2} \end{bmatrix}.
+$$
+The positive entry $\frac{g}{l}\delta t$ means that small deviations grow (the upright position is unstable without control), which LQR then corrects.
+
+**(c)** At $\theta = \pi/2$, gravity exerts a torque, so the equilibrium requires $\frac{u^*}{ml^2} = \frac{g}{l}$, i.e. $u^* = mgl$. The Jacobian is $-\frac{g}{l}\cos(\pi/2) = 0$, so
+$$
+\bar{\mathbf{x}}_{t+1} \approx \begin{bmatrix} 1 & \delta t \\ 0 & 1 \end{bmatrix}\bar{\mathbf{x}}_t + \begin{bmatrix} 0 \\ \frac{\delta t}{ml^2} \end{bmatrix}(u_t - u^*).
+$$
+With $u = 0$ the pendulum would fall. In general, nonlinear systems may need a nonzero control to stay at the target, so we linearize around $(\mathbf{x}^*, u^*)$ with $f(\mathbf{x}^*, u^*) = \mathbf{x}^*$ and let LQR compute the deviation $u - u^*$.
+
+**(d)** Start with a nominal sequence of controls and roll it out through the nonlinear dynamics to get a nominal trajectory. Linearize the dynamics (and, if needed, quadratize the cost) around this trajectory to get a time-varying LQR problem in the deviations, and solve it. Apply the resulting controls to the nonlinear system to get a new nominal trajectory, and repeat until convergence. This is the idea behind iterative LQR (iLQR) and differential dynamic programming (DDP).
+:::
+
+## Exercise 7 - LQR vs. PID
+
+**(a)** Lecture gave several reasons to prefer LQR over PID for multi-dimensional systems. Summarize three of them.
+
+**(b)** Lecture also listed drawbacks of LQR. Name two, and for each suggest a situation where it matters.
+
+**(c)** The dynamic programming recursion used in LQR also appeared in Lecture 4. Compare the LQR recursion $J_n(\mathbf{x}) = \min_{\mathbf{u}}[c(\mathbf{x}, \mathbf{u}) + J_{n-1}(A\mathbf{x} + B\mathbf{u})]$ with the graph search recursion $D(v) = \min_{u \in N(v)}[d(v, u) + D(u)]$. What makes the LQR case solvable in closed form even though the state space is continuous?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** (1) PID gains are tuned for a small region of the state space and have no formal guarantees outside it. (2) With many state and control dimensions, tuning separate PID loops ignores the interactions between variables, while LQR handles the coupled system jointly through $A$, $B$, $Q$, and $R$. (3) Covering different regions of the state space with PID requires gain scheduling, which takes a lot of effort, whereas LQR computes optimal gains directly from the model and cost.
+
+**(b)** (1) LQR requires linear dynamics, which most robots (cars, pendulums, quadrotors) only approximately satisfy near an operating point. (2) It cannot directly encode obstacles, state constraints, or hard control bounds, which matters, for example, when a car must stay in its lane while respecting steering limits.
+
+**(c)** Both compute the optimal cost-to-go by minimizing the immediate cost plus the cost-to-go of the next state. In graph search the minimization is over a finite set of neighbors and $D$ is stored as a table. In LQR the state and control spaces are continuous, but because the dynamics are linear and the cost is quadratic, $J_n$ stays quadratic, so it is fully described by the matrix $P_n$ and the minimization over $\mathbf{u}$ has a closed-form solution.
+:::

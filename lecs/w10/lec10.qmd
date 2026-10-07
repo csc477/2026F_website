@@ -331,7 +331,7 @@ $$\begin{align}
 
 $$\begin{align*}
 z_{t+1} &= h(x_{t+1}) + n_{t+1} \\
-&\approx h(\mu_{t+1|t}) + \frac{\partial h}{\partial x}(\mu_{t+1|t})(x_t - \mu_{t+1|t}) + n_{t+1} \\
+&\approx h(\mu_{t+1|t}) + \frac{\partial h}{\partial x}(\mu_{t+1|t})(x_{t+1} - \mu_{t+1|t}) + n_{t+1} \\
 &= h(\mu_{t+1|t}) + H_{t+1}(x_{t+1} - \mu_{t+1|t}) + n_{t+1} \\
 &= H_{t+1}x_{t+1} + \color{red}\boxed{\color{black}h(\mu_{t+1|t}) - H_{t+1}\mu_{t+1|t}} \color{black} + n_{t+1} \\
 &= H_{t+1}x_{t+1} + \bar{c}_{t+1} + n_{t+1}
@@ -408,7 +408,7 @@ $n_t \sim \mathcal{N}(0, R)$
 $$bel(x_0) \sim \mathcal{N}(\mu_{0|0}, \Sigma_{0|0})$$
 
 **Prediction Step**
-$$\mu_{t+1|t} = f(\mu_{t |t}, \mu_t)$$
+$$\mu_{t+1|t} = f(\mu_{t |t}, u_t)$$
 $$\Sigma_{t+1|t} = F_t\Sigma_{t|t}F^T_t + GQG^T$$
 
 **Update Step**
@@ -514,7 +514,7 @@ the robot to a landmark.
 :::
 
 :::{.absolute bottom=50 right=150 .small-font}
-$$z_t^{(i)} = h_i(x_t) = \left[ \begin{pmatrix} \sqrt{(p_x(t)-l_x^{(i)})^2 + (p_y(t)-l_y^{(i)})^2} \\ \text{atan2}(p_y(t)-l_y^{(i)}, p_x(t)-l_x^{(i)})-\theta(t) \end{pmatrix} \right] + n_t$$
+$$z_t^{(i)} = h_i(x_t) = \left[ \begin{pmatrix} \sqrt{(p_x(t)-l_x^{(i)})^2 + (p_y(t)-l_y^{(i)})^2} \\ \text{atan2}(l_y^{(i)}-p_y(t), l_x^{(i)}-p_x(t))-\theta(t) \end{pmatrix} \right] + n_t$$
 :::
 
 ## Estimation Sequence (1)

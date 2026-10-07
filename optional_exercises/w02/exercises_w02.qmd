@@ -1,0 +1,238 @@
+---
+title: "Week 2 Optional Exercises: Kinematics and Dynamics"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 2](/lecs/w02/lec02.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+Throughout, we use the conventions from lecture: $\mathbf{R}_x(\alpha), \mathbf{R}_y(\alpha), \mathbf{R}_z(\alpha)$ are counter-clockwise rotations about the corresponding axis, ${}^W_B\mathbf{R}$ rotates coordinates from the Body frame to the World frame, and quaternions are written as $\mathbf{q} = [x, y, z, w]$ with $w$ the scalar part.
+
+## Exercise 1 - Rotation Matrices
+
+**(a)** Write down $\mathbf{R}_z(90°)$ and $\mathbf{R}_x(90°)$. Apply each to the vector $(1, 0, 0)^\T$.
+
+**(b)** Compute $\mathbf{R}_z(90°)\mathbf{R}_x(90°)$ and $\mathbf{R}_x(90°)\mathbf{R}_z(90°)$. Are they equal? What does this tell you about composing 3D rotations, compared to 2D rotations?
+
+**(c)** Verify that $\mathbf{M} = \mathbf{R}_z(90°)\mathbf{R}_x(90°)$ satisfies $\mathbf{M}^\T\mathbf{M} = \mathbf{I}$ and $\det \mathbf{M} = 1$.
+
+**(d)** Show that $\mathbf{R}_z(90°) + \mathbf{R}_z(90°)$ is not a rotation matrix. Why is this relevant when, for example, averaging several orientation estimates?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+$$
+\mathbf{R}_z(90°) = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}, \qquad
+\mathbf{R}_x(90°) = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & 1 & 0 \end{bmatrix}.
+$$
+$\mathbf{R}_z(90°)(1,0,0)^\T = (0,1,0)^\T$, and $\mathbf{R}_x(90°)(1,0,0)^\T = (1,0,0)^\T$ (the x-axis is unchanged by a rotation about itself).
+
+**(b)**
+$$
+\mathbf{R}_z(90°)\mathbf{R}_x(90°) = \begin{bmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{bmatrix}, \qquad
+\mathbf{R}_x(90°)\mathbf{R}_z(90°) = \begin{bmatrix} 0 & -1 & 0 \\ 0 & 0 & -1 \\ 1 & 0 & 0 \end{bmatrix}.
+$$
+They are different: 3D rotations do not commute, so the order matters. In 2D, all rotations are about the same axis and can be composed by adding angles in any order. This is also why Euler angle conventions must specify the order of the rotations.
+
+**(c)** The columns of $\mathbf{M}$ are $(0,1,0)^\T$, $(0,0,1)^\T$, $(1,0,0)^\T$. They are unit length and mutually orthogonal, so $\mathbf{M}^\T\mathbf{M} = \mathbf{I}$. Expanding the determinant along the first row gives $\det\mathbf{M} = 1 \cdot \det\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = 1$.
+
+**(d)** $2\mathbf{R}_z(90°)$ has columns of length $2$, so $(2\mathbf{R})^\T(2\mathbf{R}) = 4\mathbf{I} \neq \mathbf{I}$. Rotations are closed under multiplication but not under addition. Naively averaging rotation matrices (or Euler angles) generally does not give a valid rotation; the result needs to be projected back onto the set of rotations, or the averaging must be done with a different representation.
+:::
+
+## Exercise 2 - Euler Angles and Gimbal Lock
+
+Consider z-y-x Euler angles (yaw $\psi$, pitch $\theta$, roll $\phi$), so that $\mathbf{R} = \mathbf{R}_z(\psi)\mathbf{R}_y(\theta)\mathbf{R}_x(\phi)$.
+
+**(a)** Compute $\mathbf{R}$ when the pitch is $\theta = 90°$. Express the result in terms of $\psi$ and $\phi$.
+
+**(b)** Use your result to explain gimbal lock: what degree of freedom is lost?
+
+**(c)** Lecture listed several ways in which an Euler angle specification can be ambiguous. Name four pieces of information that someone must give you before you can turn three numbers $(\psi, \theta, \phi)$ into a rotation matrix.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** With $\mathbf{R}_y(90°) = \begin{bmatrix} 0 & 0 & 1 \\ 0 & 1 & 0 \\ -1 & 0 & 0 \end{bmatrix}$, multiplying out and using the angle-difference identities gives
+$$
+\mathbf{R} = \begin{bmatrix}
+0 & \sin(\phi - \psi) & \cos(\phi - \psi) \\
+0 & \cos(\phi - \psi) & -\sin(\phi - \psi) \\
+-1 & 0 & 0
+\end{bmatrix}.
+$$
+
+**(b)** At $\theta = 90°$ the matrix depends only on the difference $\phi - \psi$. Changing yaw and roll by the same amount gives exactly the same rotation, so the two angles describe the same motion and only two independent degrees of freedom remain. Near this configuration, small changes in orientation can require very large changes in the Euler angles, which is problematic for estimation and control.
+
+**(c)** Any four of the following: the axis sequence (e.g., z-y-x vs. z-x-z), the order in which the three numbers are listed, whether each rotation is counter-clockwise or clockwise ($\mathbf{R}$ vs. $\mathbf{C}$ in lecture), whether the rotation maps World to Body or Body to World, and whether the angles are in degrees or radians.
+:::
+
+## Exercise 3 - Axis-Angle and the Rodrigues Formula
+
+Recall the Rodrigues formula $\mathbf{R} = \mathbf{I}\cos\theta + (1 - \cos\theta)\mathbf{v}\mathbf{v}^\T + [\mathbf{v}]_\times \sin\theta$ for a rotation by angle $\theta$ about the unit axis $\mathbf{v}$.
+
+**(a)** Verify that the formula gives $\mathbf{R}_z(90°)$ for $\mathbf{v} = (0, 0, 1)^\T$ and $\theta = 90°$.
+
+**(b)** Compute $\mathbf{R}$ for $\mathbf{v} = \frac{1}{\sqrt{3}}(1, 1, 1)^\T$ and $\theta = 120°$. Compare with your answer to Exercise 1(b).
+
+**(c)** In lecture we saw the matrix ${}^D_C\mathbf{R} = \begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \\ 1 & 0 & 0 \end{bmatrix}$. What is its axis-angle representation?
+
+**(d)** Why do $(\theta, \mathbf{v})$ and $(-\theta, -\mathbf{v})$ represent the same rotation? Check it with the Rodrigues formula.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** With $\cos 90° = 0$ and $\sin 90° = 1$, the formula reduces to $\mathbf{R} = \mathbf{v}\mathbf{v}^\T + [\mathbf{v}]_\times$:
+$$
+\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix} +
+\begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix} =
+\begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix} = \mathbf{R}_z(90°).
+$$
+
+**(b)** Here $\cos 120° = -\frac{1}{2}$, $\sin 120° = \frac{\sqrt{3}}{2}$, $\mathbf{v}\mathbf{v}^\T = \frac{1}{3}\mathbf{1}\mathbf{1}^\T$ (a matrix of all $\frac{1}{3}$), and $[\mathbf{v}]_\times = \frac{1}{\sqrt{3}}\begin{bmatrix} 0 & -1 & 1 \\ 1 & 0 & -1 \\ -1 & 1 & 0 \end{bmatrix}$. So
+$$
+\mathbf{R} = -\tfrac{1}{2}\mathbf{I} + \tfrac{1}{2}\mathbf{1}\mathbf{1}^\T + \tfrac{1}{2}\begin{bmatrix} 0 & -1 & 1 \\ 1 & 0 & -1 \\ -1 & 1 & 0 \end{bmatrix}
+= \begin{bmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{bmatrix}.
+$$
+This is exactly $\mathbf{R}_z(90°)\mathbf{R}_x(90°)$ from Exercise 1(b). It cyclically maps $x \to y \to z \to x$.
+
+**(c)** ${}^D_C\mathbf{R}$ is the transpose (inverse) of the matrix in (b). So it is a rotation by $-120°$ about $\frac{1}{\sqrt{3}}(1,1,1)^\T$, or equivalently by $120°$ about $-\frac{1}{\sqrt{3}}(1,1,1)^\T$.
+
+**(d)** Rotating clockwise about $\mathbf{v}$ is the same as rotating counter-clockwise about $-\mathbf{v}$. In the formula, $\cos$ is even, $\mathbf{v}\mathbf{v}^\T = (-\mathbf{v})(-\mathbf{v})^\T$, and $[-\mathbf{v}]_\times \sin(-\theta) = [\mathbf{v}]_\times\sin\theta$, so all three terms are unchanged.
+:::
+
+## Exercise 4 - Quaternions
+
+**(a)** Write down the unit quaternions $\mathbf{q}_z$ and $\mathbf{q}_x$ for $90°$ rotations about the z-axis and the x-axis.
+
+**(b)** Compute $\mathbf{q}_z \otimes \mathbf{q}_x$. *Hint:* writing a quaternion as a scalar $w$ and a vector $\mathbf{u}$, the product is $(w_1, \mathbf{u}_1) \otimes (w_2, \mathbf{u}_2) = (w_1 w_2 - \mathbf{u}_1 \cdot \mathbf{u}_2,\; w_1\mathbf{u}_2 + w_2\mathbf{u}_1 + \mathbf{u}_1 \times \mathbf{u}_2)$. Convert the result to axis-angle form and compare with Exercise 3(b).
+
+**(c)** What is the inverse of the quaternion from (b)? Verify that $\mathbf{q}^{-1}\otimes\mathbf{q} = [0, 0, 0, 1]$.
+
+**(d)** Show that $\mathbf{q}$ and $-\mathbf{q}$ represent the same rotation. Why can this cause problems when comparing two quaternions in code?
+
+**(e)** A robot's body-to-world orientation is ${}^W_{B(t)}\mathbf{q}$, and its gyroscope measures the body-frame angular velocity ${}^B\boldsymbol{\omega} = (0, 0, 0.5)$ rad/s. Write down the quaternion update for a time step of $dt = 0.1$ s. Should the incremental rotation be multiplied on the left or on the right, and why?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Using $\mathbf{q} = [\sin(\theta/2)\mathbf{v}, \cos(\theta/2)]$ with $\sin 45° = \cos 45° = \frac{\sqrt{2}}{2}$:
+$$
+\mathbf{q}_z = \left[0, 0, \tfrac{\sqrt{2}}{2}, \tfrac{\sqrt{2}}{2}\right], \qquad
+\mathbf{q}_x = \left[\tfrac{\sqrt{2}}{2}, 0, 0, \tfrac{\sqrt{2}}{2}\right].
+$$
+
+**(b)** Let $a = \frac{\sqrt{2}}{2}$. Then $w_1 = w_2 = a$, $\mathbf{u}_1 = (0,0,a)$, $\mathbf{u}_2 = (a,0,0)$, $\mathbf{u}_1\cdot\mathbf{u}_2 = 0$, and $\mathbf{u}_1 \times \mathbf{u}_2 = (0, a^2, 0)$. So
+$$
+w = a^2 = \tfrac{1}{2}, \qquad \mathbf{u} = a(a,0,0) + a(0,0,a) + (0,a^2,0) = \left(\tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}\right),
+$$
+i.e. $\mathbf{q}_z\otimes\mathbf{q}_x = \left[\tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}\right]$. From $\cos(\theta/2) = \frac{1}{2}$ we get $\theta = 120°$, and the axis is $\mathbf{u}/\sin 60° = \frac{1}{\sqrt{3}}(1,1,1)$. This matches Exercises 1(b) and 3(b), as expected from the correspondence between quaternion multiplication and matrix multiplication.
+
+**(c)** $\mathbf{q}^{-1} = \left[-\tfrac{1}{2}, -\tfrac{1}{2}, -\tfrac{1}{2}, \tfrac{1}{2}\right]$. Using the product formula with $w_1 = w_2 = \frac{1}{2}$, $\mathbf{u}_1 = -\mathbf{u}_2$: the scalar part is $\frac{1}{4} + \frac{3}{4} = 1$, and the vector part is $\frac{1}{2}\mathbf{u}_2 - \frac{1}{2}\mathbf{u}_2 + (-\mathbf{u}_2)\times\mathbf{u}_2 = \mathbf{0}$. So the product is $[0,0,0,1]$.
+
+**(d)** $-\mathbf{q} = [-\sin(\theta/2)\mathbf{v}, -\cos(\theta/2)] = [\sin(\theta'/2)\mathbf{v}, \cos(\theta'/2)]$ with $\theta' = \theta + 360°$, which is the same rotation. Equivalently, the rotation formula $\mathbf{q}\otimes[\mathbf{v},0]\otimes\mathbf{q}^{-1}$ is unchanged when $\mathbf{q}$ is negated. In code, checking `q1 == q2` or computing `norm(q1 - q2)` can wrongly report two identical rotations as very different. A robust comparison uses $|\mathbf{q}_1 \cdot \mathbf{q}_2| \approx 1$.
+
+**(e)** The incremental rotation has axis ${}^B\boldsymbol{\omega}/\|{}^B\boldsymbol{\omega}\| = (0,0,1)$ and angle $\|{}^B\boldsymbol{\omega}\|\,dt = 0.05$ rad, so ${}^{B(t)}_{B(t+dt)}\mathbf{q} = [0, 0, \sin(0.025), \cos(0.025)]$. The update is
+$$
+{}^W_{B(t+dt)}\mathbf{q} = {}^W_{B(t)}\mathbf{q} \otimes {}^{B(t)}_{B(t+dt)}\mathbf{q}.
+$$
+The increment goes on the right because the angular velocity is expressed in the body frame: the frame decorations must chain as $W \leftarrow B(t) \leftarrow B(t+dt)$.
+:::
+
+## Exercise 5 - Homogeneous Transformations
+
+A planar robot (frame $B$) is at position $(2, 1)$ in the world frame $W$, with heading $90°$ (its x-axis points along the world y-axis). A 2D LIDAR (frame $L$) is mounted on the robot at $(0.5, 0)$ in the body frame, with the same orientation as the body. Use $3\times 3$ homogeneous transformations for 2D.
+
+**(a)** Write down ${}^W_B\mathbf{T}$ and ${}^B_L\mathbf{T}$.
+
+**(b)** The LIDAR detects an obstacle at ${}^L\mathbf{p} = (1, 0)$. Where is the obstacle in the world frame?
+
+**(c)** Compute ${}^B_W\mathbf{T} = {}^W_B\mathbf{T}^{-1}$ using the formula from lecture (not a general matrix inverse). Verify that it maps your answer from (b) back to the body frame.
+
+**(d)** The LIDAR also estimates that the obstacle moves with velocity ${}^L\mathbf{v} = (0, 1)$ m/s. What is its velocity expressed in the world frame? Why is it different from how you transformed the point?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+$$
+{}^W_B\mathbf{T} = \begin{bmatrix} 0 & -1 & 2 \\ 1 & 0 & 1 \\ 0 & 0 & 1 \end{bmatrix}, \qquad
+{}^B_L\mathbf{T} = \begin{bmatrix} 1 & 0 & 0.5 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}.
+$$
+
+**(b)** ${}^W\mathbf{p} = {}^W_B\mathbf{T}\,{}^B_L\mathbf{T}\,(1, 0, 1)^\T$. First, ${}^B\mathbf{p} = (1.5, 0)$. Then ${}^W\mathbf{p} = {}^W_B\mathbf{R}\,(1.5, 0)^\T + (2, 1)^\T = (0, 1.5)^\T + (2, 1)^\T = (2, 2.5)$.
+
+**(c)** ${}^W_B\mathbf{R}^\T = \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$ and $-{}^W_B\mathbf{R}^\T\,{}^W\mathbf{t}_{WB} = -(1, -2)^\T = (-1, 2)^\T$, so
+$$
+{}^B_W\mathbf{T} = \begin{bmatrix} 0 & 1 & -1 \\ -1 & 0 & 2 \\ 0 & 0 & 1 \end{bmatrix}.
+$$
+Check: ${}^B_W\mathbf{T}(2, 2.5, 1)^\T = (2.5 - 1,\, -2 + 2,\, 1)^\T = (1.5, 0, 1)^\T$.
+
+**(d)** Velocities are vectors (differences of points), so only the rotation applies: ${}^W\mathbf{v} = {}^W_B\mathbf{R}\,{}^B_L\mathbf{R}\,{}^L\mathbf{v} = {}^W_B\mathbf{R}(0,1)^\T = (-1, 0)$ m/s. With homogeneous coordinates, this corresponds to appending a $0$ instead of a $1$, so the translation column has no effect.
+:::
+
+## Exercise 6 - Simple Car and Discretization
+
+Consider the simple car model from lecture: $\dot{p}_x = v\cos\theta$, $\dot{p}_y = v\sin\theta$, $\dot{\theta} = \omega$, starting at $(p_x, p_y, \theta) = (0, 0, 0)$ with constant $v = 1$ m/s and $\omega = 0.5$ rad/s.
+
+**(a)** What path does the car follow? Compute its exact state at $t = \pi$ s.
+
+**(b)** Simulate the same motion using forward Euler integration, $\mathbf{x}_{k+1} = \mathbf{x}_k + f(\mathbf{x}_k, \mathbf{u})\,\Delta t$, with $\Delta t = \pi/2$ (two steps). Compare to (a).
+
+**(c)** Write a short Python function that performs this simulation for an arbitrary $\Delta t$. How does the final position error change as $\Delta t$ decreases?
+
+**(d)** A unicycle has wheel radius $r = 0.3$ m and pedaling rate $w_y = 2$ rad/s. What is its forward velocity? Lecture asked whether the wheel radius should be part of the state. When would it make sense to include it?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** With constant speed and turn rate, the car drives on a circle of radius $v/\omega = 2$ m centered at $(0, 2)$. The exact solution is $\theta(t) = \omega t$, $p_x(t) = 2\sin\theta(t)$, and $p_y(t) = 2(1 - \cos\theta(t))$. At $t = \pi$, $\theta = \pi/2$ and the car is at $(2, 2)$.
+
+**(b)** Step 1 (from $\theta = 0$): $p = (0,0) + \frac{\pi}{2}(1, 0) \approx (1.571, 0)$ and $\theta = \pi/4$.
+Step 2 (from $\theta = \pi/4$): $p \approx (1.571, 0) + \frac{\pi}{2}(0.707, 0.707) \approx (2.682, 1.111)$ and $\theta = \pi/2$.
+The heading is exact (it is linear in time), but the position is off by about $1.1$ m, because Euler integration assumes the heading is constant during each step.
+
+**(c)**
+
+```python
+import numpy as np
+
+def simulate(dt, T=np.pi, v=1.0, w=0.5):
+    x, y, th = 0.0, 0.0, 0.0
+    for _ in range(int(round(T / dt))):
+        x += v * np.cos(th) * dt
+        y += v * np.sin(th) * dt
+        th += w * dt
+    return np.array([x, y, th])
+
+for dt in [np.pi / 2, np.pi / 20, np.pi / 200]:
+    err = np.linalg.norm(simulate(dt)[:2] - np.array([2.0, 2.0]))
+    print(dt, err)
+```
+
+The error decreases roughly in proportion to $\Delta t$, since forward Euler is a first-order method. Halving the step size roughly halves the error.
+
+**(d)** The forward velocity is $r w_y = 0.6$ m/s. The radius is normally a constant that we measure once, so it is not part of the state. If it could not be measured, or if it changes over time (e.g., a deflating tire), it should be added to the state so that it can be estimated together with the pose.
+:::
+
+## Exercise 7 - Differential Drive and the ICR
+
+A differential drive robot has wheel radius $R = 0.05$ m and distance between the wheels $H = 0.4$ m. Following lecture, $v_l = (W - H/2)\omega$ and $v_r = (W + H/2)\omega$, where $W$ is the distance from the robot's center to the instantaneous center of rotation (ICR).
+
+**(a)** The wheels turn at $u_l = 10$ rad/s and $u_r = 12$ rad/s. Compute $v_l$, $v_r$, the forward velocity $v_x$, the angular velocity $\omega$, and $W$.
+
+**(b)** The robot starts at $(p_x, p_y, \theta) = (0, 0, 0)$. Where is the ICR? Use the update equation from lecture to compute the pose after $\delta t = 2$ s.
+
+**(c)** For each of the special cases $v_l = v_r$, $v_l = -v_r$, and $v_l = 0$, what are $\omega$ and $W$?
+
+**(d)** A differential drive robot cannot move sideways directly. Is it controllable in the sense defined in lecture? Explain.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $v_l = R u_l = 0.5$ m/s and $v_r = R u_r = 0.6$ m/s. Then $v_x = (v_l + v_r)/2 = 0.55$ m/s. Subtracting the two wheel equations gives $v_r - v_l = H\omega$, so $\omega = 0.1/0.4 = 0.25$ rad/s. Finally, $W = v_x/\omega = 2.2$ m. Check: $v_l = (2.2 - 0.2)(0.25) = 0.5$.
+
+**(b)** $\text{ICR} = (p_x - W\sin\theta,\; p_y + W\cos\theta) = (0, 2.2)$. With $\omega\,\delta t = 0.5$ rad:
+$$
+\begin{bmatrix} p_x \\ p_y \end{bmatrix} =
+\begin{bmatrix} \cos 0.5 & -\sin 0.5 \\ \sin 0.5 & \cos 0.5 \end{bmatrix}
+\begin{bmatrix} 0 \\ -2.2 \end{bmatrix} + \begin{bmatrix} 0 \\ 2.2 \end{bmatrix}
+= \begin{bmatrix} 2.2\sin 0.5 \\ 2.2(1 - \cos 0.5) \end{bmatrix}
+\approx \begin{bmatrix} 1.055 \\ 0.269 \end{bmatrix},
+$$
+and $\theta = 0.5$ rad. Unlike Euler integration, this update is exact for constant wheel speeds.
+
+**(c)**
+
+- $v_l = v_r$: $\omega = 0$ and $W \to \infty$. The robot drives straight and the ICR is undefined (at infinity).
+- $v_l = -v_r$: $v_x = 0$, so $W = 0$. The robot rotates in place about its center.
+- $v_l = 0$: $W - H/2 = 0$, so $W = H/2$. The robot rotates about its left wheel, with $\omega = v_r / H$.
+
+**(d)** Yes. Controllability only requires that some control sequence reaches any state in finite time, not that every direction of motion is available instantaneously. The robot can reach a pose shifted sideways by combining rotations and forward motions, just like a car parallel parking.
+:::

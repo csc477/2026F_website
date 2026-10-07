@@ -1,0 +1,174 @@
+---
+title: "Week 10 Optional Exercises: Extended Kalman Filter"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the material from [Lecture 10](/lecs/w10/lec10.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+Recall the EKF from lecture, for dynamics $\mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t) + G\mathbf{w}_t$ with $\mathbf{w}_t \sim \mathcal{N}(\mathbf{0}, Q)$, and measurements $\mathbf{z}_t = h(\mathbf{x}_t) + \mathbf{n}_t$ with $\mathbf{n}_t \sim \mathcal{N}(\mathbf{0}, R)$:
+
+- Prediction: $\boldsymbol\mu_{t+1|t} = f(\boldsymbol\mu_{t|t}, \mathbf{u}_t)$ and $\Sigma_{t+1|t} = F_t\Sigma_{t|t}F_t^\T + GQG^\T$, with $F_t = \frac{\partial f}{\partial \mathbf{x}}(\boldsymbol\mu_{t|t}, \mathbf{u}_t)$.
+- Update: $S = H\Sigma_{t+1|t}H^\T + R$, $K = \Sigma_{t+1|t}H^\T S^{-1}$, $\boldsymbol\mu_{t+1|t+1} = \boldsymbol\mu_{t+1|t} + K(\tilde{\mathbf{z}}_{t+1} - h(\boldsymbol\mu_{t+1|t}))$, and $\Sigma_{t+1|t+1} = \Sigma_{t+1|t} - KH\Sigma_{t+1|t}$, with $H = \frac{\partial h}{\partial \mathbf{x}}(\boldsymbol\mu_{t+1|t})$.
+
+## Exercise 1 - Linearization vs. Monte Carlo
+
+Let $x \sim \mathcal{N}(\mu, \sigma^2)$ and $y = g(x) = x^2$.
+
+**(a)** Linearize $g$ around $\mu$ and compute the resulting Gaussian approximation of $p(y)$.
+
+**(b)** The exact mean and variance of $y$ are $\E[y] = \mu^2 + \sigma^2$ and $\text{Var}[y] = 4\mu^2\sigma^2 + 2\sigma^4$. Compare them to the linearized values for $(\mu, \sigma) = (1, 0.1)$ and for $(\mu, \sigma) = (0, 1)$.
+
+**(c)** Write a short numpy snippet that computes the Monte Carlo approximation of $p(y)$ (lecture's "Idea #1") and check the exact values from (b).
+
+**(d)** Based on (b), when does linearization work well, and when does it fail? Relate your answer to the figures in lecture.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $g(x) \approx g(\mu) + g'(\mu)(x - \mu) = \mu^2 + 2\mu(x - \mu)$. This is linear in $x$, so $y \approx \mathcal{N}(\mu^2, 4\mu^2\sigma^2)$.
+
+**(b)**
+
+- $(\mu, \sigma) = (1, 0.1)$: linearization gives mean $1$ and variance $0.04$; the exact values are mean $1.01$ and variance $0.0402$. Very close.
+- $(\mu, \sigma) = (0, 1)$: linearization gives mean $0$ and variance $0$ (!), because the derivative at $0$ is zero. The exact values are mean $1$ and variance $2$. Completely wrong.
+
+**(c)**
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(0)
+for mu, sigma in [(1.0, 0.1), (0.0, 1.0)]:
+    y = rng.normal(mu, sigma, size=10**6) ** 2
+    print(mu, sigma, y.mean(), y.var())
+```
+
+This prints values close to $(1.01, 0.0402)$ and $(1, 2)$.
+
+**(d)** Linearization works well when the distribution of $x$ is concentrated in a region where $g$ is close to linear (small $\sigma$ relative to the curvature of $g$). It fails when the uncertainty is large compared to the scale over which $g$ curves, as in the second case, where $y$ is not even close to Gaussian (it is a scaled chi-squared distribution, which is skewed and bounded below by $0$). This matches the two linearization examples in lecture, with low and high approximation error.
+:::
+
+## Exercise 2 - Computing Jacobians
+
+**(a)** Warm-up from lecture: compute the Jacobian of $f(x_1, x_2, u) = (x_1 + x_2^2,\; x_2 + 3u,\; x_1^4 - u^2)$ with respect to $(x_1, x_2)$, evaluated at $(\mu_1, \mu_2, u)$.
+
+**(b)** Consider the discretized unicycle model with state $\mathbf{x} = (p_x, p_y, \theta)$ and controls $\mathbf{u} = (v, \omega)$:
+$$
+f(\mathbf{x}, \mathbf{u}) = \begin{bmatrix} p_x + v\,\delta t\cos\theta \\ p_y + v\,\delta t\sin\theta \\ \theta + \omega\,\delta t \end{bmatrix}.
+$$
+Compute $F = \frac{\partial f}{\partial \mathbf{x}}$.
+
+**(c)** A robot measures the range and bearing of a landmark at known position $(l_x, l_y)$. Using the bearing of the landmark as seen from the robot,
+$$
+h(\mathbf{x}) = \begin{bmatrix} \sqrt{(l_x - p_x)^2 + (l_y - p_y)^2} \\ \operatorname{atan2}(l_y - p_y,\, l_x - p_x) - \theta \end{bmatrix},
+$$
+compute $H = \frac{\partial h}{\partial \mathbf{x}}$. *Hint:* let $\Delta_x = l_x - p_x$, $\Delta_y = l_y - p_y$, $q = \Delta_x^2 + \Delta_y^2$, and use $\frac{\partial}{\partial a}\operatorname{atan2}(b, a) = \frac{-b}{a^2 + b^2}$ and $\frac{\partial}{\partial b}\operatorname{atan2}(b, a) = \frac{a}{a^2 + b^2}$.
+
+**(d)** Why is the range measurement's Jacobian independent of $\theta$, while the bearing's derivative with respect to $\theta$ is exactly $-1$?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+$$
+\frac{\partial f}{\partial x_{1:2}} = \begin{bmatrix} 1 & 2\mu_2 \\ 0 & 1 \\ 4\mu_1^3 & 0 \end{bmatrix}.
+$$
+
+**(b)**
+$$
+F = \begin{bmatrix} 1 & 0 & -v\,\delta t\sin\theta \\ 0 & 1 & v\,\delta t\cos\theta \\ 0 & 0 & 1 \end{bmatrix}.
+$$
+The third column shows how a heading error turns into a position error: the robot drives in a slightly wrong direction.
+
+**(c)** For the range $r = \sqrt{q}$: $\frac{\partial r}{\partial p_x} = -\frac{\Delta_x}{\sqrt{q}}$, $\frac{\partial r}{\partial p_y} = -\frac{\Delta_y}{\sqrt{q}}$, and $\frac{\partial r}{\partial \theta} = 0$. For the bearing, $\Delta_x$ and $\Delta_y$ decrease when $p_x$ and $p_y$ increase, so by the chain rule
+$$
+H = \begin{bmatrix}
+-\frac{\Delta_x}{\sqrt{q}} & -\frac{\Delta_y}{\sqrt{q}} & 0 \\
+\frac{\Delta_y}{q} & -\frac{\Delta_x}{q} & -1
+\end{bmatrix}.
+$$
+
+**(d)** Turning in place does not change the distance to the landmark, so the range does not depend on $\theta$. The bearing is measured relative to the robot's heading, so turning the robot by a small angle $\epsilon$ changes the measured bearing by exactly $-\epsilon$.
+:::
+
+## Exercise 3 - One Step of EKF Localization
+
+A robot with the unicycle model from Exercise 2 starts with belief $\boldsymbol\mu_{0|0} = (0, 0, 0)$ and $\Sigma_{0|0} = \diag(0.1, 0.1, 0.01)$. It drives with $v = 1$ m/s and $\omega = 0$ for $\delta t = 1$ s, with process noise $GQG^\T = \diag(0.01, 0.01, 0.01)$. It then measures only the range to a landmark at $(1, 2)$, with measurement noise variance $R = 0.04$, and gets $\tilde{z} = 1.8$.
+
+**(a)** Compute the predicted mean and covariance. Why does $\Sigma_{1|0}$ have a nonzero entry coupling $p_y$ and $\theta$?
+
+**(b)** Compute the expected range $h(\boldsymbol\mu_{1|0})$, the Jacobian $H$, the residual covariance $S$, and the Kalman gain $K$.
+
+**(c)** Compute the updated mean and covariance, and interpret the change in each component of the mean.
+
+**(d)** If the robot had also measured the bearing, what extra care would you need to take when computing the bearing residual?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $\boldsymbol\mu_{1|0} = f(\boldsymbol\mu_{0|0}, \mathbf{u}) = (1, 0, 0)$. At $\theta = 0$, $F = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{bmatrix}$, so
+$$
+\Sigma_{1|0} = F\Sigma_{0|0}F^\T + GQG^\T = \begin{bmatrix} 0.1 & 0 & 0 \\ 0 & 0.11 & 0.01 \\ 0 & 0.01 & 0.01 \end{bmatrix} + 0.01I = \begin{bmatrix} 0.11 & 0 & 0 \\ 0 & 0.12 & 0.01 \\ 0 & 0.01 & 0.02 \end{bmatrix}.
+$$
+The robot drove along the x-axis, so a heading error makes it drift sideways (in $y$). Heading and lateral position errors are therefore correlated.
+
+**(b)** $\Delta_x = 0$, $\Delta_y = 2$, so the expected range is $2$. The range row of the Jacobian is $H = \begin{bmatrix} 0 & -1 & 0 \end{bmatrix}$. Then $S = H\Sigma_{1|0}H^\T + R = 0.12 + 0.04 = 0.16$, and
+$$
+K = \Sigma_{1|0}H^\T S^{-1} = \frac{1}{0.16}\begin{bmatrix} 0 \\ -0.12 \\ -0.01 \end{bmatrix} = \begin{bmatrix} 0 \\ -0.75 \\ -0.0625 \end{bmatrix}.
+$$
+
+**(c)** The residual is $1.8 - 2 = -0.2$, so
+$$
+\boldsymbol\mu_{1|1} = (1, 0, 0) + (-0.2)(0, -0.75, -0.0625) = (1, 0.15, 0.0125).
+$$
+The robot measured a shorter range than expected to a landmark straight ahead in the $+y$ direction, so it must be closer to it: $p_y$ increases. Through the correlation from (a), the heading is also adjusted (a positive heading error would explain a positive drift in $y$). The $x$ position is unchanged, because the range to a landmark directly above the robot is insensitive to small changes in $x$.
+
+For the covariance, $KH\Sigma_{1|0} = \frac{1}{S}(\Sigma_{1|0}H^\T)(\Sigma_{1|0}H^\T)^\T$, giving
+$$
+\Sigma_{1|1} = \begin{bmatrix} 0.11 & 0 & 0 \\ 0 & 0.03 & 0.0025 \\ 0 & 0.0025 & 0.019375 \end{bmatrix}.
+$$
+The uncertainty in $p_y$ drops from $0.12$ to $0.03$, and the heading uncertainty drops slightly.
+
+**(d)** Angles wrap around, so the residual $\tilde{z}_\phi - h_\phi(\boldsymbol\mu)$ must be normalized to $[-\pi, \pi]$. Otherwise, a measured bearing of $179°$ and a predicted bearing of $-179°$ would produce a residual of $358°$ instead of $-2°$, and the filter would make a huge, wrong correction.
+:::
+
+## Exercise 4 - EKF Properties and Failure Modes
+
+**(a)** Lecture said that, unlike the Kalman filter, the EKF is not optimal. What does "optimal" mean here, and why does the EKF lose this property?
+
+**(b)** Give a scenario in which the EKF diverges.
+
+**(c)** Lecture listed three localization problem classes: position tracking, global localization, and the kidnapped robot problem. Which of them can an EKF handle, and why?
+
+**(d)** Lecture's "Idea #1" was to approximate $p(y)$ by Monte Carlo sampling. Why is linearization still used in the EKF, given that Monte Carlo is more accurate?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** For linear-Gaussian systems, the Kalman filter computes the exact posterior, so its mean is the minimum mean squared error estimate. With nonlinear models, the true posterior is not Gaussian, and the EKF only approximates it using a Gaussian obtained by linearizing around the current estimate. The approximation error means the EKF is neither exact nor guaranteed to minimize the mean squared error.
+
+**(b)** If the initial estimate is far from the truth or the uncertainty is large (e.g., a heading error of $90°$), the Jacobians are evaluated at the wrong point, so the corrections push the estimate in the wrong direction. The covariance also shrinks after each update even though the estimate is wrong, so the filter becomes overconfident, ignores subsequent measurements, and drifts away from the truth.
+
+**(c)** Only position tracking. The EKF represents the belief as a single Gaussian, so it requires a reasonably good initial estimate and cannot represent multiple hypotheses (which global localization requires). It also cannot recover from being kidnapped, since its belief is concentrated around the old, wrong pose. Particle filters (Lecture 11) can handle all three.
+
+**(d)** Linearization is very cheap (one Jacobian evaluation instead of thousands of samples), produces a Gaussian in closed form, and fits directly into the Kalman filter equations. For many robotics problems with small uncertainty, the linearization error is small and the EKF "works surprisingly well even when all assumptions are violated", as lecture put it. (The Unscented Kalman Filter is a middle ground that propagates a small, deterministic set of sample points.)
+:::
+
+## Exercise 5 - EKF-SLAM
+
+A robot with pose $(p_x, p_y, \theta)$ performs EKF-SLAM with $N$ point landmarks, each with unknown position $(l_x^{(i)}, l_y^{(i)})$.
+
+**(a)** What is the dimension of the state vector and of the covariance matrix? How much memory does the covariance need for $N = 1000$ landmarks, using 8-byte floats?
+
+**(b)** Why does the covariance matrix become dense, even though each measurement only involves the robot and one landmark?
+
+**(c)** When the robot first observes a new landmark with range $r$ and bearing $\phi$ (as defined in Exercise 2), how can it initialize the landmark's mean? Why should its initial covariance be large and correlated with the robot pose?
+
+**(d)** Lecture stated that, in the linear case, the determinant of any sub-matrix of the map covariance decreases monotonically, and in the limit all landmarks become fully correlated. Explain intuitively what this means. What uncertainty remains even after infinitely many observations?
+
+**(e)** Why did lecture call data association a major difficulty in SLAM?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** The state has $3 + 2N$ dimensions, so the covariance has $(3 + 2N)^2$ entries. For $N = 1000$, that is $2003^2 \approx 4 \times 10^6$ entries, about $32$ MB. Each update touches the whole covariance, so the cost per measurement grows quadratically with the number of landmarks.
+
+**(b)** The landmark positions are estimated from measurements taken from uncertain robot poses. An error in the robot's pose shifts all landmarks observed from that pose in the same way, which correlates the robot pose with each landmark, and, through the robot, the landmarks with each other. The update step then spreads these correlations across the whole matrix.
+
+**(c)** Invert the measurement model: $l_x = p_x + r\cos(\theta + \phi)$ and $l_y = p_y + r\sin(\theta + \phi)$, evaluated at the current pose estimate. The landmark's position inherits all the uncertainty of the robot's pose plus the measurement noise, so its covariance is large, and it is strongly correlated with the pose. The correct cross-covariances are obtained by linearizing this inverse model with respect to the pose and the measurement.
+
+**(d)** The more the robot observes, the more precisely it knows the landmarks' positions relative to each other, and this relative uncertainty never increases. In the limit, the landmarks' positions are perfectly known relative to each other, so they move "as one rigid body" in the estimate. What remains is the uncertainty of the whole map relative to the world frame, which is determined by the uncertainty of the robot's initial pose: observations of landmarks can never tell the robot where the map is in absolute terms.
+
+**(e)** The filter needs to know which landmark each measurement came from. In practice, landmarks look alike, and the robot's pose uncertainty makes it ambiguous which landmark it is seeing. Associating a measurement with the wrong landmark produces a confident but wrong update, which corrupts the robot pose and, through the correlations, the entire map. These errors are hard to undo in a filter.
+:::

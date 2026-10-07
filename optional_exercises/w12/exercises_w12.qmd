@@ -1,0 +1,212 @@
+---
+title: "Week 12 Optional Exercises: Cameras, Features, and Stereo"
+---
+
+{{< include ../_macros.qmd >}}
+
+These exercises are optional and are not graded. They are based on the first part of [Lecture 12](/lecs/w12/lec12.html): optics, the pinhole camera model, lens distortion, local features, stereo, and triangulation. The second part of the lecture (epipolar geometry, visual odometry, visual SLAM, and optical flow) is covered in the [Week 13 exercises](/optional_exercises/w13/exercises_w13.html). Try each exercise on your own first, then click on **Solution** to reveal a worked answer.
+
+## Exercise 1 - Camera Parameters
+
+**(a)** For each of the following, say which camera parameter you would change (focus, focal length, aperture, exposure time, or ISO), and what the side effect would be:
+
+1. The image of a fast-moving robot arm is blurry.
+2. The image is too dark, and you cannot change the exposure time.
+3. You want both a nearby object and the background to be sharp.
+4. You want to see a wider part of the scene.
+
+**(b)** Why not make the aperture as small as possible?
+
+**(c)** A camera has a sensor of width $W = 36$ mm. Show that its horizontal field of view is $2\arctan\left(\frac{W}{2f}\right)$, and compute it for $f = 18$ mm and $f = 50$ mm.
+
+**(d)** Which properties are preserved by perspective projection: lengths, angles, straight lines, parallelism?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)**
+
+1. Decrease the exposure time. The image becomes darker, which you can compensate for with a larger aperture (narrower depth of field) or a higher ISO (more noise).
+2. Open the aperture (narrower depth of field) or increase the ISO (more noise).
+3. Close the aperture (smaller diameter) to increase the depth of field. Less light gets in, so you need a longer exposure (more motion blur) or a higher ISO.
+4. Decrease the focal length (wide-angle). Each pixel then covers a larger angle, so distant objects appear smaller and with less detail, and wide-angle lenses usually have stronger distortion.
+
+**(b)** Less light reaches the sensor, which requires longer exposures or higher gain. Below a certain size, diffraction also blurs the image.
+
+**(c)** The ray through the edge of the sensor makes an angle $\alpha$ with the optical axis, with $\tan\alpha = \frac{W/2}{f}$ by similar triangles. The field of view is $2\alpha$. For $f = 18$ mm: $2\arctan(1) = 90°$. For $f = 50$ mm: $2\arctan(0.36) \approx 39.6°$.
+
+**(d)** Straight lines remain straight. Lengths, areas, and angles are not preserved, and neither is parallelism: parallel lines in 3D (such as railway tracks) generally meet at a vanishing point in the image.
+:::
+
+## Exercise 2 - The Pinhole Camera Model
+
+A camera has focal length $f = 4$ mm, square pixels of size $8$ µm, and a $640 \times 480$ image with the principal point at the center.
+
+**(a)** Compute $m_x = m_y$ (pixels per mm), $fm_x$, and the calibration matrix $K$.
+
+**(b)** Project the point $(X, Y, Z) = (0.2, -0.1, 2)$ m, expressed in the camera frame, to pixel coordinates.
+
+**(c)** Show that $(0.4, -0.2, 4)$ projects to the same pixel. What does this say about recovering depth from a single image?
+
+**(d)** A pixel $(420, 290)$ is known to correspond to a point at depth $Z = 3$ m. Recover its 3D coordinates.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $m_x = 1 / 0.008 = 125$ pixels per mm, so $fm_x = 4 \times 125 = 500$ pixels. With $(c_x, c_y) = (320, 240)$:
+$$
+K = \begin{bmatrix} 500 & 0 & 320 \\ 0 & 500 & 240 \\ 0 & 0 & 1 \end{bmatrix}.
+$$
+
+**(b)** $u = 500 \cdot \frac{0.2}{2} + 320 = 370$ and $v = 500 \cdot \frac{-0.1}{2} + 240 = 215$.
+
+**(c)** $\frac{0.4}{4} = \frac{0.2}{2}$ and $\frac{-0.2}{4} = \frac{-0.1}{2}$, so it projects to the same pixel. Every point on the ray through the camera center and the pixel projects to that pixel: $s[u, v, 1]^\T = K[X, Y, Z]^\T$ only determines $(X, Y, Z)$ up to the scale $s = Z$. Depth cannot be recovered from a single pixel measurement.
+
+**(d)** Invert the projection: $X = \frac{(u - c_x)Z}{fm_x} = \frac{100 \cdot 3}{500} = 0.6$ and $Y = \frac{(v - c_y)Z}{fm_y} = \frac{50 \cdot 3}{500} = 0.3$, so the point is $(0.6, 0.3, 3)$. Equivalently, $[X, Y, Z]^\T = Z\,K^{-1}[u, v, 1]^\T$.
+:::
+
+## Exercise 3 - Lens Distortion
+
+Consider the radial distortion model with a single coefficient, $x^* = x(1 + k_1 r^2)$ and $y^* = y(1 + k_1 r^2)$, where $r^2 = x^2 + y^2$ and $(x, y)$ are normalized (metric, divided by $f$) image coordinates.
+
+**(a)** For $k_1 = -0.2$, compute the distorted coordinates of $(0.5, 0)$ and $(0.1, 0)$. Which point moves more, and in which direction?
+
+**(b)** Is $k_1 < 0$ barrel or pincushion distortion? How does a straight line that does not pass through the image center look in the image?
+
+**(c)** To undistort an image, we need to compute $(x, y)$ from $(x^*, y^*)$. Propose a simple iterative method.
+
+**(d)** Lecture said that after undistortion, we can treat the camera as a pinhole camera. Why is this convenient for the rest of the lecture?
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** For $(0.5, 0)$: $r^2 = 0.25$, so $x^* = 0.5(1 - 0.05) = 0.475$. For $(0.1, 0)$: $r^2 = 0.01$, so $x^* = 0.1(1 - 0.002) = 0.0998$. Both points move toward the center, and the point farther from the center moves much more ($0.025$ vs. $0.0002$), since the displacement grows as $r^3$.
+
+**(b)** Barrel distortion: points are pulled toward the center more the farther they are from it, so straight lines that do not pass through the center bow outward (toward the image border), like the outline of a barrel. With $k_1 > 0$ (pincushion), they bow inward.
+
+**(c)** Fixed-point iteration: start with $(x, y) = (x^*, y^*)$, and repeat $(x, y) \leftarrow \frac{(x^*, y^*)}{1 + k_1(x^2 + y^2)}$ a few times. This converges quickly when the distortion is moderate. In practice, the undistortion is computed once for every pixel and stored as a lookup table.
+
+**(d)** The pinhole model $h_{\text{pinhole}}$ is simple and, in homogeneous coordinates, linear up to scale. Straight lines map to straight lines, which underlies epipolar geometry, and the triangulation and bundle adjustment cost functions only involve $K$ and the camera poses.
+:::
+
+## Exercise 4 - Detecting and Describing Features
+
+**(a)** Consider a small window shifted by $(\Delta x, \Delta y)$. Lecture classified windows as "flat", "edge", or "corner" depending on how the window's content changes. Using the approximation $I(x + \Delta x, y + \Delta y) \approx I(x, y) + I_x\Delta x + I_y\Delta y$, show that the sum of squared differences over the window is approximately
+$$
+E(\Delta x, \Delta y) = \begin{bmatrix} \Delta x & \Delta y \end{bmatrix} M \begin{bmatrix} \Delta x \\ \Delta y \end{bmatrix}, \quad M = \sum_{\text{window}} \begin{bmatrix} I_x^2 & I_xI_y \\ I_xI_y & I_y^2 \end{bmatrix}.
+$$
+
+**(b)** How do the eigenvalues of $M$ distinguish flat regions, edges, and corners? Compute $M$ for a $5 \times 5$ window on a vertical edge where $I_x = 1$ and $I_y = 0$ at every pixel.
+
+**(c)** How many dimensions does a SIFT descriptor have, and where does this number come from?
+
+**(d)** Suppose the image intensity changes as $I' = aI + b$ (contrast and brightness changes). Show that the normalized SIFT descriptor does not change.
+
+**(e)** List the four characteristics of good features from lecture, and explain why each one matters for visual odometry.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** $E(\Delta x, \Delta y) = \sum (I(x + \Delta x, y + \Delta y) - I(x, y))^2 \approx \sum (I_x\Delta x + I_y\Delta y)^2$, and $(I_x\Delta x + I_y\Delta y)^2 = [\Delta x, \Delta y]\begin{bmatrix} I_x^2 & I_xI_y \\ I_xI_y & I_y^2 \end{bmatrix}[\Delta x, \Delta y]^\T$. Summing over the window gives $M$.
+
+**(b)**
+
+- Flat: both eigenvalues are small, so no shift changes the window.
+- Edge: one eigenvalue is large and the other small, so shifting along the edge (the small eigenvalue's eigenvector) does not change the window.
+- Corner: both eigenvalues are large, so every shift changes the window.
+
+For the vertical edge, $M = \begin{bmatrix} 25 & 0 \\ 0 & 0 \end{bmatrix}$. Its eigenvalues are $25$ and $0$, and shifting in $y$ (along the edge) costs nothing. The Harris detector scores corners using $\det M - \kappa(\operatorname{tr}M)^2$, which is large only when both eigenvalues are large.
+
+**(c)** $128 = 4 \times 4 \times 8$: the $16 \times 16$ window is split into a $4 \times 4$ grid of cells, and each cell stores an $8$-bin histogram of gradient orientations, weighted by gradient magnitude.
+
+**(d)** The gradients of $I'$ are $a$ times the gradients of $I$, since the constant $b$ disappears when differentiating. The orientations are unchanged and every magnitude is multiplied by $a$, so the descriptor vector is multiplied by $a$, and normalizing it to unit length removes $a$. (Clamping at $0.2$ and renormalizing further reduces the effect of nonlinear illumination changes, such as saturation.)
+
+**(e)**
+
+- Repeatability: the same features must be detected in consecutive frames despite changes in viewpoint and illumination, or there is nothing to match.
+- Saliency: each feature must be distinctive, or it will be matched to the wrong feature (an outlier).
+- Compactness and efficiency: there must be far fewer features than pixels, so matching and optimization can run in real time.
+- Locality: a feature should cover a small area of the image, so it is robust to occlusion and clutter and approximately follows a rigid motion.
+:::
+
+## Exercise 5 - Stereo with Parallel Cameras
+
+A rectified stereo camera has two parallel cameras with focal length $fm_x = 700$ pixels and baseline $b = 0.12$ m. A point appears at $x_l$ in the left image and $x_r$ in the right image, and the disparity is $d = x_l - x_r$ (in pixels, measured relative to each image's principal point).
+
+**(a)** Using similar triangles, show that the depth is $Z = \frac{fm_x\,b}{d}$.
+
+**(b)** Compute the depth for disparities of $21$, $4.2$, and $0$ pixels.
+
+**(c)** Show that a disparity error $\delta d$ produces a depth error of approximately $\delta Z \approx \frac{Z^2}{fm_x\,b}\delta d$. Compute the depth error caused by a $1$ pixel disparity error at $Z = 4$ m and at $Z = 20$ m.
+
+**(d)** The robot only cares about obstacles closer than $Z_{\min} = 0.5$ m or farther. What is the maximum disparity the matcher needs to search? Why does the search only need to go in one direction along the row?
+
+**(e)** Lecture showed disparity maps computed with patch sizes $5$, $35$, and $85$. Explain the tradeoff.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** In metric units, the left camera sees the point at $x_l = f\frac{X}{Z}$, and the right camera, shifted by $b$ along the x-axis, sees it at $x_r = f\frac{X - b}{Z}$. Subtracting, $x_l - x_r = \frac{fb}{Z}$, so $Z = \frac{fb}{x_l - x_r}$. Converting the image coordinates to pixels multiplies $f$ by $m_x$.
+
+**(b)** $fm_x\,b = 84$ pixel-meters. A disparity of $21$ pixels gives $4$ m, $4.2$ pixels gives $20$ m, and $0$ pixels corresponds to a point at infinity.
+
+**(c)** $\frac{dZ}{dd} = -\frac{fm_x\,b}{d^2} = -\frac{Z^2}{fm_x\,b}$. At $Z = 4$ m: $\delta Z \approx 16 / 84 \approx 0.19$ m. At $Z = 20$ m: $\delta Z \approx 400 / 84 \approx 4.8$ m. The depth error grows quadratically with depth, which is why stereo is accurate only at short range, and why a larger baseline helps.
+
+**(d)** $d_{\max} = 84 / 0.5 = 168$ pixels. The disparity is always nonnegative ($x_r \le x_l$), since a point appearing to the right of $x_l$ in the right image would have to be behind the cameras. Combined with the fact that matches lie on the same row ($y_r = y_l$), the search is a 1D scan over $168$ positions to the left.
+
+**(e)** Small patches preserve detail and object boundaries but contain too little texture to be matched reliably, so the disparity map is noisy. Large patches are more distinctive and produce smooth maps, but they blur depth discontinuities, since a patch that straddles an object boundary contains pixels at two different depths.
+:::
+
+## Exercise 6 - Triangulation as Least Squares
+
+Two cameras with the calibration matrix $K$ from Exercise 2 observe the same 3D point. Camera 1 is at the origin of the world frame, and camera 2 has the same orientation but is shifted $0.5$ m along the world x-axis, so that ${}^2\mathbf{p} = {}^w\mathbf{p} + (-0.5, 0, 0)$.
+
+**(a)** The point is at ${}^w\mathbf{p} = (1, 0.5, 5)$. Compute its pixel coordinates in both cameras, and check that the depth formula from Exercise 5 recovers $Z$.
+
+**(b)** Write the triangulation cost function from lecture for $K$ cameras. Which variables are optimized and which are known?
+
+**(c)** Implement triangulation in numpy using Gauss-Newton with a numerical Jacobian. Test it on noisy pixel measurements.
+
+**(d)** Lecture's example had $7$ points observed by $3$ cameras. Count the unknowns and the scalar constraints. In general, how many cameras must observe a point to triangulate it?
+
+**(e)** Give two situations where the triangulation is unreliable even if the optimization converges.
+
+::: {.callout-tip collapse="true" title="Solution"}
+**(a)** Camera 1: $u = 500 \cdot \frac{1}{5} + 320 = 420$ and $v = 500 \cdot \frac{0.5}{5} + 240 = 290$. Camera 2 sees $(0.5, 0.5, 5)$: $u = 370$ and $v = 290$. Both have the same row, as expected for parallel cameras. The disparity is $50$ pixels, so $Z = \frac{500 \cdot 0.5}{50} = 5$ m.
+
+**(b)**
+$$
+{}^w\mathbf{p}^* = \argmin_{{}^w\mathbf{p}} \sum_{k=1}^K \left\|\tilde{\mathbf{z}}^{(k)} - h_{\text{pinhole}}\left({}^k_wR\,{}^w\mathbf{p} + {}^k\mathbf{t}_{kw}\right)\right\|^2.
+$$
+Only the 3D point ${}^w\mathbf{p}$ is optimized. The camera poses $({}^k_wR, {}^k\mathbf{t}_{kw})$, the intrinsics, and the pixel measurements $\tilde{\mathbf{z}}^{(k)}$ are known.
+
+**(c)**
+
+```python
+import numpy as np
+
+K = np.array([[500, 0, 320], [0, 500, 240], [0, 0, 1.0]])
+cams = [(np.eye(3), np.zeros(3)), (np.eye(3), np.array([-0.5, 0, 0]))]
+
+def project(K, R, t, p):
+    q = K @ (R @ p + t)
+    return q[:2] / q[2]
+
+def triangulate(K, cams, zs, p0, iters=10, eps=1e-6):
+    p = p0.astype(float)
+    for _ in range(iters):
+        r = np.concatenate([z - project(K, R, t, p) for z, (R, t) in zip(zs, cams)])
+        J = np.zeros((len(r), 3))
+        for j in range(3):
+            dp = np.zeros(3)
+            dp[j] = eps
+            r_j = np.concatenate([z - project(K, R, t, p + dp) for z, (R, t) in zip(zs, cams)])
+            J[:, j] = (r_j - r) / eps
+        p = p - np.linalg.solve(J.T @ J, J.T @ r)
+    return p
+
+rng = np.random.default_rng(0)
+p_true = np.array([1, 0.5, 5.0])
+zs = [project(K, R, t, p_true) + rng.normal(0, 1, size=2) for R, t in cams]
+print(triangulate(K, cams, zs, p0=np.array([0, 0, 1.0])))
+```
+
+With $1$ pixel of noise, this returns approximately $(1.01, 0.51, 5.05)$. Gauss-Newton is the method from the least squares lecture: it linearizes the residual around the current estimate and solves the normal equations.
+
+**(d)** There are $7 \times 3 = 21$ unknowns (the 3D coordinates of the points) and $7 \times 3 \times 2 = 42$ scalar measurements (two pixel coordinates per point per camera). Each camera gives $2$ equations per point, so at least $2$ cameras are needed for the $3$ unknowns of a point. More cameras overdetermine the problem and reduce the effect of noise.
+
+**(e)**
+
+- The rays are nearly parallel (the point is far away compared to the baseline, or the camera moved very little). The intersection is then dominated by pixel noise, and the depth is essentially unconstrained (a "point at infinity").
+- The optimization is unconstrained, so it can return a solution with ${}^kZ < 0$, behind a camera, especially when initialized poorly. It can also converge to a wrong solution if a measurement is an outlier (a wrong match).
+:::
