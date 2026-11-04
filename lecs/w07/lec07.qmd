@@ -271,7 +271,7 @@ which is a function of theta, **not** a probability distribution.
 Example: assume we know that 1D [data points]{style="color:#002060"} were generated [independently]{.underline} from a Gaussian distribution $\mathcal{N}(\mu, \sigma^2)$ , but we don’t know the mean and variance. The likelihood function of the data is
 
 :::{.fragment}
-$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
+$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
 :::
 
 :::{.fragment}
@@ -307,7 +307,7 @@ which is a function of theta, **not** a probability distribution.
 :::{.semi-tiny-font}
 Example: assume we know that 1D [data points]{style="color:#002060"} were generated [independently]{.underline} from a Gaussian distribution $\mathcal{N}(\mu, \sigma^2)$ , but we don’t know the mean and variance. The likelihood function of the data is
 
-$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
+$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
 
 
 And the maximum-likelihood parameter estimates are
@@ -341,7 +341,7 @@ which is a function of theta, **not** a probability distribution.
 :::{.semi-tiny-font}
 Example: assume we know that 1D [data points]{style="color:#002060"} were generated [independently]{.underline} from a Gaussian distribution $\mathcal{N}(\mu, \sigma^2)$ , but we don’t know the mean and variance. The likelihood function of the data is
 
-$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
+$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
 
 
 And the maximum-likelihood parameter estimates are
@@ -393,7 +393,7 @@ which is a function of theta, **not** a probability distribution.
 :::{.semi-tiny-font}
 Example: assume we know that 1D [data points]{style="color:#002060"} were generated [independently]{.underline} from a Gaussian distribution $\mathcal{N}(\mu, \sigma^2)$ , but we don’t know the mean and variance. The likelihood function of the data is
 
-$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
+$$L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)$$
 
 
 And the maximum-likelihood parameter estimates are
@@ -1210,5 +1210,3 @@ p(\mathbf{z}_t^{(1)}, \ldots, \mathbf{z}_t^{(K)}|\mathbf{x}_t, \mathbf{m}) &= p(
 \end{align}$$
 
 :::
-
-\mathbf{z}
