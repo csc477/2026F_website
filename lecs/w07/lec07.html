@@ -339,7 +339,7 @@ e(\theta) &amp;= \sum_{i=1}^{N} ||\mathbf{z}_i - \mathbf{H}_{x_i} \theta||^2 \\
 <div class="semi-tiny-font">
 <p>Example: assume we know that 1D <span style="color:#002060">data points</span> were generated <u>independently</u> from a Gaussian distribution <span class="math inline">\(\mathcal{N}(\mu, \sigma^2)\)</span> , but we don’t know the mean and variance. The likelihood function of the data is</p>
 <div class="fragment">
-<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
+<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
 </div>
 <div class="fragment">
 <p>And the maximum-likelihood parameter estimates are</p>
@@ -361,7 +361,7 @@ e(\theta) &amp;= \sum_{i=1}^{N} ||\mathbf{z}_i - \mathbf{H}_{x_i} \theta||^2 \\
 <p><img data-src="img/blue-arrow.png" class="absolute" style="left: 240px; bottom: 290px; height: 60px; "></p>
 <div class="semi-tiny-font">
 <p>Example: assume we know that 1D <span style="color:#002060">data points</span> were generated <u>independently</u> from a Gaussian distribution <span class="math inline">\(\mathcal{N}(\mu, \sigma^2)\)</span> , but we don’t know the mean and variance. The likelihood function of the data is</p>
-<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
+<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
 <p>And the maximum-likelihood parameter estimates are</p>
 <p><span class="math display">\[(\mu, \sigma)_{MLE} = \operatorname*{argmax}_{\mu,\sigma} \sum_{i=1}^{N} \log p(d_i|\mu, \sigma) = \operatorname*{argmax}_{\mu,\sigma} \left[ -N\log(\sqrt{2\pi}\sigma) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(d_i - \mu)^2 \right]\]</span></p>
 </div>
@@ -380,7 +380,7 @@ e(\theta) &amp;= \sum_{i=1}^{N} ||\mathbf{z}_i - \mathbf{H}_{x_i} \theta||^2 \\
 <p><img data-src="img/blue-arrow.png" class="absolute" style="left: 240px; bottom: 290px; height: 60px; "></p>
 <div class="semi-tiny-font">
 <p>Example: assume we know that 1D <span style="color:#002060">data points</span> were generated <u>independently</u> from a Gaussian distribution <span class="math inline">\(\mathcal{N}(\mu, \sigma^2)\)</span> , but we don’t know the mean and variance. The likelihood function of the data is</p>
-<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
+<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
 <p>And the maximum-likelihood parameter estimates are</p>
 <div class="columns">
 <div class="column medium-font" style="width:55%;">
@@ -406,7 +406,7 @@ e(\theta) &amp;= \sum_{i=1}^{N} ||\mathbf{z}_i - \mathbf{H}_{x_i} \theta||^2 \\
 <p><img data-src="img/blue-arrow.png" class="absolute" style="left: 240px; bottom: 290px; height: 60px; "></p>
 <div class="semi-tiny-font">
 <p>Example: assume we know that 1D <span style="color:#002060">data points</span> were generated <u>independently</u> from a Gaussian distribution <span class="math inline">\(\mathcal{N}(\mu, \sigma^2)\)</span> , but we don’t know the mean and variance. The likelihood function of the data is</p>
-<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma}} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
+<p><span class="math display">\[L(\mu, \sigma) = p(\mathbf{d}_{1:N}|\mu, \sigma) = \prod_{i=1}^{N} p(d_i|\mu, \sigma) = \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi}\sigma} \exp(-0.5(d_i - \mu)^2/\sigma^2)\]</span></p>
 <p>And the maximum-likelihood parameter estimates are</p>
 <div>
 
