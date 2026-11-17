@@ -1289,7 +1289,7 @@ Suppose that at time t the state is distributed as $p(x_{t}|z_{0:t})=\mathcal{N}
 $$\mu_{t|t} = \begin{bmatrix} 0 \\ 1 \end{bmatrix} \quad \Sigma_{t|t} = \begin{bmatrix} \sigma_p^2 & \sigma_{pv} \\ \sigma_{pv} & \sigma_v^2 \end{bmatrix} = \begin{bmatrix} 1^2 & 0 \\ 0 & 10^2 \end{bmatrix}$$
 
 In other words\, we are confident that in the beginning
-the position is with high probability \(~0\.997\) within range $3\sigma_{v}=3$ of the mean position, 0.
+the position is with high probability \(~0\.997\) within range $3\sigma_{p}=3$ of the mean position, 0.
 
 
 We are not very confident in the velocity\, however\. We just know a priori that with high probability \(~0\.997\) it is within range $3\sigma_{v}=30$ of the mean velocity 1\.
@@ -1442,9 +1442,8 @@ $\mu_{t+1|t+1} = \mu_{t+1|t} + K_{t+1} \mu_{\delta x} = \begin{bmatrix} 1 \\ 1 \
 :::{layout="[50, -50]"}
 $$\begin{align}
 \Sigma_{t+1|t+1} &= \Sigma_{t+1|t} - K H \Sigma_{t+1|t} \\
-&= \Sigma_{t+1|t} - \frac{102}{103} \Sigma_{t+1|t} \\
-&= \frac{1}{103} \Sigma_{t+1|t} \\
-&= \begin{bmatrix} 0.99 & 0.97 \\ 0.97 & 0.98 \end{bmatrix}\end{align}$$
+&= \begin{bmatrix} 102 & 100 \\ 100 & 101 \end{bmatrix} - \frac{1}{103}\begin{bmatrix} 102 \cdot 102 & 102 \cdot 100 \\ 100 \cdot 102 & 100 \cdot 100 \end{bmatrix} \\
+&= \begin{bmatrix} 0.99 & 0.97 \\ 0.97 & 3.91 \end{bmatrix}\end{align}$$
 :::
 
 :::
@@ -1473,9 +1472,8 @@ $\mu_{t+1|t+1} = \mu_{t+1|t} + K_{t+1} \mu_{\delta x} = \begin{bmatrix} 1 \\ 1 \
 :::{layout="[50, 50]"}
 $$\begin{align}
 \Sigma_{t+1|t+1} &= \Sigma_{t+1|t} - K H \Sigma_{t+1|t} \\
-&= \Sigma_{t+1|t} - \frac{102}{103} \Sigma_{t+1|t} \\
-&= \frac{1}{103} \Sigma_{t+1|t} \\
-&= \begin{bmatrix} 0.99 & 0.97 \\ 0.97 & 0.98 \end{bmatrix}\end{align}$$
+&= \begin{bmatrix} 102 & 100 \\ 100 & 101 \end{bmatrix} - \frac{1}{103}\begin{bmatrix} 102 \cdot 102 & 102 \cdot 100 \\ 100 \cdot 102 & 100 \cdot 100 \end{bmatrix} \\
+&= \begin{bmatrix} 0.99 & 0.97 \\ 0.97 & 3.91 \end{bmatrix}\end{align}$$
 
 [<br><br> After the measurement the covariance was reduced. We are now more confident than both the measurement and the prediction estimate. ]{.red .medium-font}
 
@@ -1507,9 +1505,8 @@ $\mu_{t+1|t+1} = \mu_{t+1|t} + K_{t+1} \mu_{\delta x} = \begin{bmatrix} 1 \\ 1 \
 :::{layout="[50, 50]"}
 $$\begin{align}
 \Sigma_{t+1|t+1} &= \Sigma_{t+1|t} - K H \Sigma_{t+1|t} \\
-&= \Sigma_{t+1|t} - \frac{102}{103} \Sigma_{t+1|t} \\
-&= \frac{1}{103} \Sigma_{t+1|t} \\
-&= \begin{bmatrix} 0.99 & 0.97 \\ 0.97 & 0.98 \end{bmatrix}\end{align}$$
+&= \begin{bmatrix} 102 & 100 \\ 100 & 101 \end{bmatrix} - \frac{1}{103}\begin{bmatrix} 102 \cdot 102 & 102 \cdot 100 \\ 100 \cdot 102 & 100 \cdot 100 \end{bmatrix} \\
+&= \begin{bmatrix} 0.99 & 0.97 \\ 0.97 & 3.91 \end{bmatrix}\end{align}$$
 :::
 
 :::
