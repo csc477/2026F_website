@@ -1027,7 +1027,7 @@ w_t &amp;= \begin{bmatrix} w_p(t) \\ w_v(t) \end{bmatrix} \sim \mathcal{N}(0_{2 
 </div><div class="column medium-font" style="width:60%;">
 <p>Suppose that at time t the state is distributed as <span class="math inline">\(p(x_{t}|z_{0:t})=\mathcal{N}(\mu_{t|t},\Sigma_{t|t})\)</span> with</p>
 <p><span class="math display">\[\mu_{t|t} = \begin{bmatrix} 0 \\ 1 \end{bmatrix} \quad \Sigma_{t|t} = \begin{bmatrix} \sigma_p^2 &amp; \sigma_{pv} \\ \sigma_{pv} &amp; \sigma_v^2 \end{bmatrix} = \begin{bmatrix} 1^2 &amp; 0 \\ 0 &amp; 10^2 \end{bmatrix}\]</span></p>
-<p>In other words, we are confident that in the beginning the position is with high probability (~0.997) within range <span class="math inline">\(3\sigma_{v}=3\)</span> of the mean position, 0.</p>
+<p>In other words, we are confident that in the beginning the position is with high probability (~0.997) within range <span class="math inline">\(3\sigma_{p}=3\)</span> of the mean position, 0.</p>
 <p>We are not very confident in the velocity, however. We just know a priori that with high probability (~0.997) it is within range <span class="math inline">\(3\sigma_{v}=30\)</span> of the mean velocity 1.</p>
 <p><span class="red-annotation fragment">Notice that when the cross-correlation terms <span class="math inline">\(\sigma_{pv} = 0\)</span> then the ellipse is axis-aligned. This means that the position and velocity are initially uncorrelated.</span></p>
 </div></div>
@@ -1137,9 +1137,8 @@ probability (~0.997)</p>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <p><span class="math display">\[\begin{align}
 \Sigma_{t+1|t+1} &amp;= \Sigma_{t+1|t} - K H \Sigma_{t+1|t} \\
-&amp;= \Sigma_{t+1|t} - \frac{102}{103} \Sigma_{t+1|t} \\
-&amp;= \frac{1}{103} \Sigma_{t+1|t} \\
-&amp;= \begin{bmatrix} 0.99 &amp; 0.97 \\ 0.97 &amp; 0.98 \end{bmatrix}\end{align}\]</span></p>
+&amp;= \begin{bmatrix} 102 &amp; 100 \\ 100 &amp; 101 \end{bmatrix} - \frac{1}{103}\begin{bmatrix} 102 \cdot 102 &amp; 102 \cdot 100 \\ 100 \cdot 102 &amp; 100 \cdot 100 \end{bmatrix} \\
+&amp;= \begin{bmatrix} 0.99 &amp; 0.97 \\ 0.97 &amp; 3.91 \end{bmatrix}\end{align}\]</span></p>
 </div>
 <div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <p>&nbsp;</p>
@@ -1167,9 +1166,8 @@ probability (~0.997)</p>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <p><span class="math display">\[\begin{align}
 \Sigma_{t+1|t+1} &amp;= \Sigma_{t+1|t} - K H \Sigma_{t+1|t} \\
-&amp;= \Sigma_{t+1|t} - \frac{102}{103} \Sigma_{t+1|t} \\
-&amp;= \frac{1}{103} \Sigma_{t+1|t} \\
-&amp;= \begin{bmatrix} 0.99 &amp; 0.97 \\ 0.97 &amp; 0.98 \end{bmatrix}\end{align}\]</span></p>
+&amp;= \begin{bmatrix} 102 &amp; 100 \\ 100 &amp; 101 \end{bmatrix} - \frac{1}{103}\begin{bmatrix} 102 \cdot 102 &amp; 102 \cdot 100 \\ 100 \cdot 102 &amp; 100 \cdot 100 \end{bmatrix} \\
+&amp;= \begin{bmatrix} 0.99 &amp; 0.97 \\ 0.97 &amp; 3.91 \end{bmatrix}\end{align}\]</span></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <p><span class="red medium-font"><br><br> After the measurement the covariance was reduced. We are now more confident than both the measurement and the prediction estimate.</span></p>
@@ -1197,9 +1195,8 @@ probability (~0.997)</p>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <p><span class="math display">\[\begin{align}
 \Sigma_{t+1|t+1} &amp;= \Sigma_{t+1|t} - K H \Sigma_{t+1|t} \\
-&amp;= \Sigma_{t+1|t} - \frac{102}{103} \Sigma_{t+1|t} \\
-&amp;= \frac{1}{103} \Sigma_{t+1|t} \\
-&amp;= \begin{bmatrix} 0.99 &amp; 0.97 \\ 0.97 &amp; 0.98 \end{bmatrix}\end{align}\]</span></p>
+&amp;= \begin{bmatrix} 102 &amp; 100 \\ 100 &amp; 101 \end{bmatrix} - \frac{1}{103}\begin{bmatrix} 102 \cdot 102 &amp; 102 \cdot 100 \\ 100 \cdot 102 &amp; 100 \cdot 100 \end{bmatrix} \\
+&amp;= \begin{bmatrix} 0.99 &amp; 0.97 \\ 0.97 &amp; 3.91 \end{bmatrix}\end{align}\]</span></p>
 </div>
 </div>
 </div>
