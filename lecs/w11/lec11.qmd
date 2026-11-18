@@ -44,7 +44,7 @@ html-math-method:
 
 ::: {.columns}
 ::: {.column width="40%"}
-![[https://www.opsclarity.com]{.small-font}](img/Lecture10_1.png)
+![](img/Lecture10_1.png)
 :::
 
 ::: {.column width="60%" .medium-font}
@@ -71,7 +71,7 @@ Note: this approach is called the Histogram Filter. It is useful for low-dimensi
 
 ::: {.columns}
 ::: {.column width="40%"}
-![[https://www.opsclarity.com]{.small-font}](img/multimodal-diagram.png)
+![](img/multimodal-diagram.png)
 :::
 
 ::: {.column width="60%" .medium-font}
@@ -105,7 +105,7 @@ Disadvantages: need enough particles to “cover” the distribution
 
 ::: {.columns}
 ::: {.column width="40%" .small-font}
-![[https://www.opsclarity.com]{.small-font}](img/multimodal-diagram.png)
+![](img/multimodal-diagram.png)
 
 <br><br><br><br><br>
 
@@ -152,7 +152,7 @@ mass]{.semi-tiny-font .absolute bottom=200 left=200}
 
 ::: {.columns}
 ::: {.column width="40%" .small-font}
-![[https://www.opsclarity.com]{.small-font}](img/multimodal-diagram.png)
+![](img/multimodal-diagram.png)
 
 <br><br><br><br><br>
 
